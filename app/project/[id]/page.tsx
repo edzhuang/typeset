@@ -14,6 +14,7 @@ export default function Home() {
         {" "}
         <Editor
           defaultLanguage="LaTeX"
+          theme="vs-dark"
           defaultValue={`\\documentclass{article}
 \\title{Blank Project}
 \\author{Eddie Zhuang}
