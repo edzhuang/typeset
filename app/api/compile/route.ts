@@ -23,11 +23,10 @@ export async function POST(request: NextRequest) {
   const proc = spawn(tectonicPath, [
     "-X",
     "compile",
-    "--synctex",
-    "false",
+    srcPath,
     "--outdir",
     outDir,
-    srcPath,
+    "--synctex=false",
   ]);
 
   let stderr = "";
