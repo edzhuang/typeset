@@ -19,15 +19,23 @@ export async function POST(request: NextRequest) {
   const outDir = join(baseDir, "out");
   await fs.mkdir(outDir, { recursive: true });
 
+  const cacheDir = join(baseDir, "cache");
+  await fs.mkdir(cacheDir, { recursive: true });
+
   const tectonicPath = join(process.cwd(), "bin", "tectonic");
-  const proc = spawn(tectonicPath, [
-    "-X",
-    "compile",
-    srcPath,
-    "--outdir",
-    outDir,
-    "--synctex=false",
-  ]);
+  const proc = spawn(
+    tectonicPath,
+    ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
+    {
+      env: {
+        ...process.env,
+        HOME: baseDir,
+        XDG_CACHE_HOME: cacheDir,
+        TECTONIC_CACHE_DIR: cacheDir,
+        TEXMFVAR: cacheDir,
+      },
+    }
+  );
 
   let stderr = "";
   proc.stderr.on("data", (d) => (stderr += d));
