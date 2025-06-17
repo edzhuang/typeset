@@ -1,36 +1,36 @@
 "use client";
 
-import Editor from "@monaco-editor/react";
+import { LaTeXEditor } from "@/components/latex-editor";
 import {
   ResizableHandle,
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
+import { Card } from "@/components/ui/card";
+import { defaultTemplate } from "@/lib/templates";
 
 export default function Home() {
   return (
-    <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel className="p-2">
-        {" "}
-        <Editor
-          defaultLanguage="LaTeX"
-          theme="vs-dark"
-          defaultValue={`\\documentclass{article}
-\\title{Blank Project}
-\\author{Eddie Zhuang}
-\\date{June 2025}
+    <div className="h-full p-2">
+      <ResizablePanelGroup direction="horizontal" autoSaveId="editor">
+        <ResizablePanel defaultSize={20}>
+          <Card className="h-full">Chat</Card>
+        </ResizablePanel>
 
-\\begin{document}
+        <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-\\maketitle
+        <ResizablePanel defaultSize={40}>
+          <Card className="h-full">
+            <LaTeXEditor />
+          </Card>
+        </ResizablePanel>
 
-\\section{Introduction}
+        <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-\\end{document}`}
-        />
-      </ResizablePanel>
-      <ResizableHandle />
-      <ResizablePanel className="p-2">Two</ResizablePanel>
-    </ResizablePanelGroup>
+        <ResizablePanel defaultSize={40}>
+          <Card className="h-full">Preview</Card>
+        </ResizablePanel>
+      </ResizablePanelGroup>
+    </div>
   );
 }
