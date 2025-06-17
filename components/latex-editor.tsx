@@ -85,6 +85,10 @@ export function LaTeXEditor() {
       theme="vs-dark"
       defaultValue={defaultTemplate}
       onMount={handleEditorDidMount}
+      options={{
+        minimap: { enabled: false },
+        scrollBeyondLastLine: false,
+      }}
     />
   );
 }
