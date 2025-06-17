@@ -1,3 +1,6 @@
+"use client";
+
+import Editor from "@monaco-editor/react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -7,9 +10,26 @@ import {
 export default function Home() {
   return (
     <ResizablePanelGroup direction="horizontal">
-      <ResizablePanel>One</ResizablePanel>
+      <ResizablePanel className="p-2">
+        {" "}
+        <Editor
+          defaultLanguage="LaTeX"
+          defaultValue={`\\documentclass{article}
+\\title{Blank Project}
+\\author{Eddie Zhuang}
+\\date{June 2025}
+
+\\begin{document}
+
+\\maketitle
+
+\\section{Introduction}
+
+\\end{document}`}
+        />
+      </ResizablePanel>
       <ResizableHandle />
-      <ResizablePanel>Two</ResizablePanel>
+      <ResizablePanel className="p-2">Two</ResizablePanel>
     </ResizablePanelGroup>
   );
 }
