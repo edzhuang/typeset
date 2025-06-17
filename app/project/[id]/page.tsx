@@ -7,11 +7,10 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Card } from "@/components/ui/card";
-import { defaultTemplate } from "@/lib/templates";
 
 export default function Home() {
   return (
-    <div className="h-full p-2">
+    <div className="h-full px-2 pb-2">
       <ResizablePanelGroup direction="horizontal" autoSaveId="editor">
         <ResizablePanel defaultSize={20}>
           <Card className="h-full">Chat</Card>
