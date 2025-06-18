@@ -1,6 +1,5 @@
 "use client";
 
-import { LaTeXEditor } from "@/components/latex-editor";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -19,9 +18,7 @@ export default function Home() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full">
-            <LaTeXEditor />
-          </Card>
+          <Card className="h-full"></Card>
         </ResizablePanel>
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
