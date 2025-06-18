@@ -1,5 +1,5 @@
 import { Editor } from "@monaco-editor/react";
-import { useEffect, useRef } from "react";
+import { useRef } from "react";
 import type { Monaco } from "@monaco-editor/react";
 import type { editor } from "monaco-editor";
 import { defaultTemplate } from "@/lib/templates";
