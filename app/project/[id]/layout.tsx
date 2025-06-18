@@ -9,7 +9,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 
-export default function Layout({
+export default function ProjectLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

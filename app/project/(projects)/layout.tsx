@@ -5,7 +5,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { UserButton } from "@clerk/nextjs";
 
-export default function Layout({
+export default function ProjectsLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;

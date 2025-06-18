@@ -6,7 +6,7 @@ import {
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
-export default function Layout({
+export default function LandingLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
