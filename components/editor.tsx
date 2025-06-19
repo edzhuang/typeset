@@ -11,8 +11,10 @@ import { useRoom } from "@liveblocks/react/suspense";
 
 export default function Editor({
   setEditorContent,
+  className = "",
 }: {
   setEditorContent: (content: string) => void;
+  className?: string;
 }) {
   const room = useRoom();
   const yProvider = getYjsProviderForRoom(room);
@@ -55,6 +57,7 @@ export default function Editor({
     const view = new EditorView({
       state,
       parent: element,
+      scrollTo: EditorView.scrollIntoView(0),
     });
 
     return () => {
@@ -63,5 +66,5 @@ export default function Editor({
     };
   }, [element, room, setEditorContent, yProvider]);
 
-  return <div ref={ref} />;
+  return <div className={className} ref={ref} />;
 }

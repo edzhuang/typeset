@@ -75,33 +75,36 @@ export default function ProjectPage() {
             </div>
           </NavigationMenu>
 
-          <div className="h-full px-2 pb-2">
-            <ResizablePanelGroup direction="horizontal" autoSaveId="editor">
-              <ResizablePanel defaultSize={20}>
-                <Card className="h-full">Chat</Card>
-              </ResizablePanel>
+          <ResizablePanelGroup
+            className="px-2 pb-2"
+            direction="horizontal"
+            autoSaveId="editor"
+          >
+            <ResizablePanel defaultSize={20}>
+              <Card className="h-full">Chat</Card>
+            </ResizablePanel>
 
-              <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
+            <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-              <ResizablePanel defaultSize={40}>
-                <Card className="h-full">
-                  <ClientSideSuspense fallback={<div>Loading…</div>}>
-                    <Editor setEditorContent={setEditorContent} />
-                  </ClientSideSuspense>
-                </Card>
-              </ResizablePanel>
+            <ResizablePanel defaultSize={40}>
+              <Card className="h-full p-0 overflow-hidden">
+                <ClientSideSuspense fallback={<div>Loading…</div>}>
+                  <Editor
+                    setEditorContent={setEditorContent}
+                    className="h-full"
+                  />
+                </ClientSideSuspense>
+              </Card>
+            </ResizablePanel>
 
-              <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
+            <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-              <ResizablePanel defaultSize={40}>
-                <Card className="h-full p-0 overflow-hidden">
-                  {pdfData && (
-                    <PDFViewer pdfData={pdfData} className="h-full" />
-                  )}
-                </Card>
-              </ResizablePanel>
-            </ResizablePanelGroup>
-          </div>
+            <ResizablePanel defaultSize={40}>
+              <Card className="h-full p-0">
+                {pdfData && <PDFViewer pdfData={pdfData} className="h-full" />}
+              </Card>
+            </ResizablePanel>
+          </ResizablePanelGroup>
         </div>
       </RoomProvider>
     </LiveblocksProvider>

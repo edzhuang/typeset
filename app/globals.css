@@ -120,3 +120,21 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* CodeMirror styles to prevent overflow */
+.cm-editor {
+  height: 100%;
+}
+
+.cm-scroller {
+  height: 100%;
+  overflow: auto;
+}
+
+.cm-content {
+  min-height: 100%;
+}
+
+.cm-focused {
+  outline: none;
+}

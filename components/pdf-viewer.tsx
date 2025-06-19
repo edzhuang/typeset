@@ -345,7 +345,7 @@ export function PDFViewer({
           <div className="relative">
             <canvas
               ref={canvasRef}
-              className="border shadow-lg max-w-full"
+              className="border shadow-lg"
               style={{
                 height: "auto",
               }}
