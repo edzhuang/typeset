@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import {
   ZoomIn,
   ZoomOut,
-  RotateCcw,
   ChevronLeft,
   ChevronRight,
   Download,
@@ -67,6 +67,7 @@ export function PDFViewer({
   const [error, setError] = useState<string | null>(null);
   const [rendering, setRendering] = useState(false);
   const [pdfjsLib, setPdfjsLib] = useState<PDFLib | null>(null);
+  const [pageInput, setPageInput] = useState("");
 
   // Load PDF.js dynamically
   useEffect(() => {
@@ -199,16 +200,30 @@ export function PDFViewer({
     setZoom((prev) => Math.max(prev - 0.25, 0.5));
   };
 
-  const handleZoomReset = () => {
-    setZoom(1.0);
-  };
-
   const handlePrevPage = () => {
     setCurrentPage((prev) => Math.max(prev - 1, 1));
   };
-
   const handleNextPage = () => {
     setCurrentPage((prev) => Math.min(prev + 1, totalPages));
+  };
+
+  const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    setPageInput(value);
+  };
+
+  const handlePageInputSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const pageNum = parseInt(pageInput, 10);
+    if (!isNaN(pageNum) && pageNum >= 1 && pageNum <= totalPages) {
+      setCurrentPage(pageNum);
+    }
+    setPageInput("");
+  };
+  const handlePageInputKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      handlePageInputSubmit(e as React.FormEvent);
+    }
   };
 
   const handleDownload = () => {
@@ -263,66 +278,70 @@ export function PDFViewer({
   return (
     <div className={`${className}`}>
       {/* Controls */}
-      <div className="flex items-center justify-between p-4 border-b">
+      <div className="flex items-center justify-between p-2 border-b">
         {/* Zoom Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={handleZoomOut}
             disabled={zoom <= 0.5}
           >
-            <ZoomOut className="h-4 w-4" />
+            <ZoomOut />
           </Button>
-          <span className="text-sm font-medium min-w-[60px] text-center">
+          <span className="text-sm font-medium text-center">
             {Math.round(zoom * 100)}%
           </span>
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={handleZoomIn}
             disabled={zoom >= 3.0}
           >
-            <ZoomIn className="h-4 w-4" />
+            <ZoomIn />
           </Button>
-          <Button variant="outline" size="sm" onClick={handleZoomReset}>
-            <RotateCcw className="h-4 w-4" />
-          </Button>
-        </div>
-
+        </div>{" "}
         {/* Page Controls */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-6">
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={handlePrevPage}
             disabled={currentPage <= 1}
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft />
           </Button>
-          <span className="text-sm font-medium min-w-[80px] text-center">
-            {currentPage} of {totalPages}
-          </span>
+          <div className="flex items-center gap-2">
+            <Input
+              type="number"
+              value={pageInput}
+              onChange={handlePageInputChange}
+              onKeyDown={handlePageInputKeyDown}
+              placeholder={currentPage.toString()}
+              className="w-9 text-center text-sm [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+              min={1}
+              max={totalPages}
+            />
+            <span className="text-sm font-medium">of {totalPages}</span>
+          </div>
           <Button
             variant="outline"
-            size="sm"
+            size="icon"
             onClick={handleNextPage}
             disabled={currentPage >= totalPages}
           >
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight />
           </Button>
         </div>
-
         {/* Download Button */}
-        <Button variant="outline" size="sm" onClick={handleDownload}>
-          <Download className="h-4 w-4 mr-2" />
-          Download
+        <Button variant="outline" size="icon" onClick={handleDownload}>
+          <Download />
         </Button>
       </div>
 
       {/* PDF Canvas */}
-      <div className="relative overflow-auto h-full">
-        <div className="flex justify-center p-4">
+      <div className="relative overflow-hidden h-full">
+        <div className="flex justify-center p-2">
           <div className="relative">
             <canvas
               ref={canvasRef}
