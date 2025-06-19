@@ -2,19 +2,15 @@ import { NextRequest } from "next/server";
 import { spawn } from "node:child_process";
 import { promises as fs } from "fs";
 import { join } from "path";
-import { tmpdir } from "os";
+import { tmpdir, platform } from "os";
 
 export async function POST(request: NextRequest) {
-  const form = await request.formData();
-  const file = form.get("file") as File | null;
-  if (!file) {
-    return new Response("No file provided", { status: 400 });
-  }
-
   const baseDir = process.env.VERCEL ? "/tmp" : tmpdir();
 
+  const body = await request.json();
+  const content = Buffer.from(body.content);
   const srcPath = join(baseDir, "input.tex");
-  await fs.writeFile(srcPath, Buffer.from(await file.arrayBuffer()));
+  await fs.writeFile(srcPath, content);
 
   const outDir = join(baseDir, "out");
   await fs.mkdir(outDir, { recursive: true });
@@ -22,7 +18,13 @@ export async function POST(request: NextRequest) {
   const cacheDir = join(baseDir, "cache");
   await fs.mkdir(cacheDir, { recursive: true });
 
-  const tectonicPath = join(process.cwd(), "bin", "tectonic");
+  let tectonicName: string;
+  if (platform() === "win32") {
+    tectonicName = "tectonic-windows.exe";
+  } else {
+    tectonicName = "tectonic-linux";
+  }
+  const tectonicPath = join(process.cwd(), "bin", tectonicName);
   const proc = spawn(
     tectonicPath,
     ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
@@ -48,7 +50,7 @@ export async function POST(request: NextRequest) {
   return new Response(pdf, {
     headers: {
       "Content-Type": "application/pdf",
-      "Content-Disposition": 'attachment; filename="output.pdf"',
+      "Content-Disposition": 'inline; filename="output.pdf"',
     },
   });
 }

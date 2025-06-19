@@ -9,7 +9,11 @@ import { useCallback, useEffect, useState } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
 
-export default function Editor() {
+export default function Editor({
+  setEditorContent,
+}: {
+  setEditorContent: (content: string) => void;
+}) {
   const room = useRoom();
   const yProvider = getYjsProviderForRoom(room);
   const [element, setElement] = useState<HTMLElement>();
@@ -31,6 +35,12 @@ export default function Editor() {
     const yText = yDoc.getText("codemirror");
     const undoManager = new Y.UndoManager(yText);
 
+    const observer = () => {
+      setEditorContent(yText.toString());
+    };
+    yText.observe(observer);
+    observer();
+
     // Set up CodeMirror and extensions
     const state = EditorState.create({
       doc: yText.toString(),
@@ -48,9 +58,10 @@ export default function Editor() {
     });
 
     return () => {
+      yText.unobserve(observer);
       view?.destroy();
     };
-  }, [element, room]);
+  }, [element, room, setEditorContent, yProvider]);
 
   return <div ref={ref} />;
 }
