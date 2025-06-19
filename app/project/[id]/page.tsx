@@ -83,9 +83,7 @@ export default function ProjectPage() {
             <ResizablePanel defaultSize={20}>
               <Card className="h-full">Chat</Card>
             </ResizablePanel>
-
             <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
-
             <ResizablePanel defaultSize={40}>
               <Card className="h-full p-0 overflow-hidden">
                 <ClientSideSuspense fallback={<div>Loading…</div>}>
@@ -96,9 +94,7 @@ export default function ProjectPage() {
                 </ClientSideSuspense>
               </Card>
             </ResizablePanel>
-
-            <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
-
+            <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}
             <ResizablePanel defaultSize={40}>
               <Card className="h-full p-0">
                 {pdfData && <PDFViewer pdfData={pdfData} className="h-full" />}
