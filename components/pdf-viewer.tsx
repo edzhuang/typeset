@@ -56,7 +56,7 @@ export function PDFViewer({
   const [pdf, setPdf] = useState<PDFDocument | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(0);
-  const [zoom, setZoom] = useState(1.0);
+  const [zoom, setZoom] = useState(1);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [rendering, setRendering] = useState(false);
@@ -161,21 +161,26 @@ export function PDFViewer({
           throw new Error("Could not get canvas context");
         }
 
-        // Calculate scale for actual print size (96 DPI is standard web DPI, 72 DPI is PDF default)
-        const printScale = (96 / 72) * zoom;
-        const actualViewport = page.getViewport({ scale: printScale });
+        // Calculate actual PDF size scale (96 DPI web / 72 DPI PDF = 1.333...)
+        const pdfToWebScale = 96 / 72;
 
-        // Set canvas dimensions for crisp rendering on high-DPI displays
+        // Calculate scale for better quality rendering
+        // Use higher base scale for better text rendering, then scale up for device pixel ratio
         const devicePixelRatio = window.devicePixelRatio || 1;
-        canvas.height = actualViewport.height * devicePixelRatio;
-        canvas.width = actualViewport.width * devicePixelRatio;
+        const actualScale = pdfToWebScale * zoom; // zoom=1 now represents actual PDF size
+        const baseScale = Math.max(1.5, devicePixelRatio); // Minimum 1.5x for better quality
+        const renderScale = baseScale * actualScale;
+        const actualViewport = page.getViewport({ scale: renderScale });
 
-        // Scale canvas back down via CSS for proper display size
-        canvas.style.height = actualViewport.height + "px";
-        canvas.style.width = actualViewport.width + "px";
+        // Set canvas dimensions for crisp rendering
+        canvas.height = actualViewport.height;
+        canvas.width = actualViewport.width;
 
-        // Scale the context to match device pixel ratio
-        context.scale(devicePixelRatio, devicePixelRatio);
+        // Calculate display size (what the user sees) - this should be actual PDF size at 100%
+        const displayViewport = page.getViewport({ scale: actualScale });
+        canvas.style.height = displayViewport.height + "px";
+        canvas.style.width = displayViewport.width + "px"; // Configure context for high-quality rendering
+        context.imageSmoothingEnabled = false; // Disable smoothing for crisp text
 
         // Clear canvas
         context.clearRect(0, 0, actualViewport.width, actualViewport.height);
@@ -408,6 +413,7 @@ export function PDFViewer({
                 className="border shadow-lg"
                 style={{
                   height: "auto",
+                  imageRendering: "crisp-edges", // For better text rendering
                 }}
               />
               {rendering && index === 0 && (
