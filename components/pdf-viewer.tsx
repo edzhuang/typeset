@@ -2,14 +2,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  ZoomIn,
-  ZoomOut,
-  ChevronLeft,
-  ChevronRight,
-  Download,
-  Loader2,
-} from "lucide-react";
+import { ZoomIn, ZoomOut, Download, Loader2 } from "lucide-react";
 
 // PDF.js types
 interface PDFDocumentConfig {
@@ -210,20 +203,8 @@ export function PDFViewer({
   const handleZoomIn = () => {
     setZoom((prev) => Math.min(prev + 0.25, 3.0));
   };
-
   const handleZoomOut = () => {
     setZoom((prev) => Math.max(prev - 0.25, 0.5));
-  };
-  const handlePrevPage = () => {
-    const newPage = Math.max(currentPage - 1, 1);
-    setCurrentPage(newPage);
-    scrollToPage(newPage);
-  };
-
-  const handleNextPage = () => {
-    const newPage = Math.min(currentPage + 1, totalPages);
-    setCurrentPage(newPage);
-    scrollToPage(newPage);
   };
 
   const handlePageInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -269,55 +250,55 @@ export function PDFViewer({
 
     let timeoutId: NodeJS.Timeout;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        // Clear any pending updates
-        clearTimeout(timeoutId);
+    const handleScroll = () => {
+      // Clear any pending updates
+      clearTimeout(timeoutId);
 
-        // Debounce the page change to prevent flickering
-        timeoutId = setTimeout(() => {
-          // Find the page that's most visible
-          let mostVisiblePage = currentPage; // Default to current page
-          let maxIntersectionRatio = 0;
+      // Debounce the page change to prevent flickering
+      timeoutId = setTimeout(() => {
+        if (!containerRef.current || isScrollingProgrammatically.current)
+          return;
 
-          entries.forEach((entry) => {
-            if (
-              entry.isIntersecting &&
-              entry.intersectionRatio > maxIntersectionRatio
-            ) {
-              const pageElement = entry.target as HTMLElement;
-              const pageNumber = parseInt(
-                pageElement.getAttribute("data-page-number") || "1",
-                10
-              );
-              mostVisiblePage = pageNumber;
-              maxIntersectionRatio = entry.intersectionRatio;
-            }
-          });
+        const container = containerRef.current;
+        const containerRect = container.getBoundingClientRect();
+        const containerMiddle = containerRect.top + containerRect.height / 2;
 
-          // Update current page if it's different, has significant visibility, and we're not navigating
-          if (
-            mostVisiblePage !== currentPage &&
-            maxIntersectionRatio > 0.6 && // Higher threshold for more stability
-            !isScrollingProgrammatically.current
-          ) {
-            setCurrentPage(mostVisiblePage);
+        let newCurrentPage = currentPage;
+
+        // Check each page to see if its top or bottom edge crosses the middle
+        for (let i = 0; i < totalPages; i++) {
+          const pageElement = container.querySelector(
+            `[data-page-number="${i + 1}"]`
+          ) as HTMLElement;
+          if (!pageElement) continue;
+
+          const pageRect = pageElement.getBoundingClientRect();
+          const pageTop = pageRect.top;
+          const pageBottom = pageRect.bottom;
+
+          // A page is considered current if the container middle line is between its top and bottom
+          if (pageTop <= containerMiddle && containerMiddle <= pageBottom) {
+            newCurrentPage = i + 1;
+            break;
           }
-        }, 150); // 150ms debounce delay
-      },
-      {
-        root: containerRef.current,
-        rootMargin: "-20% 0px -20% 0px", // Larger margins for more stable detection
-        threshold: 0.6, // Single threshold for cleaner detection
-      }
-    ); // Observe all page containers
-    const pageElements =
-      containerRef.current.querySelectorAll("[data-page-number]");
-    pageElements.forEach((element) => observer.observe(element));
+        }
+
+        // Update current page if it's different
+        if (newCurrentPage !== currentPage) {
+          setCurrentPage(newCurrentPage);
+        }
+      }, 100); // 100ms debounce delay
+    };
+
+    const container = containerRef.current;
+    container.addEventListener("scroll", handleScroll);
+
+    // Initial check
+    handleScroll();
 
     return () => {
       clearTimeout(timeoutId);
-      observer.disconnect();
+      container.removeEventListener("scroll", handleScroll);
     };
   }, [totalPages, currentPage]);
 
@@ -374,7 +355,7 @@ export function PDFViewer({
       {/* Controls */}
       <div className="flex items-center justify-between p-2 border-b sticky top-0 z-10">
         {/* Zoom Controls */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-2">
           <Button
             variant="outline"
             size="icon"
@@ -394,41 +375,20 @@ export function PDFViewer({
           >
             <ZoomIn />
           </Button>
-        </div>
-
+        </div>{" "}
         {/* Page Controls */}
-        <div className="flex items-center gap-6">
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handlePrevPage}
-            disabled={currentPage <= 1}
-          >
-            <ChevronLeft />
-          </Button>
-          <div className="flex items-center gap-2">
-            {" "}
-            <Input
-              type="number"
-              value={pageInput}
-              onChange={handlePageInputChange}
-              onKeyDown={handlePageInputKeyDown}
-              className="w-9 px-0 text-center text-sm [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
-              min={1}
-              max={totalPages}
-            />
-            <span className="text-sm font-medium">of {totalPages}</span>
-          </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={handleNextPage}
-            disabled={currentPage >= totalPages}
-          >
-            <ChevronRight />
-          </Button>
+        <div className="flex items-center gap-2">
+          <Input
+            type="number"
+            value={pageInput}
+            onChange={handlePageInputChange}
+            onKeyDown={handlePageInputKeyDown}
+            className="w-9 px-0 text-center text-sm [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield]"
+            min={1}
+            max={totalPages}
+          />
+          <span className="text-sm font-medium">of {totalPages}</span>
         </div>
-
         {/* Download Button */}
         <Button variant="outline" size="icon" onClick={handleDownload}>
           <Download />
