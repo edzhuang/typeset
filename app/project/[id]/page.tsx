@@ -24,10 +24,11 @@ import {
 import { Button } from "@/components/ui/button";
 import { IconPlayerPlayFilled } from "@tabler/icons-react";
 import { useState } from "react";
+import { PDFViewer } from "@/components/pdf-viewer";
 
 export default function ProjectPage() {
   const [editorContent, setEditorContent] = useState("");
-  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const [pdfData, setPdfData] = useState<ArrayBuffer | null>(null);
   const params = useParams<{ id: string }>();
 
   const compile = async () => {
@@ -37,13 +38,10 @@ export default function ProjectPage() {
       body: JSON.stringify({ content: editorContent }),
     });
 
-    // Turn the binary payload into a Blob URL
-    const blob = await res.blob();
-    const namedBlob = new Blob([blob], {
-      type: "application/pdf",
-    });
-    const url = URL.createObjectURL(namedBlob);
-    setPdfUrl(url);
+    if (res.ok) {
+      const arrayBuffer = await res.arrayBuffer();
+      setPdfData(arrayBuffer);
+    }
   };
 
   return (
@@ -97,12 +95,8 @@ export default function ProjectPage() {
 
               <ResizablePanel defaultSize={40}>
                 <Card className="h-full p-0 overflow-hidden">
-                  {pdfUrl && (
-                    <iframe
-                      src={pdfUrl}
-                      title="PDF preview"
-                      className="h-full"
-                    />
+                  {pdfData && (
+                    <PDFViewer pdfData={pdfData} className="h-full" />
                   )}
                 </Card>
               </ResizablePanel>
