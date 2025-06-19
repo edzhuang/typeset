@@ -57,7 +57,6 @@ export default function Editor({
     const view = new EditorView({
       state,
       parent: element,
-      scrollTo: EditorView.scrollIntoView(0),
     });
 
     return () => {

@@ -22,7 +22,7 @@ import {
   NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { IconPlayerPlayFilled } from "@tabler/icons-react";
+import { Play } from "lucide-react";
 import { useState } from "react";
 import { PDFViewer } from "@/components/pdf-viewer";
 
@@ -66,7 +66,7 @@ export default function ProjectPage() {
               <NavigationMenuList>
                 <NavigationMenuItem>
                   <Button onClick={compile}>
-                    <IconPlayerPlayFilled /> Compile
+                    <Play /> Compile
                   </Button>
                 </NavigationMenuItem>
               </NavigationMenuList>
@@ -96,7 +96,7 @@ export default function ProjectPage() {
             </ResizablePanel>
             <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}
             <ResizablePanel defaultSize={40}>
-              <Card className="h-full p-0">
+              <Card className="h-full p-0 overflow-hidden">
                 {pdfData && <PDFViewer pdfData={pdfData} className="h-full" />}
               </Card>
             </ResizablePanel>
