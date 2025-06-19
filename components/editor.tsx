@@ -6,7 +6,6 @@ import {
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
 import { Card } from "@/components/ui/card";
-import { ClientSideSuspense } from "@liveblocks/react/suspense";
 import {
   NavigationMenu,
   NavigationMenuContent,
@@ -124,9 +123,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
-            <ClientSideSuspense fallback={<div>Loading…</div>}>
-              <div ref={ref} />
-            </ClientSideSuspense>
+            <div ref={ref} />
           </Card>
         </ResizablePanel>
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}

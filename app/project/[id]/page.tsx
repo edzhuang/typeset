@@ -3,6 +3,7 @@
 import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
 import Editor from "@/components/editor";
 import { useParams } from "next/navigation";
+import { ClientSideSuspense } from "@liveblocks/react/suspense";
 
 export default function ProjectPage() {
   const params = useParams<{ id: string }>();
@@ -14,7 +15,9 @@ export default function ProjectPage() {
       }
     >
       <RoomProvider id={params.id}>
-        <Editor />
+        <ClientSideSuspense fallback={<div>Loading…</div>}>
+          <Editor />
+        </ClientSideSuspense>
       </RoomProvider>
     </LiveblocksProvider>
   );
