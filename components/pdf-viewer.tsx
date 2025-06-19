@@ -27,7 +27,6 @@ interface PDFPage {
     canvasContext: CanvasRenderingContext2D;
     viewport: PDFViewport;
   }) => { promise: Promise<void> };
-  getTextContent: () => Promise<TextContent>;
   pageIndex: number;
 }
 
@@ -36,31 +35,9 @@ interface PDFViewport {
   height: number;
 }
 
-interface TextContent {
-  items: TextItem[];
-  styles: { [key: string]: object };
-}
-
-interface TextItem {
-  str: string;
-  dir: string;
-  width: number;
-  height: number;
-  transform: number[];
-  fontName: string;
-}
-
 declare global {
   interface Window {
     pdfjsLib: PDFLib;
-    pdfjsViewer: {
-      renderTextLayer: (options: {
-        textContentSource: TextContent;
-        container: HTMLDivElement;
-        viewport: PDFViewport;
-        textDivs: HTMLElement[];
-      }) => { promise: Promise<void> };
-    };
   }
 }
 
@@ -86,7 +63,6 @@ export function PDFViewer({
   const [pdfjsLib, setPdfjsLib] = useState<PDFLib | null>(null);
   const [pageInput, setPageInput] = useState("1");
   const canvasRefs = useRef<(HTMLCanvasElement | null)[]>([]);
-  const textLayerRefs = useRef<(HTMLDivElement | null)[]>([]);
   const isScrollingProgrammatically = useRef(false);
 
   // Load PDF.js dynamically
@@ -104,19 +80,8 @@ export function PDFViewer({
           pdfjsLib.GlobalWorkerOptions.workerSrc =
             "https://unpkg.com/pdfjs-dist@3.11.174/build/pdf.worker.min.js";
 
-          // Also load the viewer script for text layer rendering
-          const viewerScript = document.createElement("script");
-          viewerScript.src =
-            "https://unpkg.com/pdfjs-dist@3.11.174/web/pdf_viewer.js";
-          viewerScript.onload = () => {
-            // Save the lib; useEffect below will load the PDF once.
-            setPdfjsLib(pdfjsLib);
-          };
-          viewerScript.onerror = () => {
-            setError("Failed to load PDF.js viewer library");
-            setLoading(false);
-          };
-          document.head.appendChild(viewerScript);
+          // Save the lib; useEffect below will load the PDF once.
+          setPdfjsLib(pdfjsLib);
         };
 
         script.onerror = () => {
@@ -165,11 +130,8 @@ export function PDFViewer({
         setPdf(pdfDoc);
         setTotalPages(pdfDoc.numPages);
         setCurrentPage(1);
-        setPageInput("1");
-
-        // Initialize canvas refs array
+        setPageInput("1"); // Initialize canvas refs array
         canvasRefs.current = new Array(pdfDoc.numPages).fill(null);
-        textLayerRefs.current = new Array(pdfDoc.numPages).fill(null);
       } catch (err) {
         setError(
           "Failed to load PDF document. Please check if the file is a valid PDF."
@@ -222,28 +184,7 @@ export function PDFViewer({
           canvasContext: context,
           viewport: actualViewport,
         };
-
         await page.render(renderContext).promise;
-
-        // Render text layer
-        const textLayerDiv = textLayerRefs.current[pageNum - 1];
-        if (textLayerDiv && window.pdfjsViewer?.renderTextLayer) {
-          textLayerDiv.innerHTML = ""; // Clear previous content
-
-          // Set text layer size
-          textLayerDiv.style.width = actualViewport.width + "px";
-          textLayerDiv.style.height = actualViewport.height + "px";
-
-          const textContent = await page.getTextContent();
-
-          const renderTask = window.pdfjsViewer.renderTextLayer({
-            textContentSource: textContent,
-            container: textLayerDiv,
-            viewport: actualViewport,
-            textDivs: [],
-          });
-          await renderTask.promise;
-        }
       }
     } catch (err) {
       console.error("Page rendering error:", err);
@@ -457,6 +398,7 @@ export function PDFViewer({
         <div className="flex flex-col items-center p-4 gap-4">
           {Array.from({ length: totalPages }, (_, index) => (
             <div key={index} className="relative" data-page-number={index + 1}>
+              {" "}
               <canvas
                 ref={(el) => {
                   if (el) {
@@ -467,14 +409,6 @@ export function PDFViewer({
                 style={{
                   height: "auto",
                 }}
-              />
-              <div
-                ref={(el) => {
-                  if (el) {
-                    textLayerRefs.current[index] = el;
-                  }
-                }}
-                className="textLayer"
               />
               {rendering && index === 0 && (
                 <div className="absolute inset-0 flex items-center justify-center bg-opacity-75 rounded">
