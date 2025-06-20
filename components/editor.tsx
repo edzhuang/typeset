@@ -20,10 +20,15 @@ import * as Y from "yjs";
 import { yCollab } from "y-codemirror.next";
 import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
-import { javascript } from "@codemirror/lang-javascript";
+import { latex } from "codemirror-lang-latex";
+import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import { keymap } from "@codemirror/view";
+import { indentOnInput, bracketMatching } from "@codemirror/language";
 import { useCallback, useEffect, useState } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Editor() {
   const room = useRoom();
@@ -46,14 +51,18 @@ export default function Editor() {
     // Get document
     const yDoc = yProvider.getYDoc();
     const yText = yDoc.getText("codemirror");
-    const undoManager = new Y.UndoManager(yText);
-
-    // Set up CodeMirror and extensions
+    const undoManager = new Y.UndoManager(yText); // Set up CodeMirror and extensions
     const state = EditorState.create({
       doc: yText.toString(),
       extensions: [
         basicSetup,
-        javascript(),
+        latex(),
+        EditorView.lineWrapping,
+        autocompletion(),
+        history(),
+        indentOnInput(),
+        bracketMatching(),
+        keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
         yCollab(yText, yProvider.awareness, { undoManager }),
       ],
     });
@@ -123,7 +132,9 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
-            <div ref={ref} />
+            <ScrollArea className="overflow-auto">
+              <div ref={ref} />
+            </ScrollArea>
           </Card>
         </ResizablePanel>
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}
