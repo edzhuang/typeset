@@ -16,6 +16,7 @@
     "@codemirror/language": "^6.11.1",
     "@codemirror/state": "^6.5.2",
     "@codemirror/view": "^6.37.2",
+    "@lezer/highlight": "^1.2.1",
     "@liveblocks/client": "^3.0.0",
     "@liveblocks/react": "^3.0.0",
     "@liveblocks/yjs": "^3.0.0",

@@ -22,7 +22,12 @@ import { EditorView, basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { latex } from "codemirror-lang-latex";
 import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
-import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
+import {
+  defaultKeymap,
+  history,
+  historyKeymap,
+  insertTab,
+} from "@codemirror/commands";
 import { keymap } from "@codemirror/view";
 import { indentOnInput, bracketMatching } from "@codemirror/language";
 import { useCallback, useEffect, useState } from "react";
@@ -56,13 +61,18 @@ export default function Editor() {
       doc: yText.toString(),
       extensions: [
         basicSetup,
-        latex(),
         EditorView.lineWrapping,
+        latex(),
         autocompletion(),
         history(),
         indentOnInput(),
         bracketMatching(),
-        keymap.of([...defaultKeymap, ...historyKeymap, ...completionKeymap]),
+        keymap.of([
+          { key: "Tab", run: insertTab },
+          ...defaultKeymap,
+          ...historyKeymap,
+          ...completionKeymap,
+        ]),
         yCollab(yText, yProvider.awareness, { undoManager }),
       ],
     });
