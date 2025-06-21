@@ -16,30 +16,25 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
-import * as Y from "yjs";
 import { yCollab } from "y-codemirror.next";
-import { EditorView, basicSetup } from "codemirror";
+import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
 import { latex } from "codemirror-lang-latex";
-import { autocompletion, completionKeymap } from "@codemirror/autocomplete";
-import {
-  defaultKeymap,
-  history,
-  historyKeymap,
-  insertTab,
-} from "@codemirror/commands";
-import { keymap } from "@codemirror/view";
-import { indentOnInput, bracketMatching } from "@codemirror/language";
+import { defaultKeymap, insertTab } from "@codemirror/commands";
+import { keymap, EditorView } from "@codemirror/view";
 import { useCallback, useEffect, useState } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
+import { useTheme } from "next-themes";
 
 export default function Editor() {
   const room = useRoom();
   const yProvider = getYjsProviderForRoom(room);
   const [element, setElement] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+  const { resolvedTheme } = useTheme();
 
   const ref = useCallback((node: HTMLElement | null) => {
     if (!node) return;
@@ -56,24 +51,23 @@ export default function Editor() {
     // Get document
     const yDoc = yProvider.getYDoc();
     const yText = yDoc.getText("codemirror");
-    const undoManager = new Y.UndoManager(yText); // Set up CodeMirror and extensions
     const state = EditorState.create({
       doc: yText.toString(),
       extensions: [
         basicSetup,
+        EditorView.theme({
+          "&": {
+            backgroundColor: "hsl(var(--card))",
+          },
+          ".cm-gutters": {
+            backgroundColor: "hsl(var(--muted))",
+          },
+        }),
+        resolvedTheme === "dark" ? githubDark : githubLight,
         EditorView.lineWrapping,
         latex(),
-        autocompletion(),
-        history(),
-        indentOnInput(),
-        bracketMatching(),
-        keymap.of([
-          { key: "Tab", run: insertTab },
-          ...defaultKeymap,
-          ...historyKeymap,
-          ...completionKeymap,
-        ]),
-        yCollab(yText, yProvider.awareness, { undoManager }),
+        yCollab(yText, yProvider.awareness),
+        keymap.of([...defaultKeymap, { key: "Tab", run: insertTab }]),
       ],
     });
 
@@ -82,11 +76,10 @@ export default function Editor() {
       state,
       parent: element,
     });
-
     return () => {
       view?.destroy();
     };
-  }, [element, room, yProvider]);
+  }, [element, room, yProvider, resolvedTheme]);
 
   const compile = async () => {
     const res = await fetch("/api/compile", {
