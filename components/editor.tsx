@@ -28,6 +28,13 @@ import { useRoom } from "@liveblocks/react/suspense";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
+import { PdfViewer } from "@/components/pdf-viewer";
+import { pdfjs } from "react-pdf";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 export default function Editor() {
   const room = useRoom();
@@ -90,13 +97,17 @@ export default function Editor() {
       }),
     });
 
-    // Turn the binary payload into a Blob URL
-    const blob = await res.blob();
-    const namedBlob = new Blob([blob], {
-      type: "application/pdf",
-    });
-    const url = URL.createObjectURL(namedBlob);
-    setPdfUrl(url);
+    if (!res.ok) {
+      console.error("Failed to compile:", res.statusText);
+      return;
+    }
+
+    const pdfBlob = await res.blob();
+    if (pdfUrl) {
+      URL.revokeObjectURL(pdfUrl);
+    }
+    const newPdfUrl = URL.createObjectURL(pdfBlob);
+    setPdfUrl(newPdfUrl);
   };
 
   return (
@@ -143,7 +154,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
-            {pdfUrl && <iframe src={pdfUrl} title="PDF" className="h-full" />}
+            {pdfUrl && <PdfViewer file={pdfUrl} />}
           </Card>
         </ResizablePanel>
       </ResizablePanelGroup>
