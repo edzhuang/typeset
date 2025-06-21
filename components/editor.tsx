@@ -151,7 +151,7 @@ export default function Editor() {
             </ScrollArea>
           </Card>
         </ResizablePanel>
-        <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />{" "}
+        <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
