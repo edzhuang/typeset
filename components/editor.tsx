@@ -30,6 +30,7 @@ import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/pdf-viewer";
 import { pdfjs } from "react-pdf";
+import { defaultTemplate } from "@/lib/templates";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -58,6 +59,7 @@ export default function Editor() {
     // Get document
     const yDoc = yProvider.getYDoc();
     const yText = yDoc.getText("codemirror");
+    
     const state = EditorState.create({
       doc: yText.toString(),
       extensions: [
@@ -83,6 +85,26 @@ export default function Editor() {
       state,
       parent: element,
     });
+
+    // Set default template when the provider is synced
+    const handleSync = () => {
+      const hasInitialized = yDoc.getMap("meta").get("initialized");
+      if (yText.toString().length === 0 && !hasInitialized) {
+        yText.insert(0, defaultTemplate);
+        yDoc.getMap("meta").set("initialized", true);
+      }
+    };
+
+    if (yProvider.synced) {
+      handleSync();
+    }
+
+    yProvider.on("sync", (isSynced: boolean) => {
+      if (isSynced === true) {
+        handleSync();
+      }
+    });
+    
     return () => {
       view?.destroy();
     };

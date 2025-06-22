@@ -1,12 +1,12 @@
 export const defaultTemplate = `\\documentclass{article}
-\\title{Blank Project}
-\\author{Eddie Zhuang}
-\\date{June 2025}
+\\title{Title}
+\\author{Author}
+\\date{Date}
 
 \\begin{document}
 
 \\maketitle
 
-\\section{Introduction}
+\\section{Section}
 
 \\end{document}`;
