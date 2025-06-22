@@ -13,6 +13,7 @@ export function PdfViewer({ file }: { file: string | File }) {
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageInput, setPageInput] = useState<string>("1");
   const [zoom, setZoom] = useState<number>(1);
+  const [scrollReady, setScrollReady] = useState(false);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const rafId = useRef<number>(0);
@@ -31,13 +32,17 @@ export function PdfViewer({ file }: { file: string | File }) {
     }
   };
 
+  useEffect(() => {
+    setScrollReady(false);
+  }, [file]);
+
   /**
    * Automatically update `currentPage` while scrolling so that it always reflects
    * the page that is most prominently visible in the viewport.
    */
   useEffect(() => {
     const scrollArea = scrollAreaRef.current;
-    if (!scrollArea) return;
+    if (!scrollReady || !scrollArea) return;
 
     const container: HTMLElement = scrollArea.querySelector(
       "[data-radix-scroll-area-viewport]"
@@ -45,11 +50,12 @@ export function PdfViewer({ file }: { file: string | File }) {
 
     const handleScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
+
       rafId.current = requestAnimationFrame(() => {
         const containerRect = container.getBoundingClientRect();
         const viewportCenter = containerRect.top + containerRect.height / 2;
 
-        let closestPage = currentPage;
+        let closestPage = 1;
         let minDistance = Infinity;
 
         pagesRef.current.forEach((el, idx) => {
@@ -80,7 +86,7 @@ export function PdfViewer({ file }: { file: string | File }) {
       container.removeEventListener("scroll", handleScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [currentPage]);
+  }, [scrollReady]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
@@ -90,6 +96,7 @@ export function PdfViewer({ file }: { file: string | File }) {
     if (!numPages) return;
     const page = Math.min(currentPage, numPages);
     navigateToPage(page);
+    setScrollReady(true);
   };
 
   const zoomIn = () => {
