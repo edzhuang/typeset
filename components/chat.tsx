@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 export function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   return (
-    <div className="flex flex-col p-2 h-full">
+    <div className="flex flex-col h-full">
       <div className="flex-1">
         {messages.map((message) => (
           <div key={message.id} className="whitespace-pre-wrap">
@@ -21,7 +21,7 @@ export function Chat() {
         ))}
       </div>
 
-      <form onSubmit={handleSubmit}>
+      <form className="p-2" onSubmit={handleSubmit}>
         <Textarea
           value={input}
           placeholder="Say something..."

@@ -29,6 +29,7 @@ import { PdfViewer } from "@/components/pdf-viewer";
 import { pdfjs } from "react-pdf";
 import { defaultTemplate } from "@/lib/templates";
 import { Chat } from "@/components/chat";
+import { UserButton } from "@clerk/nextjs";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -144,7 +145,11 @@ export default function Editor() {
             </NavigationMenuItem>
           </NavigationMenuList>
 
-          <NavigationMenuList></NavigationMenuList>
+          <NavigationMenuList>
+            <NavigationMenuItem className="flex p-1">
+              <UserButton />
+            </NavigationMenuItem>
+          </NavigationMenuList>
         </div>
       </NavigationMenu>
 
@@ -154,7 +159,7 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <Card className="h-full p-0 overflow-hidden">
+          <Card className="h-full p-0 overflow-hidden gap-0">
             <div className="p-2 border-b">
               <div className="flex items-center h-9">Chat</div>
             </div>
@@ -165,7 +170,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden">
+          <Card className="h-full p-0 overflow-hidden gap-0">
             <div className="p-2 border-b">
               <div className="flex items-center h-9">Code</div>
             </div>
@@ -178,7 +183,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden">
+          <Card className="h-full p-0 overflow-hidden gap-0">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
           </Card>
         </ResizablePanel>

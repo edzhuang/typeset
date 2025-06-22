@@ -143,7 +143,7 @@ export function PdfViewer({ file }: { file: string | File }) {
           <Button variant="ghost" size="icon" onClick={zoomOut}>
             <ZoomOut />
           </Button>
-          {Math.round(zoom * 100)}%
+          <div className="w-12 text-center">{Math.round(zoom * 100)}%</div>
           <Button variant="ghost" size="icon" onClick={zoomIn}>
             <ZoomIn />
           </Button>
@@ -176,7 +176,7 @@ export function PdfViewer({ file }: { file: string | File }) {
                 ref={(el) => {
                   pagesRef.current[index] = el;
                 }}
-                className="w-min py-2"
+                className="w-min p-2"
               >
                 <Page
                   pageNumber={index + 1}
