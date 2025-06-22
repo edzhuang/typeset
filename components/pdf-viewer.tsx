@@ -17,8 +17,6 @@ export function PdfViewer({ file }: { file: string | File }) {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const rafId = useRef<number>(0);
 
-  console.log(currentPage, numPages);
-
   const navigateToPage = (page: number) => {
     if (!numPages || isNaN(page) || page < 1 || page > numPages) {
       setPageInput(currentPage.toString());
@@ -72,10 +70,8 @@ export function PdfViewer({ file }: { file: string | File }) {
           }
         });
 
-        if (closestPage !== currentPage) {
-          setCurrentPage(closestPage);
-          setPageInput(closestPage.toString());
-        }
+        setCurrentPage(closestPage);
+        setPageInput(closestPage.toString());
       });
     };
 
@@ -91,10 +87,9 @@ export function PdfViewer({ file }: { file: string | File }) {
   };
 
   const onPageRenderSuccess = () => {
-    if (numPages) {
-      const page = Math.min(currentPage, numPages);
-      navigateToPage(page);
-    }
+    if (!numPages) return;
+    const page = Math.min(currentPage, numPages);
+    navigateToPage(page);
   };
 
   const zoomIn = () => {
