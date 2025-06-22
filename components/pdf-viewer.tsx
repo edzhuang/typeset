@@ -9,17 +9,17 @@ import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
 export function PdfViewer({ file }: { file: string | File }) {
-  const [numPages, setNumPages] = useState<number>();
+  const [numPages, setNumPages] = useState<number>(0);
   const [currentPage, setCurrentPage] = useState<number>(1);
   const [pageInput, setPageInput] = useState<string>("1");
   const [zoom, setZoom] = useState<number>(1);
-  const [scrollReady, setScrollReady] = useState(false);
+  const [pagesRendered, setPagesRendered] = useState<number>(0);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const rafId = useRef<number>(0);
 
   const navigateToPage = (page: number) => {
-    if (!numPages || isNaN(page) || page < 1 || page > numPages) {
+    if (isNaN(page) || page < 1 || page > numPages) {
       setPageInput(currentPage.toString());
       return;
     }
@@ -33,7 +33,7 @@ export function PdfViewer({ file }: { file: string | File }) {
   };
 
   useEffect(() => {
-    setScrollReady(false);
+    setPagesRendered(0);
   }, [file]);
 
   /**
@@ -41,8 +41,10 @@ export function PdfViewer({ file }: { file: string | File }) {
    * the page that is most prominently visible in the viewport.
    */
   useEffect(() => {
+    if (pagesRendered < numPages) return;
+
     const scrollArea = scrollAreaRef.current;
-    if (!scrollReady || !scrollArea) return;
+    if (!scrollArea) return;
 
     const container: HTMLElement = scrollArea.querySelector(
       "[data-radix-scroll-area-viewport]"
@@ -86,17 +88,21 @@ export function PdfViewer({ file }: { file: string | File }) {
       container.removeEventListener("scroll", handleScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
-  }, [scrollReady]);
+  }, [pagesRendered, numPages]);
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
   };
 
   const onPageRenderSuccess = () => {
-    if (!numPages) return;
-    const page = Math.min(currentPage, numPages);
-    navigateToPage(page);
-    setScrollReady(true);
+    setPagesRendered((prev) => {
+      const newCount = prev + 1;
+      if (newCount === numPages) {
+        const page = Math.min(currentPage, numPages);
+        navigateToPage(page);
+      }
+      return newCount;
+    });
   };
 
   const zoomIn = () => {
@@ -176,9 +182,7 @@ export function PdfViewer({ file }: { file: string | File }) {
                   pageNumber={index + 1}
                   width={816}
                   scale={zoom}
-                  onRenderSuccess={
-                    index + 1 === currentPage ? onPageRenderSuccess : undefined
-                  }
+                  onRenderSuccess={onPageRenderSuccess}
                 />
               </div>
             ))}
