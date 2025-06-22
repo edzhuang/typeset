@@ -16,6 +16,8 @@ export function PdfViewer({ file }: { file: string | File }) {
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const rafId = useRef<number>(0);
 
+  console.log(currentPage, numPages);
+
   const navigateToPage = (page: number) => {
     if (!numPages || isNaN(page) || page < 1 || page > numPages) {
       setPageInput(currentPage.toString());
@@ -38,10 +40,9 @@ export function PdfViewer({ file }: { file: string | File }) {
     const scrollArea = scrollAreaRef.current;
     if (!scrollArea) return;
 
-    const container: HTMLElement =
-      (scrollArea.querySelector(
-        "[data-radix-scroll-area-viewport]"
-      ) as HTMLElement) || scrollArea;
+    const container: HTMLElement = scrollArea.querySelector(
+      "[data-radix-scroll-area-viewport]"
+    ) as HTMLElement;
 
     const handleScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
@@ -86,6 +87,13 @@ export function PdfViewer({ file }: { file: string | File }) {
 
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }) => {
     setNumPages(numPages);
+  };
+
+  const onPageRenderSuccess = () => {
+    if (numPages) {
+      const page = Math.min(currentPage, numPages);
+      navigateToPage(page);
+    }
   };
 
   const zoomIn = () => {
@@ -156,7 +164,14 @@ export function PdfViewer({ file }: { file: string | File }) {
                 }}
                 className="w-min py-2"
               >
-                <Page pageNumber={index + 1} width={816} scale={zoom} />
+                <Page
+                  pageNumber={index + 1}
+                  width={816}
+                  scale={zoom}
+                  onRenderSuccess={
+                    index + 1 === currentPage ? onPageRenderSuccess : undefined
+                  }
+                />
               </div>
             ))}
         </Document>
