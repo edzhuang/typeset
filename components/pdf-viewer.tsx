@@ -4,6 +4,7 @@ import { ZoomIn, ZoomOut, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
+import Link from "next/link";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 
@@ -142,8 +143,13 @@ export function PdfViewer({ file }: { file: string | File }) {
 
         {/* Download button */}
         <div>
-          <Button variant="ghost" size="icon">
-            <Download />
+          <Button variant="ghost" size="icon" asChild>
+            <Link
+              href={typeof file === "string" ? file : URL.createObjectURL(file)}
+              download={typeof file === "string" ? "output" : file.name}
+            >
+              <Download />
+            </Link>
           </Button>
         </div>
       </div>
