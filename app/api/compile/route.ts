@@ -2,10 +2,9 @@ import { NextRequest } from "next/server";
 import { spawn } from "node:child_process";
 import { promises as fs } from "fs";
 import { join } from "path";
-import { tmpdir, platform } from "os";
 
 export async function POST(request: NextRequest) {
-  const baseDir = process.env.VERCEL ? "/tmp" : tmpdir();
+  const baseDir = "/tmp";
 
   const body = await request.json();
   const content = Buffer.from(body.content);
@@ -18,13 +17,7 @@ export async function POST(request: NextRequest) {
   const cacheDir = join(baseDir, "cache");
   await fs.mkdir(cacheDir, { recursive: true });
 
-  let tectonicName: string;
-  if (platform() === "win32") {
-    tectonicName = "tectonic-windows.exe";
-  } else {
-    tectonicName = "tectonic-linux";
-  }
-  const tectonicPath = join(process.cwd(), "bin", tectonicName);
+  const tectonicPath = join(process.cwd(), "bin", "tectonic");
   const proc = spawn(
     tectonicPath,
     ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
