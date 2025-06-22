@@ -8,11 +8,8 @@ import {
 import { Card } from "@/components/ui/card";
 import {
   NavigationMenu,
-  NavigationMenuContent,
   NavigationMenuItem,
-  NavigationMenuLink,
   NavigationMenuList,
-  NavigationMenuTrigger,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
 import { Play } from "lucide-react";
@@ -31,6 +28,7 @@ import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/pdf-viewer";
 import { pdfjs } from "react-pdf";
 import { defaultTemplate } from "@/lib/templates";
+import { Chat } from "@/components/chat";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -59,7 +57,7 @@ export default function Editor() {
     // Get document
     const yDoc = yProvider.getYDoc();
     const yText = yDoc.getText("codemirror");
-    
+
     const state = EditorState.create({
       doc: yText.toString(),
       extensions: [
@@ -104,7 +102,7 @@ export default function Editor() {
         handleSync();
       }
     });
-    
+
     return () => {
       view?.destroy();
     };
@@ -136,14 +134,7 @@ export default function Editor() {
     <div className="flex flex-col h-screen">
       <NavigationMenu className="p-2">
         <div className="flex w-screen justify-between">
-          <NavigationMenuList>
-            <NavigationMenuItem>
-              <NavigationMenuTrigger>Item One</NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <NavigationMenuLink>Link</NavigationMenuLink>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
-          </NavigationMenuList>
+          <NavigationMenuList></NavigationMenuList>
 
           <NavigationMenuList>
             <NavigationMenuItem>
@@ -163,17 +154,29 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <Card className="h-full">Chat</Card>
+          <Card className="h-full p-0 overflow-hidden">
+            <div className="p-2 border-b">
+              <div className="flex items-center h-9">Chat</div>
+            </div>
+            <Chat />
+          </Card>
         </ResizablePanel>
+
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
+
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
+            <div className="p-2 border-b">
+              <div className="flex items-center h-9">Code</div>
+            </div>
             <ScrollArea className="overflow-auto">
               <div ref={ref} />
             </ScrollArea>
           </Card>
         </ResizablePanel>
+
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
+
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
