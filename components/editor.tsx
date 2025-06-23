@@ -159,10 +159,7 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <Card className="h-full p-0 overflow-hidden gap-0">
-            <div className="p-2 border-b">
-              <div className="flex items-center h-9">Chat</div>
-            </div>
+          <Card className="h-full p-0 overflow-hidden">
             <Chat />
           </Card>
         </ResizablePanel>
@@ -170,11 +167,8 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden gap-0">
-            <div className="p-2 border-b">
-              <div className="flex items-center h-9">Code</div>
-            </div>
-            <ScrollArea className="overflow-auto">
+          <Card className="h-full p-0 overflow-hidden">
+            <ScrollArea className="h-full">
               <div ref={ref} />
             </ScrollArea>
           </Card>
@@ -183,7 +177,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden gap-0">
+          <Card className="h-full p-0 overflow-hidden">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
           </Card>
         </ResizablePanel>
