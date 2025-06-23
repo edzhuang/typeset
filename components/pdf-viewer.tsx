@@ -122,7 +122,7 @@ export function PdfViewer({ file }: { file: string | File }) {
   return (
     <div className="flex flex-col h-full">
       {/* Top toolbar */}
-      <div className="flex justify-between p-2 border-b">
+      <div className="flex justify-between p-2 border-b gap-2">
         {/* Page selector */}
         <div className="flex items-center gap-2">
           <Input

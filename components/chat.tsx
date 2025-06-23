@@ -143,27 +143,31 @@ export function Chat() {
       </div>
 
       {/* Input */}
-      <form className="relative px-2 pb-2" onSubmit={onSubmit}>
-        <Textarea
-          value={input}
-          placeholder="Say something..."
-          onChange={handleInputChange}
-          onKeyDown={handleKeyDown}
-          className="pb-15 resize-none"
-        />
-        <div className="absolute inline-flex justify-between bottom-2 inset-x-2 p-2 pointer-events-none">
-          <Select value={model} onValueChange={setModel}>
-            <SelectTrigger className="pointer-events-auto">
-              <SelectValue />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
-              <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
-            </SelectContent>
-          </Select>
-          <Button type="submit" size="icon" className="pointer-events-auto">
-            <SendHorizontal />
-          </Button>
+      <form className="px-2 pb-2" onSubmit={onSubmit}>
+        <div className="relative">
+          <Textarea
+            value={input}
+            placeholder="Say something..."
+            onChange={handleInputChange}
+            onKeyDown={handleKeyDown}
+            className="pb-15 resize-none"
+          />
+          <div className="absolute inline-flex justify-between bottom-0 inset-x-0 p-2 pointer-events-none overflow-hidden gap-2">
+            <Select value={model} onValueChange={setModel}>
+              <SelectTrigger className="pointer-events-auto">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="gemini-2.5-flash">
+                  Gemini 2.5 Flash
+                </SelectItem>
+                <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
+              </SelectContent>
+            </Select>
+            <Button type="submit" size="icon" className="pointer-events-auto">
+              <SendHorizontal />
+            </Button>
+          </div>
         </div>
       </form>
     </div>
