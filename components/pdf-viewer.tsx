@@ -143,7 +143,7 @@ export function PdfViewer({ file }: { file: string | File }) {
           <Button variant="ghost" size="icon" onClick={zoomOut}>
             <ZoomOut />
           </Button>
-          <div className="w-12 text-center">{Math.round(zoom * 100)}%</div>
+          <div className="w-10 text-center">{Math.round(zoom * 100)}%</div>
           <Button variant="ghost" size="icon" onClick={zoomIn}>
             <ZoomIn />
           </Button>

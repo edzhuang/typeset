@@ -12,7 +12,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { Play } from "lucide-react";
+import { Play, House, UserPlus } from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -135,7 +135,13 @@ export default function Editor() {
     <div className="flex flex-col h-screen">
       <NavigationMenu className="p-2">
         <div className="flex w-screen justify-between">
-          <NavigationMenuList></NavigationMenuList>
+          <NavigationMenuList>
+            <NavigationMenuItem>
+              <Button variant="ghost" size="icon">
+                <House />
+              </Button>
+            </NavigationMenuItem>
+          </NavigationMenuList>
 
           <NavigationMenuList>
             <NavigationMenuItem>
@@ -146,6 +152,11 @@ export default function Editor() {
           </NavigationMenuList>
 
           <NavigationMenuList>
+            <NavigationMenuItem>
+              <Button variant="secondary">
+                <UserPlus /> Invite
+              </Button>
+            </NavigationMenuItem>
             <NavigationMenuItem className="flex p-1">
               <UserButton />
             </NavigationMenuItem>
