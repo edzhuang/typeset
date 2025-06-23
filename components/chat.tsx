@@ -19,14 +19,14 @@ import clsx from "clsx";
 export function Chat() {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   const [model, setModel] = useState("gemini-2.5-flash");
-
-  // --- Scroll management ---
-  const viewportRef = useRef<HTMLDivElement | null>(null);
+  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
 
   // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
-    const viewport = viewportRef.current;
+    const viewport = scrollAreaRef.current?.querySelector(
+      '[data-slot="scroll-area-viewport"]'
+    ) as HTMLElement;
     if (viewport) {
       viewport.scrollTo({ top: viewport.scrollHeight, behavior: behavior });
     }
@@ -41,7 +41,9 @@ export function Chat() {
 
   // Track scroll position to toggle autoScroll and button
   useEffect(() => {
-    const viewport = viewportRef.current;
+    const viewport = scrollAreaRef.current?.querySelector(
+      '[data-slot="scroll-area-viewport"]'
+    ) as HTMLElement;
     if (!viewport) return;
 
     const handleScroll = () => {
@@ -95,7 +97,7 @@ export function Chat() {
 
       {/* Messages */}
       <div className="flex-1 overflow-hidden relative">
-        <ScrollArea className="h-full" ref={viewportRef}>
+        <ScrollArea className="h-full" ref={scrollAreaRef}>
           {messages.map((message) => (
             <div key={message.id}>
               {message.role === "user" ? (

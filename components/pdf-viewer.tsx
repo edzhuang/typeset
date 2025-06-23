@@ -5,8 +5,14 @@ import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
 import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Link from "next/link";
+import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+
+pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+  "pdfjs-dist/build/pdf.worker.min.mjs",
+  import.meta.url
+).toString();
 
 export function PdfViewer({ file }: { file: string | File }) {
   const [numPages, setNumPages] = useState<number>(0);
@@ -28,7 +34,7 @@ export function PdfViewer({ file }: { file: string | File }) {
 
     const element = pagesRef.current[page - 1];
     if (element) {
-      element.scrollIntoView();
+      element.scrollIntoView({ behavior: "instant" });
     }
   };
 
