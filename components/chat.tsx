@@ -33,22 +33,32 @@ export function Chat() {
   return (
     <div className="flex flex-col h-full min-h-0">
       <div className="flex-1 overflow-hidden">
-        <ScrollArea className="h-full px-2 pt-2">
-          {messages.map((message) => (
-            <div key={message.id} className="whitespace-pre-wrap">
-              {message.role === "user" ? "User: " : "AI: "}
-              {message.parts.map((part, i) => {
-                switch (part.type) {
-                  case "text":
-                    return (
-                      <div className="p-2" key={`${message.id}-${i}`}>
-                        {part.text}
-                      </div>
-                    );
-                }
-              })}
-            </div>
-          ))}
+        <ScrollArea className="h-full">
+          {messages.map((message) =>
+            message.role === "user" ? (
+              <div key={message.id} className="flex justify-end p-4">
+                <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
+                  {message.parts.map((part, i) => {
+                    switch (part.type) {
+                      case "text":
+                        return (
+                          <div key={`${message.id}-${i}`}>{part.text}</div>
+                        );
+                    }
+                  })}
+                </div>
+              </div>
+            ) : (
+              <div key={message.id} className="whitespace-pre-wrap p-4">
+                {message.parts.map((part, i) => {
+                  switch (part.type) {
+                    case "text":
+                      return <div key={`${message.id}-${i}`}>{part.text}</div>;
+                  }
+                })}
+              </div>
+            )
+          )}
         </ScrollArea>
       </div>
 
