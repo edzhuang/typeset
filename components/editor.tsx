@@ -33,19 +33,19 @@ import { UserButton } from "@clerk/nextjs";
 export default function Editor() {
   const room = useRoom();
   const yProvider = getYjsProviderForRoom(room);
-  const [element, setElement] = useState<HTMLElement>();
+  const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const { resolvedTheme } = useTheme();
 
-  const ref = useCallback((node: HTMLElement | null) => {
+  const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
 
-    setElement(node);
+    setEditor(node);
   }, []);
 
   // Set up Liveblocks Yjs provider and attach CodeMirror editor
   useEffect(() => {
-    if (!element || !room) {
+    if (!editor || !room) {
       return;
     }
 
@@ -76,7 +76,7 @@ export default function Editor() {
     // Attach CodeMirror to element
     const view = new EditorView({
       state,
-      parent: element,
+      parent: editor,
     });
 
     // Set default template when the provider is synced
@@ -101,14 +101,20 @@ export default function Editor() {
     return () => {
       view?.destroy();
     };
-  }, [element, room, yProvider, resolvedTheme]);
+  }, [editor, room, yProvider, resolvedTheme]);
 
+  /**
+   * Compiles the current LaTeX content to PDF and updates the PDF viewer
+   * @returns {Promise<void>} A promise that resolves when compilation is complete
+   */
   const compile = async () => {
+    const content = yProvider.getYDoc().getText("codemirror").toString();
+
     const res = await fetch("/api/compile", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        content: yProvider.getYDoc().getText("codemirror").toString(),
+        content,
       }),
     });
 
@@ -165,7 +171,7 @@ export default function Editor() {
       >
         <ResizablePanel defaultSize={20}>
           <Card className="h-full p-0 overflow-hidden">
-            <Chat />
+            <Chat yProvider={yProvider} />
           </Card>
         </ResizablePanel>
 
@@ -174,7 +180,7 @@ export default function Editor() {
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
             <ScrollArea className="h-full">
-              <div ref={ref} />
+              <div ref={editorRef} />
             </ScrollArea>
           </Card>
         </ResizablePanel>

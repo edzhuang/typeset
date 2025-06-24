@@ -8,7 +8,7 @@ import path from "path";
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, model } = await req.json();
+  const { messages, model, editorContext } = await req.json();
 
   let selectedModel;
   switch (model) {
@@ -28,7 +28,13 @@ export async function POST(req: Request) {
   const result = streamText({
     model: selectedModel,
     system: systemPrompt,
-    messages,
+    messages: [
+      ...messages,
+      {
+        role: "user",
+        content: editorContext,
+      },
+    ],
   });
 
   return result.toDataStreamResponse();

@@ -15,8 +15,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
+import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 
-export function Chat() {
+export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   const { messages, input, handleInputChange, handleSubmit } = useChat();
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
@@ -72,10 +73,18 @@ export function Chat() {
     }
   };
 
+  const getEditorContext = () => {
+    const editorContent = yProvider.getYDoc().getText("codemirror").toString();
+    return `<editor_content>
+${editorContent}
+</editor_content>`;
+  };
+
   // Custom submit handler to include model
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    const editorContext = getEditorContext();
     handleSubmit(event, {
-      body: { model },
+      body: { model, editorContext },
     });
     setAutoScroll(true);
   };
