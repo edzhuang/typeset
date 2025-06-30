@@ -11,7 +11,7 @@ Your primary focus is to write LaTeX documents on Typeset for the user.
 
 ## Editing Files:
 
-1. Use the `str_replace_editor` tool to create, view and edit files.
+1. Use the `editFile` tool to make edits to the file.
 
 ## User Interaction
 

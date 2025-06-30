@@ -16,9 +16,29 @@ import { MemoizedMarkdown } from "@/components/memoized-markdown";
 import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
+import { UIMessage } from "ai";
+import { applyPatch } from "diff";
+import { AlertCircleIcon } from "lucide-react";
+import { Alert, AlertTitle } from "@/components/ui/alert";
 
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat();
+  const { messages, input, handleInputChange, handleSubmit } = useChat({
+    maxSteps: 5,
+    async onToolCall({ toolCall }) {
+      if (toolCall.toolName === "editFile") {
+        try {
+          const oldFile = getEditorText();
+          const { diff } = toolCall.args as { diff: string };
+          const newFile = applyPatch(oldFile, diff);
+          return { success: true };
+        } catch {
+          return {
+            success: false,
+          };
+        }
+      }
+    },
+  });
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollAreaRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -73,20 +93,79 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     }
   };
 
-  const getEditorContext = () => {
-    const editorContent = yProvider.getYDoc().getText("codemirror").toString();
-    return `<editor_content>
-${editorContent}
-</editor_content>`;
+  const getEditorText = () => {
+    return yProvider.getYDoc().getText("codemirror").toString();
   };
 
-  // Custom submit handler to include model
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const editorContext = getEditorContext();
+    const fileContents = `<file_contents>\n  ${getEditorText()}\n</file_contents>`;
     handleSubmit(event, {
-      body: { model, editorContext },
+      body: { model, fileContents },
     });
     setAutoScroll(true);
+  };
+
+  const renderUserMessage = (message: UIMessage) => {
+    return (
+      <div className="flex justify-end p-4">
+        <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
+          {message.parts.map((part, i) => {
+            switch (part.type) {
+              case "text":
+                return <div key={`${message.id}-${i}`}>{part.text}</div>;
+            }
+          })}
+        </div>
+      </div>
+    );
+  };
+
+  const renderAssistantMessage = (message: UIMessage) => {
+    return (
+      <div className="prose dark:prose-invert p-4 space-y-2 max-w-none">
+        {message.parts.map((part, i) => {
+          const partId = `${message.id}-${i}`;
+
+          switch (part.type) {
+            case "text":
+              return (
+                <MemoizedMarkdown
+                  key={partId}
+                  id={partId}
+                  content={part.text}
+                />
+              );
+
+            case "tool-invocation":
+              const callId = part.toolInvocation.toolCallId;
+
+              switch (part.toolInvocation.toolName) {
+                case "editFile": {
+                  switch (part.toolInvocation.state) {
+                    case "call":
+                      return <div key={callId}>Editing file...</div>;
+                    case "result":
+                      if (part.toolInvocation.result.success) {
+                        return (
+                          <Alert key={callId}>
+                            <AlertTitle>Code has been edited</AlertTitle>
+                          </Alert>
+                        );
+                      } else {
+                        return (
+                          <Alert key={callId} variant="destructive">
+                            <AlertCircleIcon />
+                            <AlertTitle>Something went wrong</AlertTitle>
+                          </Alert>
+                        );
+                      }
+                  }
+                }
+              }
+          }
+        })}
+      </div>
+    );
   };
 
   return (
@@ -109,24 +188,9 @@ ${editorContent}
         <ScrollArea className="h-full" ref={scrollAreaRef}>
           {messages.map((message) => (
             <div key={message.id}>
-              {message.role === "user" ? (
-                <div className="flex justify-end p-4">
-                  <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
-                    {message.parts.map((part, i) => {
-                      switch (part.type) {
-                        case "text":
-                          return (
-                            <div key={`${message.id}-${i}`}>{part.text}</div>
-                          );
-                      }
-                    })}
-                  </div>
-                </div>
-              ) : (
-                <div className="prose dark:prose-invert p-4 space-y-2 max-w-none">
-                  <MemoizedMarkdown id={message.id} content={message.content} />
-                </div>
-              )}
+              {message.role === "user"
+                ? renderUserMessage(message)
+                : renderAssistantMessage(message)}
             </div>
           ))}
         </ScrollArea>

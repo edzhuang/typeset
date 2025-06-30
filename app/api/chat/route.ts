@@ -1,14 +1,15 @@
 import { openai } from "@ai-sdk/openai";
 import { google } from "@ai-sdk/google";
-import { streamText } from "ai";
+import { tool, streamText } from "ai";
 import fs from "fs";
 import path from "path";
+import { z } from "zod";
 
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
 export async function POST(req: Request) {
-  const { messages, model, editorContext } = await req.json();
+  const { messages, model, fileContents } = await req.json();
 
   let selectedModel;
   switch (model) {
@@ -32,9 +33,17 @@ export async function POST(req: Request) {
       ...messages,
       {
         role: "user",
-        content: editorContext,
+        content: fileContents,
       },
     ],
+    tools: {
+      editFile: tool({
+        description: "Edit the file",
+        parameters: z.object({
+          diff: z.string().describe("The unified diff to apply"),
+        }),
+      }),
+    },
   });
 
   return result.toDataStreamResponse();
