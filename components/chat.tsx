@@ -17,7 +17,6 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
-import { applyPatch } from "diff";
 import { AlertCircleIcon } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 
@@ -27,9 +26,17 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "editFile") {
         try {
-          const oldFile = getEditorText();
-          const { diff } = toolCall.args as { diff: string };
-          const newFile = applyPatch(oldFile, diff);
+          const yDoc = yProvider.getYDoc();
+          const yMap = yDoc.getMap("files");
+          const yText = yDoc.getText("codemirror");
+
+          const oldFile = yText.toString();
+          const { newFile } = toolCall.args as { newFile: string };
+
+          yMap.set("oldFile", oldFile);
+          yText.delete(0, yText.length);
+          yText.insert(0, newFile);
+
           return { success: true };
         } catch {
           return {
@@ -93,12 +100,9 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     }
   };
 
-  const getEditorText = () => {
-    return yProvider.getYDoc().getText("codemirror").toString();
-  };
-
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const fileContents = `<file_contents>\n  ${getEditorText()}\n</file_contents>`;
+    const editorText = yProvider.getYDoc().getText("codemirror").toString();
+    const fileContents = `<file_contents>\n  ${editorText}\n</file_contents>`;
     handleSubmit(event, {
       body: { model, fileContents },
     });

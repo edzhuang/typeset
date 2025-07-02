@@ -33,7 +33,6 @@
     "clsx": "^2.1.1",
     "codemirror": "^6.0.1",
     "codemirror-lang-latex": "0.1.0-alpha.0",
-    "diff": "^8.0.2",
     "lucide-react": "^0.516.0",
     "marked": "^15.0.12",
     "next": "15.3.3",

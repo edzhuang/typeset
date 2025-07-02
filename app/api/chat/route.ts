@@ -40,7 +40,11 @@ export async function POST(req: Request) {
       editFile: tool({
         description: "Edit the file",
         parameters: z.object({
-          diff: z.string().describe("The unified diff to apply"),
+          newFile: z
+            .string()
+            .describe(
+              "The new file with all the edits made, which will replace the current file"
+            ),
         }),
       }),
     },

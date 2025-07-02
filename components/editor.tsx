@@ -26,22 +26,28 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/pdf-viewer";
-import { defaultTemplate } from "@/lib/templates";
 import { Chat } from "@/components/chat";
 import { UserButton } from "@clerk/nextjs";
 
 export default function Editor() {
   const room = useRoom();
+  const { resolvedTheme } = useTheme();
   const yProvider = getYjsProviderForRoom(room);
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const { resolvedTheme } = useTheme();
+  const [oldFile, setOldFile] = useState<string | null>(null);
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
 
     setEditor(node);
   }, []);
+
+  async function fetchLatexTemplate(): Promise<string> {
+    const res = await fetch("/latex-template.tex");
+    if (!res.ok) throw new Error("Failed to load template");
+    return res.text();
+  }
 
   // Set up Liveblocks Yjs provider and attach CodeMirror editor
   useEffect(() => {
@@ -80,10 +86,11 @@ export default function Editor() {
     });
 
     // Set default template when the provider is synced
-    const handleSync = () => {
+    const handleSync = async () => {
       const hasInitialized = yDoc.getMap("meta").get("initialized");
-      if (yText.toString().length === 0 && !hasInitialized) {
-        yText.insert(0, defaultTemplate);
+      if (!hasInitialized) {
+        const template = await fetchLatexTemplate();
+        yText.insert(0, template);
         yDoc.getMap("meta").set("initialized", true);
       }
     };
@@ -102,6 +109,18 @@ export default function Editor() {
       view?.destroy();
     };
   }, [editor, room, yProvider, resolvedTheme]);
+
+  // Handle changes to the old file
+  useEffect(() => {
+    const yMap = yProvider.getYDoc().getMap("files");
+    const handleChange = () => {
+      const file = yMap.get("oldFile");
+      setOldFile(typeof file === "string" ? file : null);
+    };
+    yMap.observe(handleChange);
+    handleChange();
+    return () => yMap.unobserve(handleChange);
+  });
 
   /**
    * Compiles the current LaTeX content to PDF and updates the PDF viewer
