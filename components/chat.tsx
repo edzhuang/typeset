@@ -17,7 +17,7 @@ import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
-import { AlertCircleIcon } from "lucide-react";
+import { CircleCheck } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
 
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
@@ -25,24 +25,18 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     maxSteps: 5,
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "editFile") {
-        try {
-          const yDoc = yProvider.getYDoc();
-          const yMap = yDoc.getMap("files");
-          const yText = yDoc.getText("codemirror");
+        const yDoc = yProvider.getYDoc();
+        const yMap = yDoc.getMap("files");
+        const yText = yDoc.getText("codemirror");
 
-          const oldFile = yText.toString();
-          const { newFile } = toolCall.args as { newFile: string };
+        const oldFile = yText.toString();
+        const { newFile } = toolCall.args as { newFile: string };
 
-          yMap.set("oldFile", oldFile);
-          yText.delete(0, yText.length);
-          yText.insert(0, newFile);
+        yMap.set("oldFile", oldFile);
+        yText.delete(0, yText.length);
+        yText.insert(0, newFile);
 
-          return { success: true };
-        } catch {
-          return {
-            success: false,
-          };
-        }
+        return "File edited";
       }
     },
   });
@@ -101,10 +95,25 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    const editorText = yProvider.getYDoc().getText("codemirror").toString();
-    const fileContents = `<file_contents>\n  ${editorText}\n</file_contents>`;
+    const fileContent = yProvider.getYDoc().getText("codemirror").toString();
+    const base64Content = btoa(
+      new TextEncoder()
+        .encode(fileContent)
+        .reduce((data, byte) => data + String.fromCharCode(byte), "")
+    );
+    const dataUrl = `data:text/plain;charset=utf-8;base64,${base64Content}`;
+
     handleSubmit(event, {
-      body: { model, fileContents },
+      body: {
+        model,
+      },
+      experimental_attachments: [
+        {
+          name: "main.tex",
+          contentType: "text/plain;charset=utf-8",
+          url: dataUrl,
+        },
+      ],
     });
     setAutoScroll(true);
   };
@@ -149,20 +158,12 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
                     case "call":
                       return <div key={callId}>Editing file...</div>;
                     case "result":
-                      if (part.toolInvocation.result.success) {
-                        return (
-                          <Alert key={callId}>
-                            <AlertTitle>Code has been edited</AlertTitle>
-                          </Alert>
-                        );
-                      } else {
-                        return (
-                          <Alert key={callId} variant="destructive">
-                            <AlertCircleIcon />
-                            <AlertTitle>Something went wrong</AlertTitle>
-                          </Alert>
-                        );
-                      }
+                      return (
+                        <Alert key={callId}>
+                          <CircleCheck />
+                          <AlertTitle>{part.toolInvocation.result}</AlertTitle>
+                        </Alert>
+                      );
                   }
                 }
               }

@@ -35,7 +35,7 @@ export default function Editor() {
   const yProvider = getYjsProviderForRoom(room);
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [oldFile, setOldFile] = useState<string | null>(null);
+  const [, setOldFile] = useState<string | null>(null);
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
