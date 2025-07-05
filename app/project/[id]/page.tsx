@@ -9,11 +9,7 @@ export default function ProjectPage() {
   const params = useParams<{ id: string }>();
 
   return (
-    <LiveblocksProvider
-      publicApiKey={
-        "pk_dev_3gfS1lx2gjMjPtEOIp7IgGL87dTOcwk44sLj_oRhOOxj69yGsRqlz7o7XZ5sfWi3"
-      }
-    >
+    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
       <RoomProvider id={params.id}>
         <ClientSideSuspense fallback={<div>Loading…</div>}>
           <Editor />
