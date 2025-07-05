@@ -1,6 +1,13 @@
 import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+} from "@/components/ui/navigation-menu";
+import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
 
 export default async function LandingPage() {
   const { userId } = await auth();
@@ -8,6 +15,21 @@ export default async function LandingPage() {
 
   return (
     <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <NavigationMenu className="fixed top-0 w-full">
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <SignInButton>
+              <Button variant="outline">Log In</Button>
+            </SignInButton>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <SignUpButton>
+              <Button>Sign Up</Button>
+            </SignUpButton>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
+
       <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
         <div className="text-6xl">Cursor for LaTeX</div>
         <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">

@@ -22,6 +22,8 @@ import {
   SidebarMenuItem,
   useSidebar,
 } from "@/components/ui/sidebar";
+import { SignOutButton } from "@clerk/nextjs";
+import { useClerk } from "@clerk/nextjs";
 
 export function NavUser({
   user,
@@ -33,6 +35,7 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
+  const { openUserProfile } = useClerk();
 
   return (
     <SidebarMenu>
@@ -78,16 +81,18 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem>
+              <DropdownMenuItem onSelect={() => openUserProfile()}>
                 <IconUserCircle />
                 Account
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
-            <DropdownMenuItem>
-              <IconLogout />
-              Log out
-            </DropdownMenuItem>
+            <SignOutButton redirectUrl="/">
+              <DropdownMenuItem>
+                <IconLogout />
+                Log out
+              </DropdownMenuItem>
+            </SignOutButton>
           </DropdownMenuContent>
         </DropdownMenu>
       </SidebarMenuItem>
