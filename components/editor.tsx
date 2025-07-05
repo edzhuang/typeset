@@ -28,9 +28,11 @@ import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/pdf-viewer";
 import { Chat } from "@/components/chat";
 import { UserButton } from "@clerk/nextjs";
+import { useRouter } from "next/navigation";
 
 export default function Editor() {
   const room = useRoom();
+  const router = useRouter();
   const { resolvedTheme } = useTheme();
   const yProvider = getYjsProviderForRoom(room);
   const [editor, setEditor] = useState<HTMLElement>();
@@ -156,7 +158,11 @@ export default function Editor() {
         <div className="flex w-screen justify-between">
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Button variant="ghost" size="icon">
+              <Button
+                onClick={() => router.push("/project")}
+                variant="ghost"
+                size="icon"
+              >
                 <House />
               </Button>
             </NavigationMenuItem>

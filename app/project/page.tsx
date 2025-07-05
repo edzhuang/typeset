@@ -3,7 +3,14 @@ import { DataTable } from "@/components/data-table";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
-import data from "./data.json";
+const data = [
+  {
+    id: 1,
+    title: "Cool Project",
+    owner: "2j3fdklj23",
+    last_edited: "December 21, 1984",
+  },
+];
 
 export default function Page() {
   return (
