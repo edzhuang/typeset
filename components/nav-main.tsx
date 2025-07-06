@@ -23,7 +23,6 @@ import { createProject } from "@/app/actions";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
-import { projectFormSchema } from "@/lib/schemas";
 import {
   Form,
   FormControl,
@@ -36,6 +35,10 @@ import { DialogDescription } from "@radix-ui/react-dialog";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
 
+const schema = z.object({
+  title: z.string().min(1).max(50),
+});
+
 export function NavMain({
   items,
 }: {
@@ -45,13 +48,17 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
-  const form = useForm<z.infer<typeof projectFormSchema>>({
-    resolver: zodResolver(projectFormSchema),
+  const form = useForm<z.infer<typeof schema>>({
+    resolver: zodResolver(schema),
     defaultValues: {
       title: "Untitled Project",
     },
   });
   const pathname = usePathname();
+
+  function onSubmit(values: z.infer<typeof schema>) {
+    createProject(values.title);
+  }
 
   return (
     <SidebarGroup>
@@ -71,7 +78,7 @@ export function NavMain({
               <DialogContent>
                 <Form {...form}>
                   <form
-                    onSubmit={form.handleSubmit(createProject)}
+                    onSubmit={form.handleSubmit(onSubmit)}
                     className="flex flex-col gap-4"
                   >
                     <DialogHeader>
