@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { IconFolder, IconInnerShadowTop, IconUsers } from "@tabler/icons-react";
-
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -15,6 +14,7 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { useUser } from "@clerk/nextjs";
+import Link from "next/link";
 
 const data = {
   user: {
@@ -56,10 +56,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <a href="#">
+              <Link href="/dashboard">
                 <IconInnerShadowTop className="!size-5" />
                 <span className="text-base font-semibold">Typeset</span>
-              </a>
+              </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

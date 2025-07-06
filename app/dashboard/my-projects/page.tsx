@@ -2,59 +2,62 @@ import { DataTable } from "@/components/data-table";
 import { SiteHeader } from "@/components/site-header";
 import { auth } from "@clerk/nextjs/server";
 import { clerkClient } from "@clerk/nextjs/server";
+import { Liveblocks } from "@liveblocks/node";
+import { formatISODate } from "@/lib/data";
 
-interface Room {
-  id: string;
-  metadata: {
-    title: string;
-    ownerId: string;
-    lastEdited: string;
-  };
-}
+const liveblocks = new Liveblocks({
+  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
+});
 
-function formatISODate(isoString: string): string {
-  const date = new Date(isoString);
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-  });
+function Placeholder() {
+  return (
+    <div className="flex h-64 items-center justify-center rounded-lg border border-dashed">
+      <div className="text-center text-muted-foreground">
+        No projects created by you
+      </div>
+    </div>
+  );
 }
 
 export default async function Page() {
   const client = await clerkClient();
   const { userId } = await auth();
 
-  const metadata = `metadata.ownerId=${userId}`;
-  const url = `https://api.liveblocks.io/v2/rooms?${metadata}`;
-  const response = await fetch(url, {
-    headers: {
-      Authorization: `Bearer ${process.env.LIVEBLOCKS_SECRET_KEY}`,
+  if (!userId) {
+    return <div>Sign in to view this page</div>;
+  }
+
+  const { data: rooms } = await liveblocks.getRooms({
+    userId: userId,
+    query: {
+      metadata: {
+        ownerId: userId,
+      },
     },
   });
-  const res = await response.json();
+
   const data = await Promise.all(
-    res.data.map(async (room: Room, index: number) => {
+    rooms.map(async (room, index: number) => {
       const metadata = room.metadata;
-      const owner = await client.users.getUser(metadata.ownerId);
+      const owner = await client.users.getUser(metadata.ownerId as string);
 
       return {
         id: index,
         projectId: room.id,
-        title: metadata.title,
-        owner: owner.fullName || owner.id,
-        lastEdited: formatISODate(metadata.lastEdited),
+        title: metadata.title as string,
+        owner: owner.fullName || owner.id || "Unknown User",
+        lastEdited: formatISODate(metadata.lastEdited as string),
       };
     })
   );
 
   return (
     <div>
-      <SiteHeader header="My Projects" />
+      <SiteHeader header="Shared With Me" />
       <div className="flex flex-1 flex-col">
         <div className="@container/main flex flex-1 flex-col gap-2">
           <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <DataTable data={data} />
+            <DataTable data={data} placeholder={<Placeholder />} />
           </div>
         </div>
       </div>
