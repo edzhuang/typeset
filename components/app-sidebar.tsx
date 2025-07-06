@@ -1,12 +1,7 @@
 "use client";
 
 import * as React from "react";
-import {
-  IconFolder,
-  IconInnerShadowTop,
-  IconUsers,
-  IconHome,
-} from "@tabler/icons-react";
+import { IconFolder, IconInnerShadowTop, IconUsers } from "@tabler/icons-react";
 
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
@@ -29,29 +24,24 @@ const data = {
   },
   navMain: [
     {
-      title: "Home",
-      url: "#",
-      icon: IconHome,
-    },
-    {
       title: "My Projects",
-      url: "#",
+      url: "/dashboard/my-projects",
       icon: IconFolder,
     },
     {
       title: "Shared With Me",
-      url: "#",
+      url: "/dashboard/shared-with-me",
       icon: IconUsers,
     },
   ],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const { isLoaded, user } = useUser();
+  const { user } = useUser();
 
-  if (isLoaded && user) {
+  if (user) {
     data.user = {
-      name: user.username || "",
+      name: user.fullName || "",
       email: user.emailAddresses[0].emailAddress,
       avatar: user.imageUrl,
     };
@@ -78,7 +68,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <NavMain items={data.navMain} />
       </SidebarContent>
       <SidebarFooter>
-        {isLoaded ? <NavUser user={data.user} /> : <div>Loading...</div>}
+        <NavUser user={data.user} />
       </SidebarFooter>
     </Sidebar>
   );

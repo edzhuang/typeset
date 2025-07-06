@@ -15,11 +15,15 @@ export async function POST() {
 
   const user = await currentUser();
 
+  if (!user) {
+    return new Response("User not found", { status: 404 });
+  }
+
   // Identify the user and return the result
   const { status, body } = await liveblocks.identifyUser(userId, {
     userInfo: {
-      username: user?.username,
-      imageUrl: user?.imageUrl,
+      name: user.fullName,
+      imageUrl: user.imageUrl,
     },
   });
 

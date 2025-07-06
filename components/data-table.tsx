@@ -45,6 +45,7 @@ import {
   VisibilityState,
 } from "@tanstack/react-table";
 import { z } from "zod";
+import Link from "next/link";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -76,9 +77,10 @@ import { Tabs, TabsContent } from "@/components/ui/tabs";
 
 export const schema = z.object({
   id: z.number(),
+  projectId: z.number(),
   title: z.string(),
   owner: z.string(),
-  last_edited: z.string(),
+  lastEdited: z.string(),
 });
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -112,7 +114,11 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "title",
     header: "Title",
     cell: ({ row }) => {
-      return row.original.title;
+      return (
+        <Link href={`/project/${row.original.projectId}`}>
+          {row.original.title}
+        </Link>
+      );
     },
     enableHiding: false,
   },
@@ -127,7 +133,7 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     accessorKey: "last edited",
     header: "Last Edited",
     cell: ({ row }) => {
-      return row.original.last_edited;
+      return row.original.lastEdited;
     },
   },
   {

@@ -24,7 +24,7 @@ export async function createProject(values: z.infer<typeof projectFormSchema>) {
   await liveblocks.createRoom(projectId, {
     defaultAccesses: [],
     usersAccesses: {
-      userId: ["room:write"],
+      [userId]: ["room:write"],
     },
     metadata: {
       title: values.title,

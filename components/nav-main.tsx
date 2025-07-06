@@ -33,6 +33,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { DialogDescription } from "@radix-ui/react-dialog";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
 
 export function NavMain({
   items,
@@ -49,6 +51,7 @@ export function NavMain({
       title: "Untitled Project",
     },
   });
+  const pathname = usePathname();
 
   return (
     <SidebarGroup>
@@ -107,9 +110,15 @@ export function NavMain({
         <SidebarMenu>
           {items.map((item) => (
             <SidebarMenuItem key={item.title}>
-              <SidebarMenuButton tooltip={item.title}>
-                {item.icon && <item.icon />}
-                <span>{item.title}</span>
+              <SidebarMenuButton
+                isActive={pathname === item.url}
+                tooltip={item.title}
+                asChild
+              >
+                <Link href={item.url}>
+                  {item.icon && <item.icon />}
+                  <span>{item.title}</span>
+                </Link>
               </SidebarMenuButton>
             </SidebarMenuItem>
           ))}
