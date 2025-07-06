@@ -9,7 +9,7 @@ import {
 import { SignInButton, SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 
-export default async function LandingPage() {
+export default async function Page() {
   const { userId } = await auth();
   if (userId) redirect("/dashboard");
 

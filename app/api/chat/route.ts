@@ -23,7 +23,7 @@ export async function POST(req: Request) {
       selectedModel = google("gemini-2.5-flash-preview-04-17");
   }
 
-  const systemPromptPath = path.join(process.cwd(), "lib", "system-prompt.md");
+  const systemPromptPath = path.join(process.cwd(), "system-prompt.md");
   const systemPrompt = fs.readFileSync(systemPromptPath, "utf8");
 
   const result = streamText({

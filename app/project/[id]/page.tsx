@@ -5,7 +5,7 @@ import Editor from "@/components/editor";
 import { useParams } from "next/navigation";
 import { ClientSideSuspense } from "@liveblocks/react/suspense";
 
-export default function ProjectPage() {
+export default function Page() {
   const params = useParams<{ id: string }>();
 
   return (
