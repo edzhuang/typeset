@@ -80,7 +80,7 @@ export const schema = z.object({
   projectId: z.string(),
   title: z.string(),
   owner: z.string(),
-  lastEdited: z.string(),
+  lastOpened: z.string(),
 });
 
 const columns: ColumnDef<z.infer<typeof schema>>[] = [
@@ -130,10 +130,10 @@ const columns: ColumnDef<z.infer<typeof schema>>[] = [
     },
   },
   {
-    accessorKey: "last edited",
-    header: "Last Edited",
+    accessorKey: "lastOpened",
+    header: "Last Opened",
     cell: ({ row }) => {
-      return row.original.lastEdited;
+      return row.original.lastOpened;
     },
   },
   {

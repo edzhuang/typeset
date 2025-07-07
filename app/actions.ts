@@ -17,7 +17,6 @@ export async function createProject(title: string) {
   }
 
   const projectId = nanoid();
-  const date = new Date().toISOString();
 
   await liveblocks.createRoom(projectId, {
     defaultAccesses: [],
@@ -27,7 +26,6 @@ export async function createProject(title: string) {
     metadata: {
       title,
       ownerId: userId,
-      lastEdited: date,
     },
   });
 
