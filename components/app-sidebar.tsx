@@ -58,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/my-projects">
-                <Image src="/vercel.svg" width={20} height={20} alt="Logo" />
+                <Image src="/typeset.svg" width={20} height={20} alt="Logo" />
                 <span className="text-base font-semibold">Typeset</span>
               </Link>
             </SidebarMenuButton>
