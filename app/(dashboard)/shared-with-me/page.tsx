@@ -9,16 +9,6 @@ const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
-function Placeholder() {
-  return (
-    <div className="flex h-64 items-center justify-center rounded-lg border border-dashed">
-      <div className="text-center text-muted-foreground">
-        No projects shared with you
-      </div>
-    </div>
-  );
-}
-
 export default async function Page() {
   const client = await clerkClient();
   const { userId } = await auth();
@@ -46,14 +36,22 @@ export default async function Page() {
   );
 
   return (
-    <div>
+    <div className="flex flex-col h-full">
       <SiteHeader header="Shared With Me" />
       <div className="flex flex-1 flex-col">
-        <div className="@container/main flex flex-1 flex-col gap-2">
-          <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
-            <DataTable data={data} placeholder={<Placeholder />} />
+        {data.length ? (
+          <div className="@container/main flex flex-1 flex-col gap-2">
+            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6">
+              <DataTable data={data} />
+            </div>
           </div>
-        </div>
+        ) : (
+          <div className="flex h-full flex-col justify-center items-center gap-2">
+            <div className="text-muted-foreground">
+              No projects shared with you
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
