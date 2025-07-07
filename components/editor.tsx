@@ -159,7 +159,7 @@ export default function Editor() {
           <NavigationMenuList>
             <NavigationMenuItem>
               <Button
-                onClick={() => router.push("/my-projects")}
+                onClick={() => router.push("/dashboard")}
                 variant="ghost"
                 size="icon"
               >

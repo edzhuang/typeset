@@ -26,12 +26,12 @@ const data = {
   navMain: [
     {
       title: "My Projects",
-      url: "/my-projects",
+      url: "/dashboard/my-projects",
       icon: IconFolder,
     },
     {
       title: "Shared With Me",
-      url: "/shared-with-me",
+      url: "/dashboard/shared-with-me",
       icon: IconUsers,
     },
   ],
@@ -57,7 +57,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               asChild
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
-              <Link href="/my-projects">
+              <Link href="/dashboard">
                 <Image src="/typeset.svg" width={20} height={20} alt="Logo" />
                 <span className="text-base font-semibold">Typeset</span>
               </Link>

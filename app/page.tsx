@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import {
@@ -11,7 +10,7 @@ import { Button } from "@/components/ui/button";
 
 export default async function Page() {
   const { userId } = await auth();
-  if (userId) redirect("/my-projects");
+  if (userId) redirect("/dashboard");
 
   return (
     <div>
