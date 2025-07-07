@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { IconFolder, IconInnerShadowTop, IconUsers } from "@tabler/icons-react";
+import { IconFolder, IconUsers } from "@tabler/icons-react";
 import { NavMain } from "@/components/nav-main";
 import { NavUser } from "@/components/nav-user";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/sidebar";
 import { useUser } from "@clerk/nextjs";
 import Link from "next/link";
+import Image from "next/image";
 
 const data = {
   user: {
@@ -57,7 +58,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               className="data-[slot=sidebar-menu-button]:!p-1.5"
             >
               <Link href="/dashboard">
-                <IconInnerShadowTop className="!size-5" />
+                <Image src="/vercel.svg" width={20} height={20} alt="Logo" />
                 <span className="text-base font-semibold">Typeset</span>
               </Link>
             </SidebarMenuButton>
