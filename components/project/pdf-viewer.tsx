@@ -8,6 +8,7 @@ import Link from "next/link";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
+import { DocumentSkeleton } from "@/components/skeletons";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -174,6 +175,7 @@ export function PdfViewer({ file }: { file: string | File }) {
           className="flex flex-col items-center"
           file={file}
           onLoadSuccess={onDocumentLoadSuccess}
+          loading={DocumentSkeleton}
         >
           {numPages &&
             Array.from({ length: numPages }, (_, index) => (

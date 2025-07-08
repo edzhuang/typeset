@@ -12,7 +12,7 @@ import {
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
 import { Button } from "@/components/ui/button";
-import { Play, House, UserPlus } from "lucide-react";
+import { Play, House, UserPlus, Loader2Icon } from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -30,6 +30,7 @@ import { Chat } from "@/components/project/chat";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { dark } from "@clerk/themes";
+import { useActionState, startTransition } from "react";
 
 export default function Editor() {
   const room = useRoom();
@@ -152,6 +153,7 @@ export default function Editor() {
     const newPdfUrl = URL.createObjectURL(pdfBlob);
     setPdfUrl(newPdfUrl);
   };
+  const [, action, pending] = useActionState(compile, undefined);
 
   return (
     <div className="flex flex-col h-screen">
@@ -171,8 +173,12 @@ export default function Editor() {
 
           <NavigationMenuList>
             <NavigationMenuItem>
-              <Button onClick={compile}>
-                <Play /> Compile
+              <Button
+                onClick={() => startTransition(action)}
+                disabled={pending}
+              >
+                {pending ? <Loader2Icon className="animate-spin" /> : <Play />}
+                Compile
               </Button>
             </NavigationMenuItem>
           </NavigationMenuList>
