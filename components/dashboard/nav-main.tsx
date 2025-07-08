@@ -1,6 +1,7 @@
 "use client";
 
 import { IconCirclePlusFilled, type Icon } from "@tabler/icons-react";
+import { Loader2Icon } from "lucide-react";
 import {
   SidebarGroup,
   SidebarGroupContent,
@@ -48,16 +49,17 @@ export function NavMain({
     icon?: Icon;
   }[];
 }) {
+  const pathname = usePathname();
   const form = useForm<z.infer<typeof schema>>({
     resolver: zodResolver(schema),
     defaultValues: {
       title: "Untitled Project",
     },
   });
-  const pathname = usePathname();
+  const isSubmitting = form.formState.isSubmitting;
 
   function onSubmit(values: z.infer<typeof schema>) {
-    createProject(values.title);
+    return createProject(values.title);
   }
 
   return (
@@ -106,7 +108,12 @@ export function NavMain({
                       <DialogClose asChild>
                         <Button variant="outline">Cancel</Button>
                       </DialogClose>
-                      <Button type="submit">Create</Button>
+                      <Button type="submit" disabled={isSubmitting}>
+                        {isSubmitting && (
+                          <Loader2Icon className="animate-spin" />
+                        )}
+                        Create
+                      </Button>
                     </DialogFooter>
                   </form>
                 </Form>
