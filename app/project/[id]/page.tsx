@@ -1,7 +1,7 @@
 "use client";
 
 import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
-import Editor from "@/components/editor";
+import Editor from "@/components/project/editor";
 import { useParams } from "next/navigation";
 import { ClientSideSuspense } from "@liveblocks/react/suspense";
 

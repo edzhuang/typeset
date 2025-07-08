@@ -25,10 +25,11 @@ import { useRoom } from "@liveblocks/react/suspense";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
-import { PdfViewer } from "@/components/pdf-viewer";
-import { Chat } from "@/components/chat";
+import { PdfViewer } from "@/components/project/pdf-viewer";
+import { Chat } from "@/components/project/chat";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
+import { dark } from "@clerk/themes";
 
 export default function Editor() {
   const room = useRoom();
@@ -183,7 +184,11 @@ export default function Editor() {
               </Button>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex p-1">
-              <UserButton />
+              <UserButton
+                appearance={{
+                  baseTheme: resolvedTheme === "dark" ? dark : undefined,
+                }}
+              />
             </NavigationMenuItem>
           </NavigationMenuList>
         </div>

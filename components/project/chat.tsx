@@ -12,7 +12,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { MemoizedMarkdown } from "@/components/memoized-markdown";
+import { MemoizedMarkdown } from "@/components/project/memoized-markdown";
 import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";

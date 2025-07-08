@@ -1,4 +1,5 @@
-import { SiteHeader } from "@/components/site-header";
+import { SiteHeader } from "@/components/dashboard/site-header";
+import { DataTable } from "@/components/dashboard/my-projects/data-table";
 
 export default async function Page() {
   return (
