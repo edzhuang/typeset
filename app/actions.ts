@@ -5,6 +5,9 @@ import { auth } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
+import fs from "fs/promises";
+import path from "path";
+import * as Y from "yjs";
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
@@ -18,6 +21,14 @@ export async function createProject(title: string) {
   }
 
   const projectId = nanoid();
+  const yDoc = new Y.Doc();
+  const yText = yDoc.getText("codemirror");
+
+  // Add default template
+  const templatePath = path.join(process.cwd(), "docs", "latex-template.tex");
+  const template = await fs.readFile(templatePath, "utf-8");
+  yText.insert(0, template);
+  const yUpdate = Y.encodeStateAsUpdate(yDoc);
 
   await liveblocks.createRoom(projectId, {
     defaultAccesses: [],
@@ -29,6 +40,9 @@ export async function createProject(title: string) {
       ownerId: userId,
     },
   });
+
+  // Initialize the Yjs document with the update
+  await liveblocks.sendYjsBinaryUpdate(projectId, yUpdate);
 
   revalidatePath("/dashboard/my-projects");
   redirect(`/project/${projectId}`);

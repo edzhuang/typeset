@@ -58,8 +58,8 @@ export function NavMain({
   });
   const isSubmitting = form.formState.isSubmitting;
 
-  function onSubmit(values: z.infer<typeof schema>) {
-    return createProject(values.title);
+  async function onSubmit(values: z.infer<typeof schema>) {
+    await createProject(values.title);
   }
 
   return (

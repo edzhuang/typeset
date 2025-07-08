@@ -47,12 +47,6 @@ export default function Editor() {
     setEditor(node);
   }, []);
 
-  async function fetchLatexTemplate(): Promise<string> {
-    const res = await fetch("/latex-template.tex");
-    if (!res.ok) throw new Error("Failed to load template");
-    return res.text();
-  }
-
   // Set up Liveblocks Yjs provider and attach CodeMirror editor
   useEffect(() => {
     if (!editor || !room) {
@@ -87,26 +81,6 @@ export default function Editor() {
     const view = new EditorView({
       state,
       parent: editor,
-    });
-
-    // Set default template when the provider is synced
-    const handleSync = async () => {
-      const hasInitialized = yDoc.getMap("meta").get("initialized");
-      if (!hasInitialized) {
-        const template = await fetchLatexTemplate();
-        yText.insert(0, template);
-        yDoc.getMap("meta").set("initialized", true);
-      }
-    };
-
-    if (yProvider.synced) {
-      handleSync();
-    }
-
-    yProvider.on("sync", (isSynced: boolean) => {
-      if (isSynced === true) {
-        handleSync();
-      }
     });
 
     return () => {
