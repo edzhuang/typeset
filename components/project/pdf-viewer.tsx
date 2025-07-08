@@ -3,7 +3,6 @@ import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { useState, useRef, useEffect } from "react";
-import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area";
 import Link from "next/link";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -50,12 +49,8 @@ export function PdfViewer({ file }: { file: string | File }) {
   useEffect(() => {
     if (pagesRendered < numPages) return;
 
-    const scrollArea = scrollAreaRef.current;
-    if (!scrollArea) return;
-
-    const container: HTMLElement = scrollArea.querySelector(
-      "[data-radix-scroll-area-viewport]"
-    ) as HTMLElement;
+    const container = scrollAreaRef.current;
+    if (!container) return;
 
     const handleScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
@@ -170,7 +165,7 @@ export function PdfViewer({ file }: { file: string | File }) {
       </div>
 
       {/* Scrollable PDF content */}
-      <ScrollArea className="min-h-0" ref={scrollAreaRef}>
+      <div className="min-h-0 overflow-auto" ref={scrollAreaRef}>
         <Document
           className="flex flex-col items-center"
           file={file}
@@ -195,8 +190,7 @@ export function PdfViewer({ file }: { file: string | File }) {
               </div>
             ))}
         </Document>
-        <ScrollBar orientation="horizontal" />
-      </ScrollArea>
+      </div>
     </div>
   );
 }

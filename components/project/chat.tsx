@@ -11,7 +11,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { MemoizedMarkdown } from "@/components/project/memoized-markdown";
 import { useState, useRef, useEffect, useCallback } from "react";
 import clsx from "clsx";
@@ -46,9 +45,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
-    const viewport = scrollAreaRef.current?.querySelector(
-      '[data-slot="scroll-area-viewport"]'
-    ) as HTMLElement;
+    const viewport = scrollAreaRef.current;
     if (viewport) {
       viewport.scrollTo({ top: viewport.scrollHeight, behavior: behavior });
     }
@@ -63,9 +60,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   // Track scroll position to toggle autoScroll and button
   useEffect(() => {
-    const viewport = scrollAreaRef.current?.querySelector(
-      '[data-slot="scroll-area-viewport"]'
-    ) as HTMLElement;
+    const viewport = scrollAreaRef.current;
     if (!viewport) return;
 
     const handleScroll = () => {
@@ -190,7 +185,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
       {/* Messages */}
       <div className="flex-1 overflow-hidden relative">
-        <ScrollArea className="h-full" ref={scrollAreaRef}>
+        <div className="h-full overflow-auto" ref={scrollAreaRef}>
           {messages.map((message) => (
             <div key={message.id}>
               {message.role === "user"
@@ -198,7 +193,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
                 : renderAssistantMessage(message)}
             </div>
           ))}
-        </ScrollArea>
+        </div>
         <div
           className={clsx(
             "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",

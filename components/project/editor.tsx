@@ -22,7 +22,6 @@ import { keymap, EditorView } from "@codemirror/view";
 import { useCallback, useEffect, useState } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/project/pdf-viewer";
@@ -189,9 +188,7 @@ export default function Editor() {
 
         <ResizablePanel defaultSize={40}>
           <Card className="h-full p-0 overflow-hidden">
-            <ScrollArea className="h-full">
-              <div ref={editorRef} />
-            </ScrollArea>
+            <div ref={editorRef} />
           </Card>
         </ResizablePanel>
 
