@@ -19,7 +19,7 @@ import { EditorState } from "@codemirror/state";
 import { latex } from "codemirror-lang-latex";
 import { defaultKeymap, insertTab } from "@codemirror/commands";
 import { keymap, EditorView } from "@codemirror/view";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useRef } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
@@ -30,6 +30,7 @@ import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { dark } from "@clerk/themes";
 import { useActionState, startTransition } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function Editor() {
   const room = useRoom();
@@ -39,11 +40,31 @@ export default function Editor() {
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [, setOldFile] = useState<string | null>(null);
+  const [cardHeight, setCardHeight] = useState<number>(0);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
 
     setEditor(node);
+  }, []);
+
+  // Calculate card height using ResizeObserver
+  useEffect(() => {
+    if (!cardRef.current) return;
+
+    const resizeObserver = new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        const height = entry.contentRect.height;
+        setCardHeight(height);
+      }
+    });
+
+    resizeObserver.observe(cardRef.current);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
   }, []);
 
   // Set up Liveblocks Yjs provider and attach CodeMirror editor
@@ -64,8 +85,10 @@ export default function Editor() {
           "&": {
             backgroundColor: "hsl(var(--card))",
           },
+          ".cm-content, .cm-gutter": { minHeight: `${cardHeight}px` },
           ".cm-gutters": {
             backgroundColor: "hsl(var(--muted))",
+            border: "none",
           },
         }),
         resolvedTheme === "dark" ? githubDark : githubLight,
@@ -85,7 +108,7 @@ export default function Editor() {
     return () => {
       view?.destroy();
     };
-  }, [editor, room, yProvider, resolvedTheme]);
+  }, [editor, room, yProvider, resolvedTheme, cardHeight]);
 
   // Handle changes to the old file
   useEffect(() => {
@@ -187,8 +210,10 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden">
-            <div ref={editorRef} />
+          <Card ref={cardRef} className="h-full p-0 overflow-hidden">
+            <ScrollArea className="h-full">
+              <div className="h-full" ref={editorRef} />
+            </ScrollArea>
           </Card>
         </ResizablePanel>
 

@@ -8,6 +8,8 @@ import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
 import { DocumentSkeleton } from "@/components/skeletons";
+import { ScrollBar } from "@/components/ui/scroll-area";
+import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
@@ -21,7 +23,7 @@ export function PdfViewer({ file }: { file: string | File }) {
   const [zoom, setZoom] = useState<number>(1);
   const [pagesRendered, setPagesRendered] = useState<number>(0);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
-  const scrollAreaRef = useRef<HTMLDivElement | null>(null);
+  const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
   const rafId = useRef<number>(0);
 
   const navigateToPage = (page: number) => {
@@ -49,15 +51,15 @@ export function PdfViewer({ file }: { file: string | File }) {
   useEffect(() => {
     if (pagesRendered < numPages) return;
 
-    const container = scrollAreaRef.current;
-    if (!container) return;
+    const viewport = scrollAreaViewportRef.current;
+    if (!viewport) return;
 
     const handleScroll = () => {
       if (rafId.current) cancelAnimationFrame(rafId.current);
 
       rafId.current = requestAnimationFrame(() => {
-        const containerRect = container.getBoundingClientRect();
-        const viewportCenter = containerRect.top + containerRect.height / 2;
+        const viewportRect = viewport.getBoundingClientRect();
+        const viewportCenter = viewportRect.top + viewportRect.height / 2;
 
         let closestPage = 1;
         let minDistance = Infinity;
@@ -66,10 +68,7 @@ export function PdfViewer({ file }: { file: string | File }) {
           if (!el) return;
           const rect = el.getBoundingClientRect();
 
-          if (
-            rect.bottom < containerRect.top ||
-            rect.top > containerRect.bottom
-          )
+          if (rect.bottom < viewportRect.top || rect.top > viewportRect.bottom)
             return;
 
           const pageCenter = rect.top + rect.height / 2;
@@ -85,9 +84,9 @@ export function PdfViewer({ file }: { file: string | File }) {
       });
     };
 
-    container.addEventListener("scroll", handleScroll, { passive: true });
+    viewport.addEventListener("scroll", handleScroll, { passive: true });
     return () => {
-      container.removeEventListener("scroll", handleScroll);
+      viewport.removeEventListener("scroll", handleScroll);
       if (rafId.current) cancelAnimationFrame(rafId.current);
     };
   }, [pagesRendered, numPages]);
@@ -163,33 +162,48 @@ export function PdfViewer({ file }: { file: string | File }) {
           </Button>
         </div>
       </div>
-
       {/* Scrollable PDF content */}
-      <div className="min-h-0 overflow-auto" ref={scrollAreaRef}>
-        <Document
-          className="flex flex-col items-center"
-          file={file}
-          onLoadSuccess={onDocumentLoadSuccess}
-          loading={DocumentSkeleton}
+      <div className="grow overflow-hidden">
+        <ScrollAreaPrimitive.Root
+          data-slot="scroll-area"
+          className="relative h-full bg-card"
+          type="auto"
         >
-          {numPages &&
-            Array.from({ length: numPages }, (_, index) => (
-              <div
-                key={`page_${index + 1}`}
-                ref={(el) => {
-                  pagesRef.current[index] = el;
-                }}
-                className="w-min p-2"
-              >
-                <Page
-                  pageNumber={index + 1}
-                  width={816}
-                  scale={zoom}
-                  onRenderSuccess={onPageRenderSuccess}
-                />
-              </div>
-            ))}
-        </Document>
+          <ScrollAreaPrimitive.Viewport
+            ref={scrollAreaViewportRef}
+            data-slot="scroll-area-viewport"
+            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+          >
+            <Document
+              className="flex flex-col items-center"
+              file={file}
+              onLoadSuccess={onDocumentLoadSuccess}
+              loading={DocumentSkeleton}
+            >
+              {numPages &&
+                Array.from({ length: numPages }, (_, index) => (
+                  <div
+                    key={`page_${index + 1}`}
+                    ref={(el) => {
+                      pagesRef.current[index] = el;
+                    }}
+                    className="w-min p-2"
+                  >
+                    <Page
+                      pageNumber={index + 1}
+                      width={816}
+                      scale={zoom}
+                      onRenderSuccess={onPageRenderSuccess}
+                      className="z-0"
+                    />
+                  </div>
+                ))}
+            </Document>
+          </ScrollAreaPrimitive.Viewport>
+          <ScrollBar orientation="horizontal" className="bg-card" />
+          <ScrollBar orientation="vertical" className="bg-card" />
+          <ScrollAreaPrimitive.Corner />
+        </ScrollAreaPrimitive.Root>
       </div>
     </div>
   );
