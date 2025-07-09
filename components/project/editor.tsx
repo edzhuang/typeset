@@ -98,14 +98,33 @@ export default function Editor() {
           "&": {
             backgroundColor: "transparent",
           },
-          ".cm-content, .cm-gutter": {
+          ".cm-content": {
+            paddingTop: "0.75rem",
+            paddingBottom: "0.75rem",
             minHeight: `${panelHeight}px`,
             fontFamily: "var(--font-mono)",
             fontSize: "14px",
           },
+          ".cm-gutter": {
+            minHeight: `${panelHeight}px`,
+            fontFamily: "var(--font-mono)",
+            fontSize: "14px",
+            color: "var(--muted-foreground)",
+          },
           ".cm-gutters": {
             backgroundColor: "transparent",
             border: "none",
+          },
+          ".cm-lineNumbers .cm-gutterElement": {
+            paddingLeft: "1rem !important",
+          },
+          ".cm-foldGutter .cm-gutterElement": {
+            paddingRight: ".25rem!important",
+          },
+          ".cm-foldPlaceholder": {
+            borderColor: "var(--border)",
+            backgroundColor: "var(--editor-panel)",
+            color: "var(--muted-foreground)",
           },
           ".cm-ySelectionInfo": {
             position: "absolute",
