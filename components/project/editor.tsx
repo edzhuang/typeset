@@ -20,7 +20,7 @@ import { defaultKeymap, insertTab } from "@codemirror/commands";
 import { keymap, EditorView } from "@codemirror/view";
 import { useCallback, useEffect, useState, useRef } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { useRoom } from "@liveblocks/react/suspense";
+import { useRoom, useSelf } from "@liveblocks/react/suspense";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/project/pdf-viewer";
@@ -41,6 +41,13 @@ export default function Editor() {
   const [, setOldFile] = useState<string | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
+
+  // Get user info from Liveblocks authentication endpoint
+  const userInfo = useSelf((me) => me.info) as {
+    name: string;
+    imageUrl: string;
+    color: string;
+  };
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
@@ -76,6 +83,13 @@ export default function Editor() {
     const yDoc = yProvider.getYDoc();
     const yText = yDoc.getText("codemirror");
 
+    // Attach user info to Yjs
+    yProvider.awareness.setLocalStateField("user", {
+      name: userInfo.name,
+      color: userInfo.color,
+      colorLight: userInfo.color + "80", // 6-digit hex code at 50% opacity
+    });
+
     const state = EditorState.create({
       doc: yText.toString(),
       extensions: [
@@ -107,7 +121,7 @@ export default function Editor() {
     return () => {
       view?.destroy();
     };
-  }, [editor, room, yProvider, resolvedTheme, panelHeight]);
+  }, [editor, room, yProvider, resolvedTheme, panelHeight, userInfo]);
 
   // Handle changes to the old file
   useEffect(() => {
@@ -201,7 +215,7 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
+          <div className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border">
             <Chat yProvider={yProvider} />
           </div>
         </ResizablePanel>
@@ -211,7 +225,7 @@ export default function Editor() {
         <ResizablePanel defaultSize={40}>
           <div
             ref={panelRef}
-            className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border"
+            className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border"
           >
             <ScrollArea className="h-full">
               <div className="h-full" ref={editorRef} />
@@ -222,7 +236,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
+          <div className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
           </div>
         </ResizablePanel>
