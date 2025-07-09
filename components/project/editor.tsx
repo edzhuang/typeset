@@ -151,7 +151,7 @@ export default function Editor() {
   const [, action, pending] = useActionState(compile, undefined);
 
   return (
-    <div className="flex flex-col h-screen bg-sidebar">
+    <div className="flex flex-col h-screen bg-editor">
       <NavigationMenu className="p-2">
         <div className="flex w-screen justify-between">
           <NavigationMenuList>
@@ -201,7 +201,7 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <div className="flex flex-col h-full rounded-md overflow-hidden bg-background border">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
             <Chat yProvider={yProvider} />
           </div>
         </ResizablePanel>
@@ -211,7 +211,7 @@ export default function Editor() {
         <ResizablePanel defaultSize={40}>
           <div
             ref={panelRef}
-            className="flex flex-col h-full rounded-md overflow-hidden bg-background border"
+            className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border"
           >
             <ScrollArea className="h-full">
               <div className="h-full" ref={editorRef} />
@@ -222,7 +222,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <div className="flex flex-col h-full rounded-md overflow-hidden bg-background border">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
           </div>
         </ResizablePanel>

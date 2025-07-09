@@ -200,8 +200,14 @@ export function PdfViewer({ file }: { file: string | File }) {
                 ))}
             </Document>
           </ScrollAreaPrimitive.Viewport>
-          <ScrollBar orientation="horizontal" className="bg-background" />
-          <ScrollBar orientation="vertical" className="bg-background" />
+          <ScrollBar
+            orientation="horizontal"
+            className="bg-background bg-editor-panel"
+          />
+          <ScrollBar
+            orientation="vertical"
+            className="bg-background bg-editor-panel"
+          />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </div>
