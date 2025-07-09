@@ -1,12 +1,10 @@
 "use server";
 
 import { Liveblocks } from "@liveblocks/node";
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
-import fs from "fs/promises";
-import path from "path";
 import * as Y from "yjs";
 
 const liveblocks = new Liveblocks({
@@ -15,18 +13,29 @@ const liveblocks = new Liveblocks({
 
 export async function createProject(title: string) {
   const { userId } = await auth();
-
   if (!userId) {
     return;
   }
+  const user = await currentUser();
 
   const projectId = nanoid();
   const yDoc = new Y.Doc();
   const yText = yDoc.getText("codemirror");
 
   // Add default template
-  const templatePath = path.join(process.cwd(), "docs", "latex-template.tex");
-  const template = await fs.readFile(templatePath, "utf-8");
+  const template = `\\documentclass{article}
+\\title{${title}}
+\\author{${user?.fullName || "Author"}}
+\\date{\\today}
+
+\\begin{document}
+
+\\maketitle
+
+\\section{Section}
+
+\\end{document}`;
+
   yText.insert(0, template);
   const yUpdate = Y.encodeStateAsUpdate(yDoc);
 
