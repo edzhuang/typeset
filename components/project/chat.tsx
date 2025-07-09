@@ -189,7 +189,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
       <div className="flex-1 overflow-hidden relative">
         <ScrollAreaPrimitive.Root
           data-slot="scroll-area"
-          className="relative h-full bg-card"
+          className="relative h-full"
           type="auto"
         >
           <ScrollAreaPrimitive.Viewport
@@ -220,7 +220,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           <Button
             size="icon"
             variant="outline"
-            className="rounded-full dark:bg-card dark:hover:bg-card"
+            className="rounded-full dark:bg-background dark:hover:bg-accent"
             onClick={() => {
               scrollToBottom("smooth");
             }}

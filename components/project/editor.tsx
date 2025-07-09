@@ -5,7 +5,6 @@ import {
   ResizablePanel,
   ResizablePanelGroup,
 } from "@/components/ui/resizable";
-import { Card } from "@/components/ui/card";
 import {
   NavigationMenu,
   NavigationMenuItem,
@@ -40,8 +39,8 @@ export default function Editor() {
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [, setOldFile] = useState<string | null>(null);
-  const [cardHeight, setCardHeight] = useState<number>(0);
-  const cardRef = useRef<HTMLDivElement>(null);
+  const [panelHeight, setPanelHeight] = useState<number>(0);
+  const panelRef = useRef<HTMLDivElement>(null);
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
@@ -51,16 +50,16 @@ export default function Editor() {
 
   // Calculate card height using ResizeObserver
   useEffect(() => {
-    if (!cardRef.current) return;
+    if (!panelRef.current) return;
 
     const resizeObserver = new ResizeObserver((entries) => {
       for (const entry of entries) {
         const height = entry.contentRect.height;
-        setCardHeight(height);
+        setPanelHeight(height);
       }
     });
 
-    resizeObserver.observe(cardRef.current);
+    resizeObserver.observe(panelRef.current);
 
     return () => {
       resizeObserver.disconnect();
@@ -83,11 +82,11 @@ export default function Editor() {
         basicSetup,
         EditorView.theme({
           "&": {
-            backgroundColor: "hsl(var(--card))",
+            backgroundColor: "transparent",
           },
-          ".cm-content, .cm-gutter": { minHeight: `${cardHeight}px` },
+          ".cm-content, .cm-gutter": { minHeight: `${panelHeight}px` },
           ".cm-gutters": {
-            backgroundColor: "hsl(var(--muted))",
+            backgroundColor: "transparent",
             border: "none",
           },
         }),
@@ -108,7 +107,7 @@ export default function Editor() {
     return () => {
       view?.destroy();
     };
-  }, [editor, room, yProvider, resolvedTheme, cardHeight]);
+  }, [editor, room, yProvider, resolvedTheme, panelHeight]);
 
   // Handle changes to the old file
   useEffect(() => {
@@ -152,7 +151,7 @@ export default function Editor() {
   const [, action, pending] = useActionState(compile, undefined);
 
   return (
-    <div className="flex flex-col h-screen">
+    <div className="flex flex-col h-screen bg-sidebar">
       <NavigationMenu className="p-2">
         <div className="flex w-screen justify-between">
           <NavigationMenuList>
@@ -202,27 +201,30 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <Card className="h-full p-0 overflow-hidden">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-background border">
             <Chat yProvider={yProvider} />
-          </Card>
+          </div>
         </ResizablePanel>
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card ref={cardRef} className="h-full p-0 overflow-hidden">
+          <div
+            ref={panelRef}
+            className="flex flex-col h-full rounded-md overflow-hidden bg-background border"
+          >
             <ScrollArea className="h-full">
               <div className="h-full" ref={editorRef} />
             </ScrollArea>
-          </Card>
+          </div>
         </ResizablePanel>
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <Card className="h-full p-0 overflow-hidden">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-background border">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
-          </Card>
+          </div>
         </ResizablePanel>
       </ResizablePanelGroup>
     </div>

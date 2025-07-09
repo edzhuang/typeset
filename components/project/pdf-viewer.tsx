@@ -166,7 +166,7 @@ export function PdfViewer({ file }: { file: string | File }) {
       <div className="grow overflow-hidden">
         <ScrollAreaPrimitive.Root
           data-slot="scroll-area"
-          className="relative h-full bg-card"
+          className="relative h-full"
           type="auto"
         >
           <ScrollAreaPrimitive.Viewport
@@ -194,14 +194,14 @@ export function PdfViewer({ file }: { file: string | File }) {
                       width={816}
                       scale={zoom}
                       onRenderSuccess={onPageRenderSuccess}
-                      className="z-0"
+                      className="z-0 border"
                     />
                   </div>
                 ))}
             </Document>
           </ScrollAreaPrimitive.Viewport>
-          <ScrollBar orientation="horizontal" className="bg-card" />
-          <ScrollBar orientation="vertical" className="bg-card" />
+          <ScrollBar orientation="horizontal" className="bg-background" />
+          <ScrollBar orientation="vertical" className="bg-background" />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </div>
