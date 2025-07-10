@@ -7,7 +7,6 @@ import Link from "next/link";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { DocumentSkeleton } from "@/components/skeletons";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
@@ -178,7 +177,6 @@ export function PdfViewer({ file }: { file: string | File }) {
               className="flex flex-col items-center"
               file={file}
               onLoadSuccess={onDocumentLoadSuccess}
-              loading={DocumentSkeleton}
             >
               {numPages &&
                 Array.from({ length: numPages }, (_, index) => (
@@ -200,14 +198,8 @@ export function PdfViewer({ file }: { file: string | File }) {
                 ))}
             </Document>
           </ScrollAreaPrimitive.Viewport>
-          <ScrollBar
-            orientation="horizontal"
-            className="bg-background bg-editor-panel"
-          />
-          <ScrollBar
-            orientation="vertical"
-            className="bg-background bg-editor-panel"
-          />
+          <ScrollBar orientation="horizontal" className="bg-editor-panel" />
+          <ScrollBar orientation="vertical" className="bg-editor-panel" />
           <ScrollAreaPrimitive.Corner />
         </ScrollAreaPrimitive.Root>
       </div>

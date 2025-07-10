@@ -52,7 +52,7 @@ export async function POST() {
   // Identify the user and return the result
   const { status, body } = await liveblocks.identifyUser(userId, {
     userInfo: {
-      name: user.fullName,
+      name: user.fullName || "",
       imageUrl: user.imageUrl,
       color: userColor,
     },

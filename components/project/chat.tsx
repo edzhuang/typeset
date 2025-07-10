@@ -240,7 +240,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
             onKeyDown={handleKeyDown}
             className="pb-15 resize-none"
           />
-          <div className="absolute inline-flex justify-between bottom-0 inset-x-0 p-2 pointer-events-none overflow-hidden gap-2">
+          <div className="absolute inline-flex justify-between bottom-0 inset-x-0 p-2 pointer-events-none overflow-hidden gap-2 border border-transparent">
             <Select value={model} onValueChange={setModel}>
               <SelectTrigger className="pointer-events-auto">
                 <SelectValue />

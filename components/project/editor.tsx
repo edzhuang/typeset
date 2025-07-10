@@ -30,6 +30,8 @@ import { useRouter } from "next/navigation";
 import { dark } from "@clerk/themes";
 import { useActionState, startTransition } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { UserInfo } from "@/liveblocks.config";
+import { Avatars } from "@/components/project/avatars";
 
 export default function Editor() {
   const room = useRoom();
@@ -43,11 +45,7 @@ export default function Editor() {
   const panelRef = useRef<HTMLDivElement>(null);
 
   // Get user info from Liveblocks authentication endpoint
-  const userInfo = useSelf((me) => me.info) as {
-    name: string;
-    imageUrl: string;
-    color: string;
-  };
+  const userInfo = useSelf((me) => me.info) as UserInfo;
 
   const editorRef = useCallback((node: HTMLElement | null) => {
     if (!node) return;
@@ -238,16 +236,22 @@ export default function Editor() {
             </NavigationMenuItem>
           </NavigationMenuList>
 
-          <NavigationMenuList>
+          <NavigationMenuList className="gap-2">
+            <NavigationMenuItem className="mx-4">
+              <Avatars />
+            </NavigationMenuItem>
             <NavigationMenuItem>
               <Button variant="secondary">
                 <UserPlus /> Invite
               </Button>
             </NavigationMenuItem>
-            <NavigationMenuItem className="flex p-1">
+            <NavigationMenuItem className="flex flex-1 item-center">
               <UserButton
                 appearance={{
                   baseTheme: resolvedTheme === "dark" ? dark : undefined,
+                  elements: {
+                    avatarBox: "size-8!",
+                  },
                 }}
               />
             </NavigationMenuItem>
