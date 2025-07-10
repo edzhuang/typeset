@@ -10,8 +10,23 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Play, House, UserPlus, Loader2Icon } from "lucide-react";
+import {
+  Play,
+  House,
+  UserPlus,
+  Loader2Icon,
+  SendHorizontal,
+} from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -241,9 +256,29 @@ export default function Editor() {
               <Avatars />
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Button variant="secondary">
-                <UserPlus /> Invite
-              </Button>
+              <Dialog>
+                <form>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary">
+                      <UserPlus /> Invite
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Invite</DialogTitle>
+                      <DialogDescription className="sr-only">
+                        Invite users to collaborate on your project
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex w-full items-center gap-2">
+                      <Input type="email" placeholder="Email address" />
+                      <Button type="submit" size="icon">
+                        <SendHorizontal />
+                      </Button>
+                    </div>
+                  </DialogContent>
+                </form>
+              </Dialog>
             </NavigationMenuItem>
             <NavigationMenuItem className="flex flex-1 item-center">
               <UserButton

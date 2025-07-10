@@ -1,7 +1,7 @@
 "use server";
 
 import { Liveblocks } from "@liveblocks/node";
-import { auth, currentUser } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
@@ -11,30 +11,36 @@ const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
+// Helper function to generate LaTeX template
+function generateLatexTemplate(title: string, author: string): string {
+  return [
+    "\\documentclass{article}",
+    `\\title{${title}}`,
+    `\\author{${author}}`,
+    "\\date{\\today}",
+    "",
+    "\\begin{document}",
+    "",
+    "\\maketitle",
+    "",
+    "\\section{Section}",
+    "",
+    "\\end{document}",
+  ].join("\n");
+}
+
 export async function createProject(title: string) {
-  const { userId } = await auth();
-  if (!userId) {
-    return;
-  }
   const user = await currentUser();
+  if (!user) return;
+
+  const email = user.emailAddresses[0].emailAddress;
 
   const projectId = nanoid();
   const yDoc = new Y.Doc();
   const yText = yDoc.getText("codemirror");
 
   // Add default template
-  const template = `\\documentclass{article}
-\\title{${title}}
-\\author{${user?.fullName || "Author"}}
-\\date{\\today}
-
-\\begin{document}
-
-\\maketitle
-
-\\section{Section}
-
-\\end{document}`;
+  const template = generateLatexTemplate(title, user.fullName || "Author");
 
   yText.insert(0, template);
   const yUpdate = Y.encodeStateAsUpdate(yDoc);
@@ -42,11 +48,11 @@ export async function createProject(title: string) {
   await liveblocks.createRoom(projectId, {
     defaultAccesses: [],
     usersAccesses: {
-      [userId]: ["room:write"],
+      [email]: ["room:write"],
     },
     metadata: {
       title,
-      ownerId: userId,
+      ownerId: email,
     },
   });
 
@@ -63,15 +69,14 @@ export async function deleteProject(projectId: string) {
 }
 
 export async function leaveProject(projectId: string) {
-  const { userId } = await auth();
+  const user = await currentUser();
+  if (!user) return;
 
-  if (!userId) {
-    return;
-  }
+  const email = user.emailAddresses[0].emailAddress;
 
   await liveblocks.updateRoom(projectId, {
     usersAccesses: {
-      [userId]: null,
+      [email]: null,
     },
   });
 
