@@ -97,8 +97,8 @@ export default function Editor() {
             backgroundColor: "transparent",
           },
           ".cm-content": {
-            paddingTop: "0.75rem",
-            paddingBottom: "0.75rem",
+            paddingTop: "0.5rem",
+            paddingBottom: "0.5rem",
             minHeight: `${panelHeight}px`,
             fontFamily: "var(--font-mono)",
             fontSize: "14px",
@@ -117,7 +117,7 @@ export default function Editor() {
             paddingLeft: "1rem !important",
           },
           ".cm-foldGutter .cm-gutterElement": {
-            paddingRight: ".25rem!important",
+            paddingRight: ".25rem !important",
           },
           ".cm-foldPlaceholder": {
             borderColor: "var(--border)",
@@ -265,7 +265,7 @@ export default function Editor() {
         autoSaveId="editor"
       >
         <ResizablePanel defaultSize={20}>
-          <div className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
             <Chat yProvider={yProvider} />
           </div>
         </ResizablePanel>
@@ -275,7 +275,7 @@ export default function Editor() {
         <ResizablePanel defaultSize={40}>
           <div
             ref={panelRef}
-            className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border"
+            className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border"
           >
             <ScrollArea className="h-full">
               <div className="h-full" ref={editorRef} />
@@ -286,7 +286,7 @@ export default function Editor() {
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <div className="flex flex-col h-full rounded-xl overflow-hidden bg-editor-panel border">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
             {pdfUrl && <PdfViewer file={pdfUrl} />}
           </div>
         </ResizablePanel>
