@@ -62,7 +62,7 @@ export async function deleteProject(projectId: string) {
   revalidatePath("/dashboard/my-projects");
 }
 
-export async function removeSharedProject(projectId: string) {
+export async function leaveProject(projectId: string) {
   const { userId } = await auth();
 
   if (!userId) {

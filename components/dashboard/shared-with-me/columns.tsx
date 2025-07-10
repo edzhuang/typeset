@@ -9,7 +9,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { deleteProject } from "@/app/actions";
+import { leaveProject } from "@/app/actions";
 import Link from "next/link";
 
 export type Project = {
@@ -69,9 +69,9 @@ export const columns: ColumnDef<Project>[] = [
             <DropdownMenuContent align="end">
               <DropdownMenuItem
                 variant="destructive"
-                onClick={async () => await deleteProject(project.id)}
+                onClick={async () => await leaveProject(project.id)}
               >
-                Delete
+                Leave
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
