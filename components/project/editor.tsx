@@ -47,8 +47,9 @@ import { useActionState, startTransition } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
+import { renameProject } from "@/app/actions";
 
-export default function Editor() {
+export default function Editor({ title }: { title: string }) {
   const room = useRoom();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -227,7 +228,7 @@ export default function Editor() {
     <div className="flex flex-col h-screen bg-editor">
       <NavigationMenu className="p-2">
         <div className="flex w-screen justify-between">
-          <NavigationMenuList>
+          <NavigationMenuList className="gap-2">
             <NavigationMenuItem>
               <Button
                 onClick={() => router.push("/dashboard")}
@@ -237,9 +238,23 @@ export default function Editor() {
                 <House />
               </Button>
             </NavigationMenuItem>
+            <NavigationMenuItem>
+              <Input
+                defaultValue={title}
+                onBlur={(e) => {
+                  renameProject(room.id, e.target.value);
+                }}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.currentTarget.blur();
+                  }
+                }}
+                className="not-focus-visible:bg-transparent dark:not-focus-visible:bg-transparent not-focus-visible:border-none not-focus-visible:shadow-none"
+              />
+            </NavigationMenuItem>
           </NavigationMenuList>
 
-          <NavigationMenuList>
+          <NavigationMenuList className="gap-2">
             <NavigationMenuItem>
               <Button
                 onClick={() => startTransition(action)}

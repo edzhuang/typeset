@@ -129,7 +129,6 @@ export function PdfViewer({ file }: { file: string | File }) {
             }}
             onKeyDown={(e) => {
               if (e.key === "Enter") {
-                navigateToPage(parseInt(e.currentTarget.value));
                 e.currentTarget.blur();
               }
             }}

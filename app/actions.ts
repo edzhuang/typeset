@@ -81,3 +81,15 @@ export async function leaveProject(projectId: string) {
 
   revalidatePath("/dashboard/shared-with-me");
 }
+
+export async function renameProject(projectId: string, newTitle: string) {
+  await liveblocks.updateRoom(projectId, {
+    metadata: {
+      title: newTitle,
+    },
+  });
+
+  revalidatePath("/dashboard/my-projects");
+  revalidatePath("/dashboard/shared-with-me");
+  revalidatePath(`/project/${projectId}`);
+}

@@ -1,20 +1,23 @@
-"use client";
-
-import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
+import { Providers } from "@/components/project/providers";
 import Editor from "@/components/project/editor";
-import { useParams } from "next/navigation";
-import { ClientSideSuspense } from "@liveblocks/react/suspense";
+import { Liveblocks } from "@liveblocks/node";
 
-export default function Page() {
-  const params = useParams<{ id: string }>();
+const liveblocks = new Liveblocks({
+  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
+});
+
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
+  const room = await liveblocks.getRoom(id);
+  const title = room.metadata.title as string;
 
   return (
-    <LiveblocksProvider authEndpoint="/api/liveblocks-auth">
-      <RoomProvider id={params.id}>
-        <ClientSideSuspense fallback={<div>Loading…</div>}>
-          <Editor />
-        </ClientSideSuspense>
-      </RoomProvider>
-    </LiveblocksProvider>
+    <Providers id={id}>
+      <Editor title={title} />
+    </Providers>
   );
 }
