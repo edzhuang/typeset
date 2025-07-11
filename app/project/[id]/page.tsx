@@ -12,12 +12,11 @@ export default async function Page({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const room = await liveblocks.getRoom(id);
-  const title = room.metadata.title as string;
+  const roomDataPromise = liveblocks.getRoom(id);
 
   return (
     <Providers id={id}>
-      <Editor title={title} />
+      <Editor roomDataPromise={roomDataPromise} />
     </Providers>
   );
 }

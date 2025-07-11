@@ -1,5 +1,6 @@
 "use client";
 
+import { use } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -48,8 +49,13 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
+import { type RoomData } from "@liveblocks/node";
 
-export default function Editor({ title }: { title: string }) {
+export default function Editor({
+  roomDataPromise,
+}: {
+  roomDataPromise: Promise<RoomData>;
+}) {
   const room = useRoom();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -59,6 +65,20 @@ export default function Editor({ title }: { title: string }) {
   const [, setOldFile] = useState<string | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
+  const roomData = use(roomDataPromise);
+  const [titleInputValue, setTitleInputValue] = useState<string>(
+    roomData.metadata.title as string
+  );
+  const titleInputRef = useRef<HTMLInputElement>(null);
+  const titleSpanRef = useRef<HTMLSpanElement>(null);
+  const [inputWidth, setInputWidth] = useState<number>(0);
+
+  // Update input width based on span width
+  useEffect(() => {
+    if (titleSpanRef.current) {
+      setInputWidth(titleSpanRef.current.offsetWidth);
+    }
+  }, [titleInputValue]);
 
   // Get user info from Liveblocks authentication endpoint
   const userInfo = useSelf((me) => me.info) as UserInfo;
@@ -239,18 +259,41 @@ export default function Editor({ title }: { title: string }) {
               </Button>
             </NavigationMenuItem>
             <NavigationMenuItem>
-              <Input
-                defaultValue={title}
-                onBlur={(e) => {
-                  renameProject(room.id, e.target.value);
-                }}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.currentTarget.blur();
-                  }
-                }}
-                className="not-focus-visible:bg-transparent dark:not-focus-visible:bg-transparent not-focus-visible:border-none not-focus-visible:shadow-none"
-              />
+              <div className="relative flex items-center">
+                <Input
+                  ref={titleInputRef}
+                  value={titleInputValue}
+                  onChange={(e) => {
+                    setTitleInputValue(e.target.value);
+                  }}
+                  onBlur={() => {
+                    if (
+                      titleInputValue.length > 0 &&
+                      titleInputValue.length <= 60
+                    ) {
+                      renameProject(room.id, titleInputValue);
+                    } else {
+                      setTitleInputValue(roomData.metadata.title as string);
+                    }
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.currentTarget.blur();
+                    }
+                  }}
+                  className="bg-transparent dark:bg-transparent border-transparent"
+                  style={{ width: `${inputWidth}px` }}
+                />
+
+                {/* Hidden span to measure text width */}
+                <span
+                  ref={titleSpanRef}
+                  className="absolute whitespace-pre invisible px-4 py-1 text-sm"
+                  aria-hidden="true"
+                >
+                  {titleInputValue}
+                </span>
+              </div>
             </NavigationMenuItem>
           </NavigationMenuList>
 

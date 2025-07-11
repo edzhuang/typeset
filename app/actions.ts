@@ -83,6 +83,10 @@ export async function leaveProject(projectId: string) {
 }
 
 export async function renameProject(projectId: string, newTitle: string) {
+  if (newTitle.length == 0 || newTitle.length > 60) {
+    return;
+  }
+
   await liveblocks.updateRoom(projectId, {
     metadata: {
       title: newTitle,
