@@ -1,5 +1,11 @@
 import { useOthers } from "@liveblocks/react/suspense";
-import { Avatar, AvatarImage } from "@/components/ui/avatar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+
+function getInitials(name: string) {
+  const words = name.trim().split(" ");
+  if (words.length === 1) return words[0][0].toUpperCase();
+  return (words[0][0] + words[words.length - 1][0]).toUpperCase();
+}
 
 export function Avatars() {
   const users = useOthers();
@@ -13,10 +19,10 @@ export function Avatars() {
 
         return (
           <Avatar key={connectionId}>
-            <AvatarImage
-              src={info.imageUrl as string}
-              alt={info.name as string}
-            />
+            <AvatarImage src={info.imageUrl as string} />
+            <AvatarFallback>
+              {info.name ? getInitials(info.name) : null}
+            </AvatarFallback>
           </Avatar>
         );
       })}

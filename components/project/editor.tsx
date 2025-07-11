@@ -1,6 +1,5 @@
 "use client";
 
-import { use } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -11,23 +10,9 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import {
-  Play,
-  House,
-  UserPlus,
-  Loader2Icon,
-  SendHorizontal,
-} from "lucide-react";
+import { Play, House, UserPlus, Loader2Icon } from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -49,13 +34,16 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
-import { type RoomData } from "@liveblocks/node";
 import { UserButtonSkeleton } from "@/components/project/skeletons";
+import { type UserAccessRowProps } from "@/components/project/user-access-row";
+import { InviteDialog } from "./invite-dialog";
 
 export default function Editor({
-  roomDataPromise,
+  title,
+  usersInfo,
 }: {
-  roomDataPromise: Promise<RoomData>;
+  title: string;
+  usersInfo: UserAccessRowProps[];
 }) {
   const room = useRoom();
   const router = useRouter();
@@ -66,19 +54,16 @@ export default function Editor({
   const [, setOldFile] = useState<string | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
-  const roomData = use(roomDataPromise);
-  const [titleInputValue, setTitleInputValue] = useState<string>(
-    roomData.metadata.title as string
-  );
+  const [titleInputValue, setTitleInputValue] = useState<string>(title);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const titleSpanRef = useRef<HTMLSpanElement>(null);
-  const [inputWidth, setInputWidth] = useState<number>(0);
+  const [titleInputWidth, setTitleInputWidth] = useState<number>(0);
 
   // Update input width based on span width
   useEffect(() => {
     function updateWidth() {
       if (titleSpanRef.current) {
-        setInputWidth(titleSpanRef.current.offsetWidth);
+        setTitleInputWidth(titleSpanRef.current.offsetWidth);
       }
     }
 
@@ -282,7 +267,7 @@ export default function Editor({
                       ) {
                         renameProject(room.id, titleInputValue);
                       } else {
-                        setTitleInputValue(roomData.metadata.title as string);
+                        setTitleInputValue(title);
                       }
                     }}
                     onKeyDown={(e) => {
@@ -291,7 +276,7 @@ export default function Editor({
                       }
                     }}
                     className="bg-transparent dark:bg-transparent border-transparent"
-                    style={{ width: `${inputWidth}px` }}
+                    style={{ width: `${titleInputWidth}px` }}
                   />
 
                   {/* Hidden span to measure text width */}
@@ -329,29 +314,11 @@ export default function Editor({
                 <Avatars />
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <Dialog>
-                  <form>
-                    <DialogTrigger asChild>
-                      <Button variant="secondary">
-                        <UserPlus /> Invite
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent>
-                      <DialogHeader>
-                        <DialogTitle>Invite</DialogTitle>
-                        <DialogDescription className="sr-only">
-                          Invite users to collaborate on your project
-                        </DialogDescription>
-                      </DialogHeader>
-                      <div className="flex w-full items-center gap-2">
-                        <Input type="email" placeholder="Email address" />
-                        <Button type="submit" size="icon">
-                          <SendHorizontal />
-                        </Button>
-                      </div>
-                    </DialogContent>
-                  </form>
-                </Dialog>
+                <InviteDialog usersInfo={usersInfo}>
+                  <Button variant="secondary">
+                    <UserPlus /> Invite
+                  </Button>
+                </InviteDialog>
               </NavigationMenuItem>
               <NavigationMenuItem className="flex flex-1 item-center">
                 <UserButton

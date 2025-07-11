@@ -44,7 +44,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const email = user.primaryEmailAddress.emailAddress;
 
     data.user = {
-      name: user.fullName || "",
+      name: user.fullName || email,
       email: email,
       avatar: user.imageUrl,
     };
