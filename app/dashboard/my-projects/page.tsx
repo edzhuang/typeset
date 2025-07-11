@@ -2,24 +2,22 @@ import { columns, Project } from "@/components/dashboard/my-projects/columns";
 import { SiteHeader } from "@/components/dashboard/site-header";
 import { DataTable } from "@/components/dashboard/data-table";
 import { Liveblocks } from "@liveblocks/node";
-import { clerkClient } from "@clerk/nextjs/server";
-import { auth } from "@clerk/nextjs/server";
+import { currentUser } from "@clerk/nextjs/server";
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
 async function getData(): Promise<Project[]> {
-  const client = await clerkClient();
-  const { userId } = await auth();
-
-  if (!userId) return [];
+  const user = await currentUser();
+  if (!user || !user.primaryEmailAddress) return [];
+  const email = user.primaryEmailAddress.emailAddress;
 
   const { data: rooms } = await liveblocks.getRooms({
-    userId: userId,
+    userId: email,
     query: {
       metadata: {
-        ownerId: userId,
+        ownerId: email,
       },
     },
   });
@@ -27,12 +25,10 @@ async function getData(): Promise<Project[]> {
   const data = Promise.all(
     rooms.map(async (room) => {
       const metadata = room.metadata;
-      const owner = await client.users.getUser(metadata.ownerId as string);
 
       return {
         id: room.id,
         title: metadata.title as string,
-        owner: owner.fullName || "",
         lastOpened: room.lastConnectionAt || null,
       };
     })

@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { IconFolder, IconUsers } from "@tabler/icons-react";
+import { Folder, Users } from "lucide-react";
 import { NavMain } from "@/components/dashboard/nav-main";
 import { NavUser } from "@/components/dashboard/nav-user";
 import {
@@ -27,12 +27,12 @@ const data = {
     {
       title: "My Projects",
       url: "/dashboard/my-projects",
-      icon: IconFolder,
+      icon: Folder,
     },
     {
       title: "Shared With Me",
       url: "/dashboard/shared-with-me",
-      icon: IconUsers,
+      icon: Users,
     },
   ],
 };
@@ -40,10 +40,12 @@ const data = {
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user } = useUser();
 
-  if (user) {
+  if (user && user.primaryEmailAddress) {
+    const email = user.primaryEmailAddress.emailAddress;
+
     data.user = {
       name: user.fullName || "",
-      email: user.emailAddresses[0].emailAddress,
+      email: email,
       avatar: user.imageUrl,
     };
   }

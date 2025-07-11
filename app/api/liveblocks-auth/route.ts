@@ -34,12 +34,15 @@ export async function POST() {
   if (!user) {
     return new Response("User not found", { status: 404 });
   }
+  if (!user.primaryEmailAddress) {
+    return new Response("Email address not set", { status: 404 });
+  }
 
   const userColor = generateRandomColor();
-  const emailAddress = user.emailAddresses[0].emailAddress;
+  const email = user.primaryEmailAddress.emailAddress;
 
   // Identify the user and return the result
-  const { status, body } = await liveblocks.identifyUser(emailAddress, {
+  const { status, body } = await liveblocks.identifyUser(email, {
     userInfo: {
       name: user.fullName || "Unnamed User",
       imageUrl: user.imageUrl,

@@ -11,11 +11,10 @@ const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
-// Helper function to generate LaTeX template
-function generateLatexTemplate(title: string, author: string): string {
+function generateLatexTemplate(author: string): string {
   return [
     "\\documentclass{article}",
-    `\\title{${title}}`,
+    `\\title{Untitled Project}`,
     `\\author{${author}}`,
     "\\date{\\today}",
     "",
@@ -25,22 +24,23 @@ function generateLatexTemplate(title: string, author: string): string {
     "",
     "\\section{Section}",
     "",
+    "Text",
+    "",
     "\\end{document}",
   ].join("\n");
 }
 
-export async function createProject(title: string) {
+export async function createProject() {
   const user = await currentUser();
-  if (!user) return;
-
-  const email = user.emailAddresses[0].emailAddress;
+  if (!user || !user.primaryEmailAddress) return;
+  const email = user.primaryEmailAddress.emailAddress;
 
   const projectId = nanoid();
   const yDoc = new Y.Doc();
   const yText = yDoc.getText("codemirror");
 
   // Add default template
-  const template = generateLatexTemplate(title, user.fullName || "Author");
+  const template = generateLatexTemplate(user.fullName || "Author");
 
   yText.insert(0, template);
   const yUpdate = Y.encodeStateAsUpdate(yDoc);
@@ -51,7 +51,7 @@ export async function createProject(title: string) {
       [email]: ["room:write"],
     },
     metadata: {
-      title,
+      title: "Untitled Project",
       ownerId: email,
     },
   });
@@ -70,9 +70,8 @@ export async function deleteProject(projectId: string) {
 
 export async function leaveProject(projectId: string) {
   const user = await currentUser();
-  if (!user) return;
-
-  const email = user.emailAddresses[0].emailAddress;
+  if (!user || !user.primaryEmailAddress) return;
+  const email = user.primaryEmailAddress.emailAddress;
 
   await liveblocks.updateRoom(projectId, {
     usersAccesses: {

@@ -15,7 +15,6 @@ import Link from "next/link";
 export type Project = {
   id: string;
   title: string;
-  owner: string;
   lastOpened: Date | null;
 };
 
@@ -28,10 +27,6 @@ export const columns: ColumnDef<Project>[] = [
 
       return <Link href={`/project/${project.id}`}>{project.title}</Link>;
     },
-  },
-  {
-    accessorKey: "owner",
-    header: "Owner",
   },
   {
     accessorKey: "lastOpened",
