@@ -9,19 +9,17 @@ import {
 } from "@/components/ui/select";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
-export interface UserAccessRowProps {
-  imageUrl: string | null;
-  name: string | null;
-  email: string;
-  access: "owner" | "can edit";
-}
-
 export function UserAccessRow({
   imageUrl,
   name,
   email,
   access,
-}: UserAccessRowProps) {
+}: {
+  imageUrl: string | null;
+  name: string | null;
+  email: string;
+  access: "owner" | "can edit";
+}) {
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-4">

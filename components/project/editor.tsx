@@ -19,7 +19,15 @@ import { EditorState } from "@codemirror/state";
 import { latex } from "codemirror-lang-latex";
 import { defaultKeymap, insertTab } from "@codemirror/commands";
 import { keymap, EditorView } from "@codemirror/view";
-import { useCallback, useEffect, useState, useRef } from "react";
+import {
+  use,
+  useCallback,
+  useEffect,
+  useState,
+  useRef,
+  useActionState,
+  startTransition,
+} from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom, useSelf } from "@liveblocks/react/suspense";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
@@ -29,32 +37,25 @@ import { Chat } from "@/components/project/chat";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { dark } from "@clerk/themes";
-import { useActionState, startTransition } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
 import { UserButtonSkeleton } from "@/components/project/skeletons";
-import { type UserAccessRowProps } from "@/components/project/user-access-row";
 import { InviteDialog } from "./invite-dialog";
 
-export default function Editor({
-  title,
-  usersInfo,
-}: {
-  title: string;
-  usersInfo: UserAccessRowProps[];
-}) {
+export default function Editor({ title }: { title: Promise<string> }) {
   const room = useRoom();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
+  const projectTitle = use(title);
   const yProvider = getYjsProviderForRoom(room);
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [, setOldFile] = useState<string | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [titleInputValue, setTitleInputValue] = useState<string>(title);
+  const [titleInputValue, setTitleInputValue] = useState<string>(projectTitle);
   const titleInputRef = useRef<HTMLInputElement>(null);
   const titleSpanRef = useRef<HTMLSpanElement>(null);
   const [titleInputWidth, setTitleInputWidth] = useState<number>(0);
@@ -267,7 +268,7 @@ export default function Editor({
                       ) {
                         renameProject(room.id, titleInputValue);
                       } else {
-                        setTitleInputValue(title);
+                        setTitleInputValue(projectTitle);
                       }
                     }}
                     onKeyDown={(e) => {
@@ -314,7 +315,7 @@ export default function Editor({
                 <Avatars />
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <InviteDialog usersInfo={usersInfo}>
+                <InviteDialog>
                   <Button variant="secondary">
                     <UserPlus /> Invite
                   </Button>

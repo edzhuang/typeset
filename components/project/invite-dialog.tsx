@@ -7,10 +7,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { UserAccessRow } from "@/components/project/user-access-row";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { type UserAccessRowProps } from "@/components/project/user-access-row";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
@@ -26,13 +24,7 @@ const formSchema = z.object({
   email: z.string().email(),
 });
 
-export function InviteDialog({
-  usersInfo,
-  children,
-}: {
-  usersInfo: UserAccessRowProps[];
-  children: React.ReactNode;
-}) {
+export function InviteDialog({ children }: { children: React.ReactNode }) {
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -75,9 +67,6 @@ export function InviteDialog({
                   </FormItem>
                 )}
               />
-              {usersInfo.map((userInfo) => (
-                <UserAccessRow key={userInfo.email} {...userInfo} />
-              ))}
             </div>
           </form>
         </Form>

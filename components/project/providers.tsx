@@ -1,7 +1,10 @@
 "use client";
 
-import { LiveblocksProvider, RoomProvider } from "@liveblocks/react/suspense";
-import { ClientSideSuspense } from "@liveblocks/react/suspense";
+import {
+  LiveblocksProvider,
+  RoomProvider,
+  ClientSideSuspense,
+} from "@liveblocks/react/suspense";
 import { LoaderCircle } from "lucide-react";
 
 export function Providers({
