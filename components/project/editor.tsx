@@ -50,6 +50,7 @@ import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
 import { type RoomData } from "@liveblocks/node";
+import { UserButtonSkeleton } from "@/components/project/skeletons";
 
 export default function Editor({
   roomDataPromise,
@@ -75,9 +76,16 @@ export default function Editor({
 
   // Update input width based on span width
   useEffect(() => {
-    if (titleSpanRef.current) {
-      setInputWidth(titleSpanRef.current.offsetWidth);
+    function updateWidth() {
+      if (titleSpanRef.current) {
+        setInputWidth(titleSpanRef.current.offsetWidth);
+      }
     }
+
+    updateWidth(); // Initial call
+
+    window.addEventListener("resize", updateWidth);
+    return () => window.removeEventListener("resize", updateWidth);
   }, [titleInputValue]);
 
   // Get user info from Liveblocks authentication endpoint
@@ -247,108 +255,117 @@ export default function Editor({
   return (
     <div className="flex flex-col h-screen bg-editor">
       <NavigationMenu className="p-2">
-        <div className="flex w-screen justify-between">
-          <NavigationMenuList className="gap-2">
-            <NavigationMenuItem>
-              <Button
-                onClick={() => router.push("/dashboard")}
-                variant="ghost"
-                size="icon"
-              >
-                <House />
-              </Button>
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <div className="relative flex items-center">
-                <Input
-                  ref={titleInputRef}
-                  value={titleInputValue}
-                  onChange={(e) => {
-                    setTitleInputValue(e.target.value);
-                  }}
-                  onBlur={() => {
-                    if (
-                      titleInputValue.length > 0 &&
-                      titleInputValue.length <= 60
-                    ) {
-                      renameProject(room.id, titleInputValue);
-                    } else {
-                      setTitleInputValue(roomData.metadata.title as string);
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") {
-                      e.currentTarget.blur();
-                    }
-                  }}
-                  className="bg-transparent dark:bg-transparent border-transparent"
-                  style={{ width: `${inputWidth}px` }}
-                />
-
-                {/* Hidden span to measure text width */}
-                <span
-                  ref={titleSpanRef}
-                  className="absolute whitespace-pre invisible px-4 py-1 text-sm"
-                  aria-hidden="true"
+        <div className="grid w-screen grid-cols-[1fr_auto_1fr]">
+          <div className="flex">
+            <NavigationMenuList className="gap-2">
+              <NavigationMenuItem>
+                <Button
+                  onClick={() => router.push("/dashboard")}
+                  variant="ghost"
+                  size="icon"
                 >
-                  {titleInputValue}
-                </span>
-              </div>
-            </NavigationMenuItem>
-          </NavigationMenuList>
+                  <House />
+                </Button>
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <div className="relative flex items-center">
+                  <Input
+                    ref={titleInputRef}
+                    value={titleInputValue}
+                    onChange={(e) => {
+                      setTitleInputValue(e.target.value);
+                    }}
+                    onBlur={() => {
+                      if (
+                        titleInputValue.length > 0 &&
+                        titleInputValue.length <= 60
+                      ) {
+                        renameProject(room.id, titleInputValue);
+                      } else {
+                        setTitleInputValue(roomData.metadata.title as string);
+                      }
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter") {
+                        e.currentTarget.blur();
+                      }
+                    }}
+                    className="bg-transparent dark:bg-transparent border-transparent"
+                    style={{ width: `${inputWidth}px` }}
+                  />
 
-          <NavigationMenuList className="gap-2">
-            <NavigationMenuItem>
-              <Button
-                onClick={() => startTransition(action)}
-                disabled={pending}
-              >
-                {pending ? <Loader2Icon className="animate-spin" /> : <Play />}
-                Compile
-              </Button>
-            </NavigationMenuItem>
-          </NavigationMenuList>
-
-          <NavigationMenuList className="gap-2">
-            <NavigationMenuItem className="mx-4">
-              <Avatars />
-            </NavigationMenuItem>
-            <NavigationMenuItem>
-              <Dialog>
-                <form>
-                  <DialogTrigger asChild>
-                    <Button variant="secondary">
-                      <UserPlus /> Invite
-                    </Button>
-                  </DialogTrigger>
-                  <DialogContent>
-                    <DialogHeader>
-                      <DialogTitle>Invite</DialogTitle>
-                      <DialogDescription className="sr-only">
-                        Invite users to collaborate on your project
-                      </DialogDescription>
-                    </DialogHeader>
-                    <div className="flex w-full items-center gap-2">
-                      <Input type="email" placeholder="Email address" />
-                      <Button type="submit" size="icon">
-                        <SendHorizontal />
+                  {/* Hidden span to measure text width */}
+                  <span
+                    ref={titleSpanRef}
+                    className="absolute whitespace-pre invisible px-4 py-1 text-base md:text-sm"
+                    aria-hidden="true"
+                  >
+                    {titleInputValue}
+                  </span>
+                </div>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </div>
+          <div className="justify-self-center">
+            <NavigationMenuList className="gap-2">
+              <NavigationMenuItem>
+                <Button
+                  onClick={() => startTransition(action)}
+                  disabled={pending}
+                >
+                  {pending ? (
+                    <Loader2Icon className="animate-spin" />
+                  ) : (
+                    <Play />
+                  )}
+                  Compile
+                </Button>
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </div>
+          <div className="flex justify-end">
+            <NavigationMenuList className="gap-2">
+              <NavigationMenuItem className="mx-4">
+                <Avatars />
+              </NavigationMenuItem>
+              <NavigationMenuItem>
+                <Dialog>
+                  <form>
+                    <DialogTrigger asChild>
+                      <Button variant="secondary">
+                        <UserPlus /> Invite
                       </Button>
-                    </div>
-                  </DialogContent>
-                </form>
-              </Dialog>
-            </NavigationMenuItem>
-            <NavigationMenuItem className="flex flex-1 item-center">
-              <UserButton
-                appearance={{
-                  baseTheme: resolvedTheme === "dark" ? dark : undefined,
-                  elements: {
-                    avatarBox: "size-8!",
-                  },
-                }}
-              />
-            </NavigationMenuItem>
-          </NavigationMenuList>
+                    </DialogTrigger>
+                    <DialogContent>
+                      <DialogHeader>
+                        <DialogTitle>Invite</DialogTitle>
+                        <DialogDescription className="sr-only">
+                          Invite users to collaborate on your project
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="flex w-full items-center gap-2">
+                        <Input type="email" placeholder="Email address" />
+                        <Button type="submit" size="icon">
+                          <SendHorizontal />
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </form>
+                </Dialog>
+              </NavigationMenuItem>
+              <NavigationMenuItem className="flex flex-1 item-center">
+                <UserButton
+                  appearance={{
+                    baseTheme: resolvedTheme === "dark" ? dark : undefined,
+                    elements: {
+                      avatarBox: "size-8!",
+                    },
+                  }}
+                  fallback={<UserButtonSkeleton />}
+                />
+              </NavigationMenuItem>
+            </NavigationMenuList>
+          </div>
         </div>
       </NavigationMenu>
 
