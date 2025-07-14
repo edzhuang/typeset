@@ -3,7 +3,12 @@
 import { useChat } from "@ai-sdk/react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { SendHorizontal, ArrowDown, BotMessageSquare } from "lucide-react";
+import {
+  SendHorizontal,
+  ArrowDown,
+  BotMessageSquare,
+  LoaderCircle,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -159,8 +164,14 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
               switch (part.toolInvocation.toolName) {
                 case "editFile": {
                   switch (part.toolInvocation.state) {
+                    case "partial-call":
                     case "call":
-                      return <div key={callId}>Editing file...</div>;
+                      return (
+                        <Alert key={callId}>
+                          <LoaderCircle className="animate-spin" />
+                          <AlertTitle>Editing file...</AlertTitle>
+                        </Alert>
+                      );
                     case "result":
                       return (
                         <Alert key={callId}>

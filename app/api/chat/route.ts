@@ -30,6 +30,7 @@ export async function POST(req: Request) {
     model: selectedModel,
     system: systemPrompt,
     messages,
+    toolCallStreaming: true,
     tools: {
       editFile: tool({
         description: "Edit the file",
@@ -44,6 +45,5 @@ export async function POST(req: Request) {
     },
   });
 
-  console.dir(messages, { depth: null });
   return result.toDataStreamResponse();
 }
