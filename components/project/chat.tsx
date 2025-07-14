@@ -8,6 +8,7 @@ import {
   ArrowDown,
   BotMessageSquare,
   LoaderCircle,
+  Square,
 } from "lucide-react";
 import {
   Select,
@@ -33,26 +34,33 @@ const promptSuggestions = [
 ];
 
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
-  const { messages, input, setInput, handleInputChange, handleSubmit } =
-    useChat({
-      maxSteps: 5,
-      async onToolCall({ toolCall }) {
-        if (toolCall.toolName === "editFile") {
-          const yDoc = yProvider.getYDoc();
-          const yMap = yDoc.getMap("files");
-          const yText = yDoc.getText("codemirror");
+  const {
+    messages,
+    status,
+    input,
+    stop,
+    setInput,
+    handleInputChange,
+    handleSubmit,
+  } = useChat({
+    maxSteps: 5,
+    async onToolCall({ toolCall }) {
+      if (toolCall.toolName === "editFile") {
+        const yDoc = yProvider.getYDoc();
+        const yMap = yDoc.getMap("files");
+        const yText = yDoc.getText("codemirror");
 
-          const oldFile = yText.toString();
-          const { newFile } = toolCall.args as { newFile: string };
+        const oldFile = yText.toString();
+        const { newFile } = toolCall.args as { newFile: string };
 
-          yMap.set("oldFile", oldFile);
-          yText.delete(0, yText.length);
-          yText.insert(0, newFile);
+        yMap.set("oldFile", oldFile);
+        yText.delete(0, yText.length);
+        yText.insert(0, newFile);
 
-          return "File edited";
-        }
-      },
-    });
+        return "File edited";
+      }
+    },
+  });
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -104,6 +112,10 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   };
 
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    if (status !== "ready") {
+      return;
+    }
+
     const fileContent = yProvider.getYDoc().getText("codemirror").toString();
     const base64Content = btoa(
       new TextEncoder()
@@ -210,6 +222,15 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
                     : renderAssistantMessage(message)}
                 </div>
               ))}
+
+              {/* Show spinner if waiting for assistant response */}
+              {status !== "ready" &&
+                messages.length > 0 &&
+                messages[messages.length - 1].role === "user" && (
+                  <div className="p-4">
+                    <LoaderCircle className="animate-spin" />
+                  </div>
+                )}
             </ScrollAreaPrimitive.Viewport>
             <ScrollBar />
             <ScrollAreaPrimitive.Corner />
@@ -284,9 +305,19 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
                 <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
               </SelectContent>
             </Select>
-            <Button type="submit" size="icon" className="pointer-events-auto">
-              <SendHorizontal />
-            </Button>
+            {status == "ready" ? (
+              <Button type="submit" size="icon" className="pointer-events-auto">
+                <SendHorizontal />
+              </Button>
+            ) : (
+              <Button
+                onClick={stop}
+                size="icon"
+                className="pointer-events-auto"
+              >
+                <Square />
+              </Button>
+            )}
           </div>
         </div>
       </form>
