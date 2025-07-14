@@ -70,6 +70,11 @@ import {
 import { UserAccessList } from "@/components/project/user-access-list";
 import { inviteToProject } from "@/app/actions";
 import { UserAccessInfo } from "@/lib/types";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -92,10 +97,7 @@ export default function Editor({
   const [, setOldFile] = useState<string | null>(null);
   const [panelHeight, setPanelHeight] = useState<number>(0);
   const panelRef = useRef<HTMLDivElement>(null);
-  const [titleInputValue, setTitleInputValue] = useState<string>(projectTitle);
-  const titleInputRef = useRef<HTMLInputElement>(null);
-  const titleSpanRef = useRef<HTMLSpanElement>(null);
-  const [titleInputWidth, setTitleInputWidth] = useState<number>(0);
+  const [titleInput, setTitleInput] = useState(projectTitle);
 
   const inviteForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -109,20 +111,6 @@ export default function Editor({
     inviteToProject(room.id, email);
     inviteForm.reset();
   }
-
-  // Update input width based on span width
-  useEffect(() => {
-    function updateWidth() {
-      if (titleSpanRef.current) {
-        setTitleInputWidth(titleSpanRef.current.offsetWidth);
-      }
-    }
-
-    updateWidth(); // Initial call
-
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, [titleInputValue]);
 
   // Get user info from Liveblocks authentication endpoint
   const userInfo = useSelf((me) => me.info) as UserInfo;
@@ -304,41 +292,30 @@ export default function Editor({
                 </Button>
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <div className="relative flex items-center">
-                  <Input
-                    ref={titleInputRef}
-                    value={titleInputValue}
-                    onChange={(e) => {
-                      setTitleInputValue(e.target.value);
-                    }}
-                    onBlur={() => {
+                <Popover
+                  onOpenChange={(open) => {
+                    if (!open) {
+                      const newTitle = titleInput.trim();
                       if (
-                        titleInputValue.length > 0 &&
-                        titleInputValue.length <= 60
+                        newTitle.length > 0 &&
+                        newTitle.length <= 60 &&
+                        newTitle !== projectTitle
                       ) {
-                        renameProject(room.id, titleInputValue);
-                      } else {
-                        setTitleInputValue(projectTitle);
+                        renameProject(room.id, newTitle);
                       }
-                    }}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.currentTarget.blur();
-                      }
-                    }}
-                    className="bg-transparent dark:bg-transparent border-transparent"
-                    style={{ width: `${titleInputWidth}px` }}
-                  />
-
-                  {/* Hidden span to measure text width */}
-                  <span
-                    ref={titleSpanRef}
-                    className="absolute whitespace-pre invisible px-4 py-1 text-base md:text-sm"
-                    aria-hidden="true"
-                  >
-                    {titleInputValue}
-                  </span>
-                </div>
+                    }
+                  }}
+                >
+                  <PopoverTrigger asChild>
+                    <Button variant="ghost">{projectTitle}</Button>
+                  </PopoverTrigger>
+                  <PopoverContent align="start">
+                    <Input
+                      value={titleInput}
+                      onChange={(e) => setTitleInput(e.target.value)}
+                    />
+                  </PopoverContent>
+                </Popover>
               </NavigationMenuItem>
             </NavigationMenuList>
           </div>
