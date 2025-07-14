@@ -3,13 +3,7 @@
 import { useChat } from "@ai-sdk/react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import {
-  Plus,
-  History,
-  SendHorizontal,
-  ArrowDown,
-  BotMessageSquare,
-} from "lucide-react";
+import { SendHorizontal, ArrowDown, BotMessageSquare } from "lucide-react";
 import {
   Select,
   SelectContent,
