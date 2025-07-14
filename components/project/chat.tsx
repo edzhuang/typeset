@@ -68,9 +68,9 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
     const viewport = scrollAreaViewportRef.current;
-    if (viewport) {
-      viewport.scrollTo({ top: viewport.scrollHeight, behavior: behavior });
-    }
+    if (!viewport) return;
+
+    viewport.scrollTo({ top: viewport.scrollHeight, behavior: behavior });
   }, []);
 
   // On new messages, scroll if autoScroll is enabled
@@ -94,6 +94,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     };
     viewport.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
+
     return () => viewport.removeEventListener("scroll", handleScroll);
   }, []);
 
@@ -203,60 +204,65 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   return (
     <div className="@container flex flex-col h-full min-h-0">
       {/* Messages */}
-      {messages.length > 0 ? (
-        <div className="flex-1 overflow-hidden relative">
-          <ScrollAreaPrimitive.Root
-            data-slot="scroll-area"
-            className="relative h-full"
-            type="auto"
+      <div
+        className={clsx(
+          "flex-1 overflow-hidden relative",
+          messages.length === 0 && "hidden"
+        )}
+      >
+        <ScrollAreaPrimitive.Root
+          data-slot="scroll-area"
+          className="relative h-full"
+        >
+          <ScrollAreaPrimitive.Viewport
+            ref={scrollAreaViewportRef}
+            data-slot="scroll-area-viewport"
+            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
           >
-            <ScrollAreaPrimitive.Viewport
-              ref={scrollAreaViewportRef}
-              data-slot="scroll-area-viewport"
-              className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
-            >
-              {messages.map((message) => (
-                <div key={message.id}>
-                  {message.role === "user"
-                    ? renderUserMessage(message)
-                    : renderAssistantMessage(message)}
+            {messages.map((message) => (
+              <div key={message.id}>
+                {message.role === "user"
+                  ? renderUserMessage(message)
+                  : renderAssistantMessage(message)}
+              </div>
+            ))}
+
+            {/* Show spinner if waiting for assistant response */}
+            {status !== "ready" &&
+              messages.length > 0 &&
+              messages[messages.length - 1].role === "user" && (
+                <div className="p-4">
+                  <LoaderCircle className="animate-spin" />
                 </div>
-              ))}
+              )}
+          </ScrollAreaPrimitive.Viewport>
+          <ScrollBar />
+          <ScrollAreaPrimitive.Corner />
+        </ScrollAreaPrimitive.Root>
 
-              {/* Show spinner if waiting for assistant response */}
-              {status !== "ready" &&
-                messages.length > 0 &&
-                messages[messages.length - 1].role === "user" && (
-                  <div className="p-4">
-                    <LoaderCircle className="animate-spin" />
-                  </div>
-                )}
-            </ScrollAreaPrimitive.Viewport>
-            <ScrollBar />
-            <ScrollAreaPrimitive.Corner />
-          </ScrollAreaPrimitive.Root>
-
-          <div
-            className={clsx(
-              "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
-              autoScroll
-                ? "opacity-0 pointer-events-none"
-                : "opacity-100 pointer-events-auto"
-            )}
+        <div
+          className={clsx(
+            "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
+            autoScroll
+              ? "opacity-0 pointer-events-none"
+              : "opacity-100 pointer-events-auto"
+          )}
+        >
+          <Button
+            size="icon"
+            variant="outline"
+            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-accent dark:hover:bg-accent"
+            onClick={() => {
+              scrollToBottom("smooth");
+            }}
           >
-            <Button
-              size="icon"
-              variant="outline"
-              className="rounded-full dark:bg-background dark:hover:bg-accent"
-              onClick={() => {
-                scrollToBottom("smooth");
-              }}
-            >
-              <ArrowDown />
-            </Button>
-          </div>
+            <ArrowDown />
+          </Button>
         </div>
-      ) : (
+      </div>
+
+      {/* Welcome screen */}
+      {messages.length == 0 && (
         <div className="flex flex-col gap-4 grow justify-center">
           <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
             <BotMessageSquare className="size-10" />
