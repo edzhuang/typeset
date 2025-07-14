@@ -28,7 +28,15 @@ export function Providers({
   if (error) {
     return (
       <div className="h-screen flex flex-col justify-center items-center text-center">
-        <h1 className="text-6xl font-semibold">404</h1>
+        <div className="flex flex-col gap-4 p-6">
+          <h1 className="text-3xl font-semibold mb-2">
+            You don&apos;t have access to this project
+          </h1>
+          <p className="text-gray-500 mb-4">
+            If you believe this is a mistake, please contact the project owner
+            or try accessing a different project.
+          </p>
+        </div>
       </div>
     );
   }
