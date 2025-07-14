@@ -27,9 +27,9 @@ import { ScrollBar } from "@/components/ui/scroll-area";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 const promptSuggestions = [
-  "Add the Transformer attention formula",
+  "Add Transformer attention formula",
   "How do I write an integral?",
-  "Inspect for spelling errors",
+  "Check for spelling errors",
 ];
 
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
@@ -189,7 +189,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   };
 
   return (
-    <div className="flex flex-col h-full min-h-0">
+    <div className="@container flex flex-col h-full min-h-0">
       {/* Messages */}
       {messages.length > 0 ? (
         <div className="flex-1 overflow-hidden relative">
@@ -236,23 +236,28 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           </div>
         </div>
       ) : (
-        <div className="flex flex-col gap-4 grow justify-center items-center p-6">
-          <BotMessageSquare className="size-12" />
-          <h1 className="text-lg">Chat</h1>
-          <p className="text-muted-foreground">
-            Ask questions and request edits from an AI
-          </p>
-          <div className="flex flex-wrap gap-2 justify-center">
-            {promptSuggestions.map((suggestion) => (
-              <Button
-                key={suggestion}
-                size="sm"
-                variant="secondary"
-                onClick={() => setInput(suggestion)}
-              >
-                {suggestion}
-              </Button>
-            ))}
+        <div className="flex flex-col gap-4 grow justify-center">
+          <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
+            <BotMessageSquare className="size-10" />
+            <h1 className="text-lg">Chat</h1>
+          </div>
+
+          <div className="flex @xs:justify-center relative">
+            <div
+              className="flex flex-wrap gap-2 justify-start @xs:justify-center px-4 max-w-md
+                absolute left-0 w-screen @xs:static"
+            >
+              {promptSuggestions.map((suggestion) => (
+                <Button
+                  key={suggestion}
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setInput(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       )}

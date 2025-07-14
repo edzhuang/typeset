@@ -440,12 +440,14 @@ export default function Editor({
             {pdfUrl ? (
               <PdfViewer file={pdfUrl} />
             ) : (
-              <div className="flex flex-col gap-4 grow justify-center items-center">
-                <FileText className="size-12" />
-                <h1 className="text-lg">Preview your document here</h1>
-                <p className="text-muted-foreground">
-                  Compile to see the results of your LaTeX code
-                </p>
+              <div className="flex flex-col grow justify-center items-center">
+                <div className="flex flex-col  justify-center items-center p-4 gap-4 text-center">
+                  <FileText className="size-10" />
+                  <h1 className="text-lg">Preview your document here</h1>
+                  <p className="text-muted-foreground text-sm">
+                    Compile to see the output PDF
+                  </p>
+                </div>
               </div>
             )}
           </div>
