@@ -12,7 +12,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Play, House, UserPlus, Loader2Icon } from "lucide-react";
+import { Play, House, UserPlus, Loader2Icon, FileText } from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -458,7 +458,17 @@ export default function Editor({
 
         <ResizablePanel defaultSize={40}>
           <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
-            {pdfUrl && <PdfViewer file={pdfUrl} />}
+            {pdfUrl ? (
+              <PdfViewer file={pdfUrl} />
+            ) : (
+              <div className="flex flex-col gap-4 grow justify-center items-center">
+                <FileText className="size-12" />
+                <h1 className="text-lg">Preview your document here</h1>
+                <p className="text-muted-foreground">
+                  Compile to see the results of your LaTeX code
+                </p>
+              </div>
+            )}
           </div>
         </ResizablePanel>
       </ResizablePanelGroup>

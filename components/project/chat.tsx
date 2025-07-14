@@ -3,7 +3,13 @@
 import { useChat } from "@ai-sdk/react";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
-import { Plus, History, SendHorizontal, ArrowDown } from "lucide-react";
+import {
+  Plus,
+  History,
+  SendHorizontal,
+  ArrowDown,
+  BotMessageSquare,
+} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -21,26 +27,33 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 import { ScrollBar } from "@/components/ui/scroll-area";
 import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
+const promptSuggestions = [
+  "Add the Transformer attention formula",
+  "How do I write an integral?",
+  "Inspect for spelling errors",
+];
+
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
-    maxSteps: 5,
-    async onToolCall({ toolCall }) {
-      if (toolCall.toolName === "editFile") {
-        const yDoc = yProvider.getYDoc();
-        const yMap = yDoc.getMap("files");
-        const yText = yDoc.getText("codemirror");
+  const { messages, input, setInput, handleInputChange, handleSubmit } =
+    useChat({
+      maxSteps: 5,
+      async onToolCall({ toolCall }) {
+        if (toolCall.toolName === "editFile") {
+          const yDoc = yProvider.getYDoc();
+          const yMap = yDoc.getMap("files");
+          const yText = yDoc.getText("codemirror");
 
-        const oldFile = yText.toString();
-        const { newFile } = toolCall.args as { newFile: string };
+          const oldFile = yText.toString();
+          const { newFile } = toolCall.args as { newFile: string };
 
-        yMap.set("oldFile", oldFile);
-        yText.delete(0, yText.length);
-        yText.insert(0, newFile);
+          yMap.set("oldFile", oldFile);
+          yText.delete(0, yText.length);
+          yText.insert(0, newFile);
 
-        return "File edited";
-      }
-    },
-  });
+          return "File edited";
+        }
+      },
+    });
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
@@ -172,63 +185,72 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      {/* Header */}
-      <div className="flex justify-between p-2 border-b">
-        <div></div>
-        <div className="flex gap-2">
-          <Button variant="ghost" size="icon">
-            <Plus />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <History />
-          </Button>
-        </div>
-      </div>
-
       {/* Messages */}
-      <div className="flex-1 overflow-hidden relative">
-        <ScrollAreaPrimitive.Root
-          data-slot="scroll-area"
-          className="relative h-full"
-          type="auto"
-        >
-          <ScrollAreaPrimitive.Viewport
-            ref={scrollAreaViewportRef}
-            data-slot="scroll-area-viewport"
-            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+      {messages.length > 0 ? (
+        <div className="flex-1 overflow-hidden relative">
+          <ScrollAreaPrimitive.Root
+            data-slot="scroll-area"
+            className="relative h-full"
+            type="auto"
           >
-            {messages.map((message) => (
-              <div key={message.id}>
-                {message.role === "user"
-                  ? renderUserMessage(message)
-                  : renderAssistantMessage(message)}
-              </div>
-            ))}
-          </ScrollAreaPrimitive.Viewport>
-          <ScrollBar />
-          <ScrollAreaPrimitive.Corner />
-        </ScrollAreaPrimitive.Root>
+            <ScrollAreaPrimitive.Viewport
+              ref={scrollAreaViewportRef}
+              data-slot="scroll-area-viewport"
+              className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+            >
+              {messages.map((message) => (
+                <div key={message.id}>
+                  {message.role === "user"
+                    ? renderUserMessage(message)
+                    : renderAssistantMessage(message)}
+                </div>
+              ))}
+            </ScrollAreaPrimitive.Viewport>
+            <ScrollBar />
+            <ScrollAreaPrimitive.Corner />
+          </ScrollAreaPrimitive.Root>
 
-        <div
-          className={clsx(
-            "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
-            autoScroll
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100 pointer-events-auto"
-          )}
-        >
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full dark:bg-background dark:hover:bg-accent"
-            onClick={() => {
-              scrollToBottom("smooth");
-            }}
+          <div
+            className={clsx(
+              "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
+              autoScroll
+                ? "opacity-0 pointer-events-none"
+                : "opacity-100 pointer-events-auto"
+            )}
           >
-            <ArrowDown />
-          </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="rounded-full dark:bg-background dark:hover:bg-accent"
+              onClick={() => {
+                scrollToBottom("smooth");
+              }}
+            >
+              <ArrowDown />
+            </Button>
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-col gap-4 grow justify-center items-center p-6">
+          <BotMessageSquare className="size-12" />
+          <h1 className="text-lg">Chat</h1>
+          <p className="text-muted-foreground">
+            Ask questions and request edits from an AI
+          </p>
+          <div className="flex flex-wrap gap-2 justify-center">
+            {promptSuggestions.map((suggestion) => (
+              <Button
+                key={suggestion}
+                size="sm"
+                variant="secondary"
+                onClick={() => setInput(suggestion)}
+              >
+                {suggestion}
+              </Button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <form className="px-2 pb-2" onSubmit={onSubmit}>
