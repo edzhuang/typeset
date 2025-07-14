@@ -1,6 +1,8 @@
 import { Providers } from "@/components/project/providers";
 import Editor from "@/components/project/editor";
 import { Liveblocks } from "@liveblocks/node";
+import { UserAccessInfo } from "@/lib/types";
+import { clerkClient, User } from "@clerk/nextjs/server";
 
 const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
@@ -11,6 +13,56 @@ const getTitle = async (projectId: string) => {
   return room.metadata.title as string;
 };
 
+const getUserAccessInfo = async (
+  projectId: string
+): Promise<UserAccessInfo[]> => {
+  const room = await liveblocks.getRoom(projectId);
+  const emails = Object.keys(room.usersAccesses);
+  const clerk = await clerkClient();
+
+  const { data: users } = await clerk.users.getUserList({
+    emailAddress: emails,
+  });
+
+  const emailToUser = new Map<string, User>();
+  for (const user of users) {
+    if (user.primaryEmailAddress) {
+      const primaryEmail = user.primaryEmailAddress.emailAddress;
+      emailToUser.set(primaryEmail, user);
+    }
+  }
+
+  const userAccessInfo: UserAccessInfo[] = emails.map((email) => {
+    const user = emailToUser.get(email);
+    const roomAccess = room.usersAccesses[email]!;
+
+    let access: "owner" | "can edit" | "can view";
+    if (email === room.metadata.ownerId) {
+      access = "owner";
+    } else if (roomAccess.length === 1 && roomAccess[0] === "room:write") {
+      access = "can edit";
+    } else {
+      access = "can view";
+    }
+
+    return {
+      imageUrl: user?.imageUrl ?? null,
+      name: user?.fullName ?? null,
+      email,
+      access,
+    };
+  });
+
+  // Sort so that the owner's email comes first
+  userAccessInfo.sort((a, b) => {
+    if (a.access === "owner") return -1;
+    if (b.access === "owner") return 1;
+    return 0;
+  });
+
+  return userAccessInfo;
+};
+
 export default async function Page({
   params,
 }: {
@@ -18,10 +70,11 @@ export default async function Page({
 }) {
   const { id } = await params;
   const title = getTitle(id);
+  const userAccessInfo = getUserAccessInfo(id);
 
   return (
     <Providers id={id}>
-      <Editor title={title} />
+      <Editor title={title} userAccessInfo={userAccessInfo} />
     </Providers>
   );
 }

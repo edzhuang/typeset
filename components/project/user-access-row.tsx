@@ -8,18 +8,28 @@ import {
   SelectGroup,
 } from "@/components/ui/select";
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
+import { useState } from "react";
+import { removeFromProject } from "@/app/actions";
+import { UserAccessInfo } from "@/lib/types";
 
 export function UserAccessRow({
-  imageUrl,
-  name,
-  email,
-  access,
+  projectId,
+  userAccessInfo,
 }: {
-  imageUrl: string | null;
-  name: string | null;
-  email: string;
-  access: "owner" | "can edit";
+  projectId: string;
+  userAccessInfo: UserAccessInfo;
 }) {
+  const { imageUrl, name, email, access } = userAccessInfo;
+  const [selectValue, setSelectValue] = useState<string>(access);
+
+  const handleValueChange = (value: string) => {
+    if (value == "remove access") {
+      removeFromProject(projectId, email);
+    } else {
+      setSelectValue(value);
+    }
+  };
+
   return (
     <div className="flex items-center justify-between gap-4">
       <div className="flex items-center gap-4">
@@ -29,7 +39,9 @@ export function UserAccessRow({
             <AvatarFallback>{email[0]}</AvatarFallback>
           </Avatar>
         ) : (
-          <AvatarFallback>{email[0]}</AvatarFallback>
+          <Avatar>
+            <AvatarFallback>{email[0]}</AvatarFallback>
+          </Avatar>
         )}
         <div className="flex flex-col gap-0.5">
           <p className="text-sm leading-none font-medium">{name || email}</p>
@@ -41,7 +53,7 @@ export function UserAccessRow({
           Owner
         </div>
       ) : (
-        <Select defaultValue={access}>
+        <Select value={selectValue} onValueChange={handleValueChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>

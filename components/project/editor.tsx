@@ -29,7 +29,11 @@ import {
   startTransition,
 } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
-import { useRoom, useSelf } from "@liveblocks/react/suspense";
+import {
+  ClientSideSuspense,
+  useRoom,
+  useSelf,
+} from "@liveblocks/react/suspense";
 import { githubDark, githubLight } from "@uiw/codemirror-theme-github";
 import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/project/pdf-viewer";
@@ -41,10 +45,43 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
-import { UserButtonSkeleton } from "@/components/project/skeletons";
-import { InviteDialog } from "./invite-dialog";
+import {
+  UserAccessListSkeleton,
+  UserButtonSkeleton,
+} from "@/components/project/skeletons";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { z } from "zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "@/components/ui/form";
+import { UserAccessList } from "@/components/project/user-access-list";
+import { inviteToProject } from "@/app/actions";
+import { UserAccessInfo } from "@/lib/types";
 
-export default function Editor({ title }: { title: Promise<string> }) {
+const formSchema = z.object({
+  email: z.string().email(),
+});
+
+export default function Editor({
+  title,
+  userAccessInfo,
+}: {
+  title: Promise<string>;
+  userAccessInfo: Promise<UserAccessInfo[]>;
+}) {
   const room = useRoom();
   const router = useRouter();
   const { resolvedTheme } = useTheme();
@@ -59,6 +96,19 @@ export default function Editor({ title }: { title: Promise<string> }) {
   const titleInputRef = useRef<HTMLInputElement>(null);
   const titleSpanRef = useRef<HTMLSpanElement>(null);
   const [titleInputWidth, setTitleInputWidth] = useState<number>(0);
+
+  const inviteForm = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: "",
+    },
+  });
+
+  function onSubmitInvite(values: z.infer<typeof formSchema>) {
+    const email = values.email;
+    inviteToProject(room.id, email);
+    inviteForm.reset();
+  }
 
   // Update input width based on span width
   useEffect(() => {
@@ -315,11 +365,54 @@ export default function Editor({ title }: { title: Promise<string> }) {
                 <Avatars />
               </NavigationMenuItem>
               <NavigationMenuItem>
-                <InviteDialog>
-                  <Button variant="secondary">
-                    <UserPlus /> Invite
-                  </Button>
-                </InviteDialog>
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button variant="secondary">
+                      <UserPlus /> Invite
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>Invite people</DialogTitle>
+                      <DialogDescription>
+                        Invite your team members to collaborate.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex flex-col gap-6">
+                      <Form {...inviteForm}>
+                        <form
+                          onSubmit={inviteForm.handleSubmit(onSubmitInvite)}
+                        >
+                          <FormField
+                            control={inviteForm.control}
+                            name="email"
+                            render={({ field }) => (
+                              <FormItem className="grow">
+                                <div className="flex w-full items-center gap-2">
+                                  <FormControl>
+                                    <Input
+                                      placeholder="Email address"
+                                      {...field}
+                                    />
+                                  </FormControl>
+
+                                  <Button type="submit">Invite</Button>
+                                </div>
+                                <FormMessage />
+                              </FormItem>
+                            )}
+                          />
+                        </form>
+                      </Form>
+                      <ClientSideSuspense fallback={<UserAccessListSkeleton />}>
+                        <UserAccessList
+                          projectId={room.id}
+                          userAccessInfo={userAccessInfo}
+                        />
+                      </ClientSideSuspense>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </NavigationMenuItem>
               <NavigationMenuItem className="flex flex-1 item-center">
                 <UserButton

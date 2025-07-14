@@ -97,3 +97,23 @@ export async function renameProject(projectId: string, newTitle: string) {
   revalidatePath("/dashboard/shared-with-me");
   revalidatePath(`/project/${projectId}`);
 }
+
+export async function inviteToProject(projectId: string, email: string) {
+  await liveblocks.updateRoom(projectId, {
+    usersAccesses: {
+      [email]: ["room:write"],
+    },
+  });
+
+  revalidatePath(`/project/${projectId}`);
+}
+
+export async function removeFromProject(projectId: string, email: string) {
+  await liveblocks.updateRoom(projectId, {
+    usersAccesses: {
+      [email]: null,
+    },
+  });
+
+  revalidatePath(`/project/${projectId}`);
+}
