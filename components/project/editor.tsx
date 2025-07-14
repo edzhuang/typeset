@@ -302,6 +302,8 @@ export default function Editor({
                         newTitle !== projectTitle
                       ) {
                         renameProject(room.id, newTitle);
+                      } else {
+                        setTitleInput(projectTitle);
                       }
                     }
                   }}
