@@ -296,7 +296,7 @@ export default function Editor({
             <NavigationMenuList className="gap-2">
               <NavigationMenuItem>
                 <Button
-                  onClick={() => router.push("/dashboard")}
+                  onClick={() => router.push("/my-projects")}
                   variant="ghost"
                   size="icon"
                 >

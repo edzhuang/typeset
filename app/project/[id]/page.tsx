@@ -1,6 +1,6 @@
 import { Providers } from "@/components/project/providers";
 import Editor from "@/components/project/editor";
-import { Liveblocks } from "@liveblocks/node";
+import { Liveblocks, RoomData } from "@liveblocks/node";
 import { UserAccessInfo } from "@/lib/types";
 import { clerkClient, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
@@ -9,17 +9,11 @@ const liveblocks = new Liveblocks({
   secret: process.env.LIVEBLOCKS_SECRET_KEY!,
 });
 
-const getTitle = async (projectId: string) => {
-  const room = await liveblocks.getRoom(projectId);
-  if (!room) throw new Error("Room not found");
+const getTitle = async (room: RoomData) => {
   return room.metadata.title as string;
 };
 
-const getUserAccessInfo = async (
-  projectId: string
-): Promise<UserAccessInfo[]> => {
-  const room = await liveblocks.getRoom(projectId);
-  if (!room) throw new Error("Room not found");
+const getUserAccessInfo = async (room: RoomData): Promise<UserAccessInfo[]> => {
   const emails = Object.keys(room.usersAccesses);
   const clerk = await clerkClient();
 
@@ -66,12 +60,17 @@ const getUserAccessInfo = async (
   return userAccessInfo;
 };
 
-export default async function Page({ params }: { params: { id: string } }) {
-  const { id } = params;
+export default async function Page({
+  params,
+}: {
+  params: Promise<{ id: string }>;
+}) {
+  const { id } = await params;
 
   try {
-    const title = getTitle(id);
-    const userAccessInfo = getUserAccessInfo(id);
+    const room = await liveblocks.getRoom(id);
+    const title = getTitle(room);
+    const userAccessInfo = getUserAccessInfo(room);
 
     return (
       <Providers id={id}>

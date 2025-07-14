@@ -59,13 +59,13 @@ export async function createProject() {
   // Initialize the Yjs document with the update
   await liveblocks.sendYjsBinaryUpdate(projectId, yUpdate);
 
-  revalidatePath("/dashboard/my-projects");
+  revalidatePath("/my-projects");
   redirect(`/project/${projectId}`);
 }
 
 export async function deleteProject(projectId: string) {
   await liveblocks.deleteRoom(projectId);
-  revalidatePath("/dashboard/my-projects");
+  revalidatePath("/my-projects");
 }
 
 export async function leaveProject(projectId: string) {
@@ -79,7 +79,7 @@ export async function leaveProject(projectId: string) {
     },
   });
 
-  revalidatePath("/dashboard/shared-with-me");
+  revalidatePath("/shared-with-me");
 }
 
 export async function renameProject(projectId: string, newTitle: string) {
@@ -93,8 +93,8 @@ export async function renameProject(projectId: string, newTitle: string) {
     },
   });
 
-  revalidatePath("/dashboard/my-projects");
-  revalidatePath("/dashboard/shared-with-me");
+  revalidatePath("/my-projects");
+  revalidatePath("/shared-with-me");
   revalidatePath(`/project/${projectId}`);
 }
 
