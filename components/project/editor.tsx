@@ -277,7 +277,7 @@ export default function Editor({
   const [, action, pending] = useActionState(compile, undefined);
 
   return (
-    <div className="flex flex-col h-screen bg-editor">
+    <div className="flex flex-col h-screen bg-editor text-sm">
       <NavigationMenu className="p-2">
         <div className="grid w-screen grid-cols-[1fr_auto_1fr]">
           <div className="flex">

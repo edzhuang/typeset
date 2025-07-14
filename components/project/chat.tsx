@@ -157,7 +157,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderAssistantMessage = (message: UIMessage) => {
     return (
-      <div className="prose dark:prose-invert p-4 space-y-2 max-w-none">
+      <div className="prose-sm dark:prose-invert p-4 space-y-2 max-w-none">
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;
 
