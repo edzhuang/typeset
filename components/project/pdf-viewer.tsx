@@ -7,9 +7,6 @@ import Link from "next/link";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
 import "react-pdf/dist/Page/TextLayer.css";
-import { ScrollBar } from "@/components/ui/scroll-area";
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
-
 pdfjs.GlobalWorkerOptions.workerSrc = new URL(
   "pdfjs-dist/build/pdf.worker.min.mjs",
   import.meta.url
@@ -23,7 +20,6 @@ export function PdfViewer({ file }: { file: string | File }) {
   const [pagesRendered, setPagesRendered] = useState<number>(0);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
-  const rafId = useRef<number>(0);
 
   const navigateToPage = (page: number) => {
     if (isNaN(page) || page < 1 || page > numPages) {
@@ -49,44 +45,42 @@ export function PdfViewer({ file }: { file: string | File }) {
    */
   useEffect(() => {
     if (pagesRendered < numPages) return;
-
     const viewport = scrollAreaViewportRef.current;
     if (!viewport) return;
+    let observer: IntersectionObserver | null = null;
+    const visibleMap = new Map<number, number>();
 
-    const handleScroll = () => {
-      if (rafId.current) cancelAnimationFrame(rafId.current);
-
-      rafId.current = requestAnimationFrame(() => {
-        const viewportRect = viewport.getBoundingClientRect();
-        const viewportCenter = viewportRect.top + viewportRect.height / 2;
-
-        let closestPage = 1;
-        let minDistance = Infinity;
-
-        pagesRef.current.forEach((el, idx) => {
-          if (!el) return;
-          const rect = el.getBoundingClientRect();
-
-          if (rect.bottom < viewportRect.top || rect.top > viewportRect.bottom)
-            return;
-
-          const pageCenter = rect.top + rect.height / 2;
-          const distance = Math.abs(pageCenter - viewportCenter);
-          if (distance < minDistance) {
-            minDistance = distance;
-            closestPage = idx + 1;
+    observer = new window.IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          const idx = pagesRef.current.findIndex((el) => el === entry.target);
+          if (idx !== -1) {
+            visibleMap.set(idx, entry.intersectionRatio);
           }
         });
-
-        setCurrentPage(closestPage);
-        setPageInput(closestPage.toString());
-      });
-    };
-
-    viewport.addEventListener("scroll", handleScroll, { passive: true });
+        // Find the page with the highest intersection ratio
+        let maxIdx = 0;
+        let maxRatio = 0;
+        visibleMap.forEach((ratio, idx) => {
+          if (ratio > maxRatio) {
+            maxRatio = ratio;
+            maxIdx = idx;
+          }
+        });
+        const page = maxIdx + 1;
+        setCurrentPage(page);
+        setPageInput(page.toString());
+      },
+      {
+        root: viewport,
+        threshold: Array.from({ length: 11 }, (_, i) => i / 10),
+      }
+    );
+    pagesRef.current.forEach((el) => {
+      if (el) observer!.observe(el);
+    });
     return () => {
-      viewport.removeEventListener("scroll", handleScroll);
-      if (rafId.current) cancelAnimationFrame(rafId.current);
+      if (observer) observer.disconnect();
     };
   }, [pagesRendered, numPages]);
 
@@ -162,45 +156,32 @@ export function PdfViewer({ file }: { file: string | File }) {
       </div>
       {/* Scrollable PDF content */}
       <div className="grow overflow-hidden">
-        <ScrollAreaPrimitive.Root
-          data-slot="scroll-area"
-          className="relative h-full"
-          type="auto"
-        >
-          <ScrollAreaPrimitive.Viewport
-            ref={scrollAreaViewportRef}
-            data-slot="scroll-area-viewport"
-            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+        <div className="size-full overflow-auto" ref={scrollAreaViewportRef}>
+          <Document
+            className="flex flex-col items-center"
+            file={file}
+            onLoadSuccess={onDocumentLoadSuccess}
           >
-            <Document
-              className="flex flex-col items-center"
-              file={file}
-              onLoadSuccess={onDocumentLoadSuccess}
-            >
-              {numPages &&
-                Array.from({ length: numPages }, (_, index) => (
-                  <div
-                    key={`page_${index + 1}`}
-                    ref={(el) => {
-                      pagesRef.current[index] = el;
-                    }}
-                    className="w-min p-2"
-                  >
-                    <Page
-                      pageNumber={index + 1}
-                      width={816}
-                      scale={zoom}
-                      onRenderSuccess={onPageRenderSuccess}
-                      className="z-0 border"
-                    />
-                  </div>
-                ))}
-            </Document>
-          </ScrollAreaPrimitive.Viewport>
-          <ScrollBar orientation="horizontal" className="bg-editor-panel" />
-          <ScrollBar orientation="vertical" className="bg-editor-panel" />
-          <ScrollAreaPrimitive.Corner />
-        </ScrollAreaPrimitive.Root>
+            {numPages &&
+              Array.from({ length: numPages }, (_, index) => (
+                <div
+                  key={`page_${index + 1}`}
+                  ref={(el) => {
+                    pagesRef.current[index] = el;
+                  }}
+                  className="w-min p-2"
+                >
+                  <Page
+                    pageNumber={index + 1}
+                    width={816}
+                    scale={zoom}
+                    onRenderSuccess={onPageRenderSuccess}
+                    className="z-0 border"
+                  />
+                </div>
+              ))}
+          </Document>
+        </div>
       </div>
     </div>
   );

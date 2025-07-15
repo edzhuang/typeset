@@ -1,7 +1,6 @@
 "use client";
 
 import { useChat } from "@ai-sdk/react";
-import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import {
   SendHorizontal,
@@ -24,8 +23,6 @@ import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
 import { CircleCheck } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { ScrollBar } from "@/components/ui/scroll-area";
-import * as ScrollAreaPrimitive from "@radix-ui/react-scroll-area";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
@@ -217,35 +214,24 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           messages.length === 0 && "hidden"
         )}
       >
-        <ScrollAreaPrimitive.Root
-          data-slot="scroll-area"
-          className="relative h-full"
-        >
-          <ScrollAreaPrimitive.Viewport
-            ref={scrollAreaViewportRef}
-            data-slot="scroll-area-viewport"
-            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 py-2 [&>div]:!block"
-          >
-            {messages.map((message) => (
-              <div key={message.id}>
-                {message.role === "user"
-                  ? renderUserMessage(message)
-                  : renderAssistantMessage(message)}
-              </div>
-            ))}
+        <div ref={scrollAreaViewportRef} className="size-full overflow-auto">
+          {messages.map((message) => (
+            <div key={message.id}>
+              {message.role === "user"
+                ? renderUserMessage(message)
+                : renderAssistantMessage(message)}
+            </div>
+          ))}
 
-            {/* Show spinner if waiting for assistant response */}
-            {status !== "ready" &&
-              messages.length > 0 &&
-              messages[messages.length - 1].role === "user" && (
-                <div className="px-4 py-2">
-                  <LoaderCircle className="animate-spin" />
-                </div>
-              )}
-          </ScrollAreaPrimitive.Viewport>
-          <ScrollBar />
-          <ScrollAreaPrimitive.Corner />
-        </ScrollAreaPrimitive.Root>
+          {/* Show spinner if waiting for assistant response */}
+          {status !== "ready" &&
+            messages.length > 0 &&
+            messages[messages.length - 1].role === "user" && (
+              <div className="px-4 py-2">
+                <LoaderCircle className="animate-spin" />
+              </div>
+            )}
+        </div>
 
         <div
           className={clsx(
@@ -258,7 +244,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           <Button
             size="icon"
             variant="outline"
-            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-accent dark:hover:bg-accent"
+            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-accent dark:hover:bg-accent/50"
             onClick={() => {
               scrollToBottom("smooth");
             }}
@@ -304,13 +290,14 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           textareaRef.current?.focus();
         }}
       >
-        <Textarea
+        <textarea
           ref={textareaRef}
           value={input}
           placeholder="Say something..."
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="resize-none min-h-9 max-h-42 border-none focus-visible:ring-0 bg-transparent dark:bg-transparent"
+          className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
+                      resize-none min-h-9 max-h-42 border-none focus-visible:ring-0 dark:bg-transparent"
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
