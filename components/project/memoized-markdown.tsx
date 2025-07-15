@@ -5,7 +5,6 @@ import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
 import rehypePrettyCode from "rehype-pretty-code";
-import { transformerCopyButton } from "@rehype-pretty/transformers";
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
@@ -26,12 +25,6 @@ const MemoizedMarkdownBlock = memo(
                 dark: "github-dark-default",
                 light: "github-light-default",
               },
-              transformers: [
-                transformerCopyButton({
-                  visibility: "always",
-                  feedbackDuration: 3_000,
-                }),
-              ],
             },
           ],
         ]}

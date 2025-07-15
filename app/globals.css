@@ -129,11 +129,6 @@
 }
 
 * {
-  scrollbar-width: none;
-  scrollbar-color: var(--border) transparent;
-}
-
-*:hover {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }
@@ -142,13 +137,13 @@
 code[data-theme*=" "],
 code[data-theme*=" "] span {
   color: var(--shiki-light);
-  background-color: var(--editor-panel);
+  background-color: transparent;
 }
 
 @media (prefers-color-scheme: dark) {
   code[data-theme*=" "],
   code[data-theme*=" "] span {
     color: var(--shiki-dark);
-    background-color: var(--editor-panel);
+    background-color: transparent;
   }
 }

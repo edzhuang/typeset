@@ -64,6 +64,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
@@ -163,7 +164,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderAssistantMessage = (message: UIMessage) => {
     return (
-      <div className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-pre:rounded-md prose-pre:border prose-pre:bg-editor-panel prose-code:text-sm prose-pre:overflow-auto prose-pre:max-w-full">
+      <div className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent prose-pre:p-0 prose-pre:overflow-x-auto prose-code:text-sm prose-code:p-4">
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;
 
@@ -296,41 +297,41 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
       )}
 
       {/* Input */}
-      <form className="px-2 pb-2" onSubmit={onSubmit}>
-        <div className="relative">
-          <Textarea
-            value={input}
-            placeholder="Say something..."
-            onChange={handleInputChange}
-            onKeyDown={handleKeyDown}
-            className="pb-15 resize-none"
-          />
-          <div className="absolute inline-flex justify-between bottom-0 inset-x-0 p-2 pointer-events-none overflow-hidden gap-2 border border-transparent">
-            <Select value={model} onValueChange={setModel}>
-              <SelectTrigger className="pointer-events-auto">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="gemini-2.5-flash">
-                  Gemini 2.5 Flash
-                </SelectItem>
-                <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
-              </SelectContent>
-            </Select>
-            {status == "ready" ? (
-              <Button type="submit" size="icon" className="pointer-events-auto">
-                <SendHorizontal />
-              </Button>
-            ) : (
-              <Button
-                onClick={stop}
-                size="icon"
-                className="pointer-events-auto"
-              >
-                <Square />
-              </Button>
-            )}
-          </div>
+      <form
+        className="mx-2 mb-2 overflow-hidden cursor-text border-input focus-within:border-ring focus-within:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        onSubmit={onSubmit}
+        onClick={() => {
+          textareaRef.current?.focus();
+        }}
+      >
+        <Textarea
+          ref={textareaRef}
+          value={input}
+          placeholder="Say something..."
+          onChange={handleInputChange}
+          onKeyDown={handleKeyDown}
+          className="resize-none min-h-9 max-h-42 border-none focus-visible:ring-0 bg-transparent dark:bg-transparent"
+        />
+
+        <div className="flex justify-between p-2 pointer-events-none gap-2">
+          <Select value={model} onValueChange={setModel}>
+            <SelectTrigger className="pointer-events-auto">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
+              <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
+            </SelectContent>
+          </Select>
+          {status == "ready" ? (
+            <Button type="submit" size="icon" className="pointer-events-auto">
+              <SendHorizontal />
+            </Button>
+          ) : (
+            <Button onClick={stop} size="icon" className="pointer-events-auto">
+              <Square />
+            </Button>
+          )}
         </div>
       </form>
     </div>
