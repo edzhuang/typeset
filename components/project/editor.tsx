@@ -143,7 +143,15 @@ export default function Editor({
             backgroundColor: "transparent",
             height: "100%",
           },
-          ".cm-scroller": { overflow: "auto" },
+          ".cm-scroller": {
+            overflow: "auto",
+            scrollbarWidth: "none",
+            scrollbarColor: "var(--border) transparent",
+          },
+          ".cm-scroller:hover": {
+            scrollbarWidth: "thin",
+            scrollbarColor: "var(--border) transparent",
+          },
           ".cm-content": {
             paddingTop: "1rem",
             paddingBottom: "1rem",

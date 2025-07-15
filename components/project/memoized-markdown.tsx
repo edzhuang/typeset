@@ -1,9 +1,10 @@
 import { marked } from "marked";
 import { memo, useMemo } from "react";
-import ReactMarkdown from "react-markdown";
+import { MarkdownHooks } from "react-markdown";
 import rehypeKatex from "rehype-katex";
 import remarkMath from "remark-math";
 import "katex/dist/katex.min.css";
+import rehypePrettyCode from "rehype-pretty-code";
 
 function parseMarkdownIntoBlocks(markdown: string): string[] {
   const tokens = marked.lexer(markdown);
@@ -13,9 +14,23 @@ function parseMarkdownIntoBlocks(markdown: string): string[] {
 const MemoizedMarkdownBlock = memo(
   ({ content }: { content: string }) => {
     return (
-      <ReactMarkdown remarkPlugins={[remarkMath]} rehypePlugins={[rehypeKatex]}>
+      <MarkdownHooks
+        remarkPlugins={[remarkMath]}
+        rehypePlugins={[
+          rehypeKatex,
+          [
+            rehypePrettyCode,
+            {
+              theme: {
+                dark: "github-dark-default",
+                light: "github-light-default",
+              },
+            },
+          ],
+        ]}
+      >
         {content}
-      </ReactMarkdown>
+      </MarkdownHooks>
     );
   },
   (prevProps, nextProps) => {
