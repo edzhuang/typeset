@@ -24,7 +24,6 @@ import {
   useCallback,
   useEffect,
   useState,
-  useRef,
   useActionState,
   startTransition,
 } from "react";
@@ -41,7 +40,6 @@ import { Chat } from "@/components/project/chat";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { dark } from "@clerk/themes";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import { UserInfo } from "@/liveblocks.config";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
@@ -95,8 +93,6 @@ export default function Editor({
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [, setOldFile] = useState<string | null>(null);
-  const [panelHeight, setPanelHeight] = useState<number>(0);
-  const panelRef = useRef<HTMLDivElement>(null);
   const [titleInput, setTitleInput] = useState(projectTitle);
 
   const inviteForm = useForm<z.infer<typeof formSchema>>({
@@ -119,24 +115,6 @@ export default function Editor({
     if (!node) return;
 
     setEditor(node);
-  }, []);
-
-  // Calculate card height using ResizeObserver
-  useEffect(() => {
-    if (!panelRef.current) return;
-
-    const resizeObserver = new ResizeObserver((entries) => {
-      for (const entry of entries) {
-        const height = entry.contentRect.height;
-        setPanelHeight(height);
-      }
-    });
-
-    resizeObserver.observe(panelRef.current);
-
-    return () => {
-      resizeObserver.disconnect();
-    };
   }, []);
 
   // Set up Liveblocks Yjs provider and attach CodeMirror editor
@@ -163,15 +141,15 @@ export default function Editor({
         EditorView.theme({
           "&": {
             backgroundColor: "transparent",
+            height: "100%",
           },
+          ".cm-scroller": { overflow: "auto" },
           ".cm-content": {
             paddingTop: "0.5rem",
             paddingBottom: "0.5rem",
-            minHeight: `${panelHeight}px`,
             fontSize: "14px",
           },
           ".cm-gutter": {
-            minHeight: `${panelHeight}px`,
             fontSize: "14px",
             color: "var(--muted-foreground)",
           },
@@ -231,7 +209,7 @@ export default function Editor({
     return () => {
       view?.destroy();
     };
-  }, [editor, room, yProvider, resolvedTheme, panelHeight, userInfo]);
+  }, [editor, room, yProvider, resolvedTheme, userInfo]);
 
   // Handle changes to the old file
   useEffect(() => {
@@ -421,13 +399,8 @@ export default function Editor({
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <div
-            ref={panelRef}
-            className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border"
-          >
-            <ScrollArea className="h-full">
-              <div className="h-full" ref={editorRef} />
-            </ScrollArea>
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
+            <div className="h-full" ref={editorRef} />
           </div>
         </ResizablePanel>
 
