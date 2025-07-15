@@ -135,16 +135,14 @@
 }
 
 /* Code block styling */
-code[data-theme*=" "],
-code[data-theme*=" "] span {
+code,
+code span {
   color: var(--shiki-light);
-  background-color: transparent;
 }
 
 @media (prefers-color-scheme: dark) {
-  code[data-theme*=" "],
-  code[data-theme*=" "] span {
+  code,
+  code span {
     color: var(--shiki-dark);
-    background-color: transparent;
   }
 }
