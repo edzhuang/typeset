@@ -145,8 +145,8 @@ export default function Editor({
           },
           ".cm-scroller": { overflow: "auto" },
           ".cm-content": {
-            paddingTop: "0.5rem",
-            paddingBottom: "0.5rem",
+            paddingTop: "1rem",
+            paddingBottom: "1rem",
             fontSize: "14px",
           },
           ".cm-gutter": {
