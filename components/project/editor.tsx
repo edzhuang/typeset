@@ -168,12 +168,10 @@ export default function Editor({
             paddingTop: "0.5rem",
             paddingBottom: "0.5rem",
             minHeight: `${panelHeight}px`,
-            fontFamily: "var(--font-mono)",
             fontSize: "14px",
           },
           ".cm-gutter": {
             minHeight: `${panelHeight}px`,
-            fontFamily: "var(--font-mono)",
             fontSize: "14px",
             color: "var(--muted-foreground)",
           },
