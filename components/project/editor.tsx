@@ -145,21 +145,17 @@ export default function Editor({
           },
           ".cm-scroller": {
             overflow: "auto",
-            scrollbarWidth: "none",
-            scrollbarColor: "var(--border) transparent",
-          },
-          ".cm-scroller:hover": {
-            scrollbarWidth: "thin",
-            scrollbarColor: "var(--border) transparent",
           },
           ".cm-content": {
             paddingTop: "1rem",
             paddingBottom: "1rem",
             fontSize: "14px",
+            fontFamily: "var(--font-mono)",
           },
           ".cm-gutter": {
             fontSize: "14px",
             color: "var(--muted-foreground)",
+            fontFamily: "var(--font-mono)",
           },
           ".cm-gutters": {
             backgroundColor: "transparent",

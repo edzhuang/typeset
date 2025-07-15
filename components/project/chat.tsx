@@ -163,7 +163,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderAssistantMessage = (message: UIMessage) => {
     return (
-      <div className="prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-pre:p-0">
+      <div className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-pre:rounded-md prose-pre:border prose-pre:bg-editor-panel prose-code:text-sm prose-pre:overflow-auto prose-pre:max-w-full">
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;
 
@@ -223,7 +223,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           <ScrollAreaPrimitive.Viewport
             ref={scrollAreaViewportRef}
             data-slot="scroll-area-viewport"
-            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 py-2"
+            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 py-2 [&>div]:!block"
           >
             {messages.map((message) => (
               <div key={message.id}>
