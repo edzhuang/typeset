@@ -149,11 +149,11 @@ export default function Editor({
           ".cm-content": {
             paddingTop: "1rem",
             paddingBottom: "1rem",
-            fontSize: "14px",
+            fontSize: "13px",
             fontFamily: "var(--font-mono)",
           },
           ".cm-gutter": {
-            fontSize: "14px",
+            fontSize: "13px",
             color: "var(--muted-foreground)",
             fontFamily: "var(--font-mono)",
           },

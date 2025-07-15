@@ -164,7 +164,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderAssistantMessage = (message: UIMessage) => {
     return (
-      <div className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent prose-pre:p-0 prose-pre:overflow-x-auto prose-code:text-sm prose-code:p-4">
+      <div className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent prose-pre:p-4 prose-pre:overflow-x-auto prose-code:text-[13px] prose-code:p-0">
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;
 
