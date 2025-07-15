@@ -67,7 +67,7 @@ import {
 } from "@/components/ui/form";
 import { UserAccessList } from "@/components/project/user-access-list";
 import { inviteToProject } from "@/app/actions";
-import { UserAccessInfo } from "@/lib/types";
+import { UserAccessInfo } from "@/types/user-access";
 import {
   Popover,
   PopoverContent,

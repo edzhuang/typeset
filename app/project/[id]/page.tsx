@@ -1,7 +1,7 @@
 import { Providers } from "@/components/project/providers";
 import Editor from "@/components/project/editor";
 import { Liveblocks, RoomData } from "@liveblocks/node";
-import { UserAccessInfo } from "@/lib/types";
+import { UserAccessInfo } from "@/types/user-access";
 import { clerkClient, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 

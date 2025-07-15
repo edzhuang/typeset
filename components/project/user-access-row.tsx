@@ -10,7 +10,7 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { removeFromProject } from "@/app/actions";
-import { UserAccessInfo } from "@/lib/types";
+import { UserAccessInfo } from "@/types/user-access";
 
 export function UserAccessRow({
   projectId,
