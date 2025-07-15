@@ -256,7 +256,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           <Button
             size="icon"
             variant="outline"
-            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-accent dark:hover:bg-accent/50"
+            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
             onClick={() => {
               scrollToBottom("smooth");
             }}
