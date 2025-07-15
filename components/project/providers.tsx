@@ -48,7 +48,7 @@ export function Providers({
         <ClientSideSuspense
           fallback={
             <div className="h-screen flex flex-col justify-center items-center">
-              <LoaderCircle className="size-28 animate-spin" />
+              <LoaderCircle className="size-24 animate-spin" />
             </div>
           }
         >

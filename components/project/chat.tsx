@@ -86,6 +86,12 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     if (!viewport) return;
 
     const handleScroll = () => {
+      // If content fits in viewport, always autoscroll
+      if (viewport.scrollHeight <= viewport.clientHeight) {
+        setAutoScroll(true);
+        return;
+      }
+
       const atBottom =
         Math.abs(
           viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight
@@ -142,7 +148,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderUserMessage = (message: UIMessage) => {
     return (
-      <div className="flex justify-end p-4">
+      <div className="flex justify-end px-4 py-2">
         <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
           {message.parts.map((part, i) => {
             switch (part.type) {
@@ -157,7 +163,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   const renderAssistantMessage = (message: UIMessage) => {
     return (
-      <div className="prose-sm dark:prose-invert p-4 space-y-2 max-w-none">
+      <div className="prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-pre:p-0">
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;
 
@@ -217,7 +223,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           <ScrollAreaPrimitive.Viewport
             ref={scrollAreaViewportRef}
             data-slot="scroll-area-viewport"
-            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1"
+            className="focus-visible:ring-ring/50 size-full rounded-[inherit] transition-[color,box-shadow] outline-none focus-visible:ring-[3px] focus-visible:outline-1 py-2"
           >
             {messages.map((message) => (
               <div key={message.id}>
@@ -231,7 +237,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
             {status !== "ready" &&
               messages.length > 0 &&
               messages[messages.length - 1].role === "user" && (
-                <div className="p-4">
+                <div className="px-4 py-2">
                   <LoaderCircle className="animate-spin" />
                 </div>
               )}
