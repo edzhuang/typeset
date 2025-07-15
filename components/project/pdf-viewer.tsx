@@ -19,7 +19,7 @@ export function PdfViewer({ file }: { file: string | File }) {
   const [zoom, setZoom] = useState<number>(1);
   const [pagesRendered, setPagesRendered] = useState<number>(0);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
-  const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
+  const scrollareaRef = useRef<HTMLDivElement | null>(null);
 
   const navigateToPage = (page: number) => {
     if (isNaN(page) || page < 1 || page > numPages) {
@@ -45,8 +45,8 @@ export function PdfViewer({ file }: { file: string | File }) {
    */
   useEffect(() => {
     if (pagesRendered < numPages) return;
-    const viewport = scrollAreaViewportRef.current;
-    if (!viewport) return;
+    const scrollarea = scrollareaRef.current;
+    if (!scrollarea) return;
     let observer: IntersectionObserver | null = null;
     const visibleMap = new Map<number, number>();
 
@@ -72,7 +72,7 @@ export function PdfViewer({ file }: { file: string | File }) {
         setPageInput(page.toString());
       },
       {
-        root: viewport,
+        root: scrollarea,
         threshold: Array.from({ length: 11 }, (_, i) => i / 10),
       }
     );
@@ -155,33 +155,31 @@ export function PdfViewer({ file }: { file: string | File }) {
         </div>
       </div>
       {/* Scrollable PDF content */}
-      <div className="grow overflow-hidden">
-        <div className="size-full overflow-auto" ref={scrollAreaViewportRef}>
-          <Document
-            className="flex flex-col items-center"
-            file={file}
-            onLoadSuccess={onDocumentLoadSuccess}
-          >
-            {numPages &&
-              Array.from({ length: numPages }, (_, index) => (
-                <div
-                  key={`page_${index + 1}`}
-                  ref={(el) => {
-                    pagesRef.current[index] = el;
-                  }}
-                  className="w-min p-2"
-                >
-                  <Page
-                    pageNumber={index + 1}
-                    width={816}
-                    scale={zoom}
-                    onRenderSuccess={onPageRenderSuccess}
-                    className="z-0 border"
-                  />
-                </div>
-              ))}
-          </Document>
-        </div>
+      <div ref={scrollareaRef} className="size-full overflow-auto">
+        <Document
+          className="flex flex-col w-min mx-auto"
+          file={file}
+          onLoadSuccess={onDocumentLoadSuccess}
+        >
+          {numPages &&
+            Array.from({ length: numPages }, (_, index) => (
+              <div
+                key={`page_${index + 1}`}
+                ref={(el) => {
+                  pagesRef.current[index] = el;
+                }}
+                className="p-2"
+              >
+                <Page
+                  pageNumber={index + 1}
+                  width={816}
+                  scale={zoom}
+                  onRenderSuccess={onPageRenderSuccess}
+                  className="z-0 border"
+                />
+              </div>
+            ))}
+        </Document>
       </div>
     </div>
   );

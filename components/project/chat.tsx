@@ -59,16 +59,16 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     },
   });
   const [model, setModel] = useState("gemini-2.5-flash");
-  const scrollAreaViewportRef = useRef<HTMLDivElement | null>(null);
+  const scrollareaRef = useRef<HTMLDivElement | null>(null);
   const [autoScroll, setAutoScroll] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
   // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
-    const viewport = scrollAreaViewportRef.current;
-    if (!viewport) return;
+    const scrollarea = scrollareaRef.current;
+    if (!scrollarea) return;
 
-    viewport.scrollTo({ top: viewport.scrollHeight, behavior: behavior });
+    scrollarea.scrollTo({ top: scrollarea.scrollHeight, behavior: behavior });
   }, []);
 
   // On new messages, scroll if autoScroll is enabled
@@ -80,26 +80,38 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   // Track scroll position to toggle autoScroll and button
   useEffect(() => {
-    const viewport = scrollAreaViewportRef.current;
-    if (!viewport) return;
+    const scrollarea = scrollareaRef.current;
+    if (!scrollarea) return;
 
     const handleScroll = () => {
       // If content fits in viewport, always autoscroll
-      if (viewport.scrollHeight <= viewport.clientHeight) {
+      if (scrollarea.scrollHeight <= scrollarea.clientHeight) {
         setAutoScroll(true);
         return;
       }
 
       const atBottom =
         Math.abs(
-          viewport.scrollHeight - viewport.scrollTop - viewport.clientHeight
+          scrollarea.scrollHeight -
+            scrollarea.scrollTop -
+            scrollarea.clientHeight
         ) < 8;
       setAutoScroll(atBottom);
     };
-    viewport.addEventListener("scroll", handleScroll, { passive: true });
+
+    scrollarea.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    return () => viewport.removeEventListener("scroll", handleScroll);
+    // Add ResizeObserver to call handleScroll on resize
+    const resizeObserver = new ResizeObserver(() => {
+      handleScroll();
+    });
+    resizeObserver.observe(scrollarea);
+
+    return () => {
+      scrollarea.removeEventListener("scroll", handleScroll);
+      resizeObserver.disconnect();
+    };
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -214,7 +226,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           messages.length === 0 && "hidden"
         )}
       >
-        <div ref={scrollAreaViewportRef} className="size-full overflow-auto">
+        <div ref={scrollareaRef} className="size-full overflow-auto py-2">
           {messages.map((message) => (
             <div key={message.id}>
               {message.role === "user"
