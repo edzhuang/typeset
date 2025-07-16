@@ -94,12 +94,6 @@ export function Chat({
     if (!scrollarea) return;
 
     const handleScroll = () => {
-      // If content fits in viewport, always autoscroll
-      if (scrollarea.scrollHeight <= scrollarea.clientHeight) {
-        setAutoScroll(true);
-        return;
-      }
-
       const atBottom =
         Math.abs(
           scrollarea.scrollHeight -
@@ -112,7 +106,6 @@ export function Chat({
     scrollarea.addEventListener("scroll", handleScroll, { passive: true });
     handleScroll();
 
-    // Add ResizeObserver to call handleScroll on resize
     const resizeObserver = new ResizeObserver(() => {
       handleScroll();
     });
@@ -168,7 +161,7 @@ export function Chat({
 
   const renderUserMessage = (message: UIMessage) => {
     return (
-      <div className="flex justify-end px-4 py-2">
+      <div className="flex justify-end p-4">
         <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
           {message.parts.map((part, i) => {
             switch (part.type) {
@@ -201,7 +194,7 @@ export function Chat({
   const renderAssistantMessage = (message: UIMessage) => {
     return (
       <div
-        className="prose prose-sm dark:prose-invert px-4 py-2 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent
+        className="prose prose-sm dark:prose-invert p-4 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent
                       prose-pre:p-4 prose-pre:overflow-x-auto prose-code:text-[13px] prose-code:p-0"
       >
         {message.parts.map((part, i) => {
@@ -248,15 +241,15 @@ export function Chat({
   };
 
   return (
-    <div className="@container flex flex-col h-full min-h-0">
+    <div className="@container flex flex-col h-full">
       <div className="flex-1 overflow-hidden relative">
         <div
           ref={scrollareaRef}
-          className="flex flex-col size-full overflow-auto py-2"
+          className="flex flex-col size-full overflow-auto"
         >
           {messages.length == 0 ? (
             // Welcome screen
-            <div className="flex flex-col gap-4 grow justify-center">
+            <div className="flex flex-col gap-4 grow justify-center py-4">
               <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
                 <BotMessageSquare className="size-10" />
                 <h1 className="text-lg">Chat</h1>
@@ -295,7 +288,7 @@ export function Chat({
               {status !== "ready" &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === "user" && (
-                  <div className="px-4 py-2">
+                  <div className="p-4">
                     <LoaderCircle className="animate-spin" />
                   </div>
                 )}
@@ -316,7 +309,7 @@ export function Chat({
             variant="outline"
             className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
             onClick={() => {
-              scrollToBottom("smooth");
+              scrollToBottom();
             }}
           >
             <ArrowDown />
@@ -326,11 +319,11 @@ export function Chat({
 
       {/* Accept and reject buttons */}
       {newFile !== null && (
-        <div className="border-x border-t rounded-t-md mx-4 p-2 flex justify-between overflow-hidden">
-          <div className="flex items-center text-muted-foreground">
+        <div className="border-x border-t rounded-t-md mx-4 flex justify-between overflow-hidden">
+          <div className="flex items-center text-muted-foreground px-3 py-2">
             File edited
           </div>
-          <div className="flex gap-2">
+          <div className="flex gap-2 p-2">
             <Button variant="ghost" onClick={rejectEdit}>
               Reject
             </Button>
@@ -342,7 +335,7 @@ export function Chat({
       {/* Input */}
       <form
         className="mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 has-[textarea:focus]:ring-[3px]
-                   dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none"
+                   dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none z-10"
         onSubmit={onSubmit}
         onClick={() => {
           textareaRef.current?.focus();

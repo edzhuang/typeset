@@ -208,7 +208,7 @@ export default function CollaborativeEditor({
 
         <ResizablePanel defaultSize={40}>
           <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
-            <Editor room={room} yProvider={yProvider} />
+            <Editor room={room} yProvider={yProvider} newFile={newFile} />
           </div>
         </ResizablePanel>
 

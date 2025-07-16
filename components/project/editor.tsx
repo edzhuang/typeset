@@ -14,13 +14,16 @@ import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import type { Room } from "@liveblocks/client";
 import { useTheme } from "next-themes";
 import { customTheme } from "@/lib/utils";
+import { MergeView } from "@codemirror/merge";
 
 export function Editor({
   room,
   yProvider,
+  newFile,
 }: {
   room: Room;
   yProvider: LiveblocksYjsProvider;
+  newFile: string | null;
 }) {
   const { resolvedTheme } = useTheme();
   const [editor, setEditor] = useState<HTMLElement | undefined>();
@@ -51,7 +54,7 @@ export function Editor({
       colorLight: userInfo.color + "80", // 6-digit hex code at 50% opacity
     });
 
-    const state = EditorState.create({
+    const stateConfig = {
       doc: yText.toString(),
       extensions: [
         basicSetup,
@@ -62,18 +65,38 @@ export function Editor({
         yCollab(yText, yProvider.awareness),
         keymap.of([...defaultKeymap, { key: "Tab", run: insertTab }]),
       ],
-    });
+    };
 
     // Attach CodeMirror to element
-    const view = new EditorView({
-      state,
-      parent: editor,
-    });
+    let view: EditorView | MergeView;
+    if (newFile === null) {
+      view = new EditorView({
+        state: EditorState.create(stateConfig),
+        parent: editor,
+      });
+    } else {
+      view = new MergeView({
+        a: stateConfig,
+        b: {
+          doc: newFile,
+          extensions: [
+            basicSetup,
+            customTheme,
+            resolvedTheme === "dark" ? githubDark : githubLight,
+            EditorView.lineWrapping,
+            latex(),
+            EditorView.editable.of(false),
+            EditorState.readOnly.of(true),
+          ],
+        },
+        parent: editor,
+      });
+    }
 
     return () => {
       view?.destroy();
     };
-  }, [editor, room, yProvider, resolvedTheme, userInfo]);
+  }, [editor, resolvedTheme, userInfo, room, yProvider, newFile]);
 
   return <div className="h-full" ref={editorRef} />;
 }
