@@ -315,7 +315,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
               <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
             </SelectContent>
           </Select>
-          {status == "ready" ? (
+          {(status === "ready" || status === "error") && (
             <Button
               type="submit"
               size="icon"
@@ -324,8 +324,14 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
             >
               <SendHorizontal />
             </Button>
-          ) : (
-            <Button onClick={stop} size="icon" className="pointer-events-auto">
+          )}
+
+          {(status === "submitted" || status === "streaming") && (
+            <Button
+              onClick={() => stop()}
+              size="icon"
+              className="pointer-events-auto"
+            >
               <Square />
             </Button>
           )}
