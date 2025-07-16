@@ -260,8 +260,8 @@ export default function Editor({
 
   return (
     <div className="flex flex-col absolute inset-0 bg-editor text-sm">
-      <NavigationMenu className="p-2">
-        <div className="grid w-screen grid-cols-[1fr_auto_1fr]">
+      <NavigationMenu className="max-w-none p-2">
+        <div className="grid grid-cols-[1fr_auto_1fr] w-full">
           <div className="flex">
             <NavigationMenuList className="gap-2">
               <NavigationMenuItem>
