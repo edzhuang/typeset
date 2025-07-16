@@ -1,5 +1,5 @@
 import { Providers } from "@/components/project/providers";
-import Editor from "@/components/project/editor";
+import CollaborativeEditor from "@/components/project/collaborative-editor";
 import { Liveblocks, RoomData } from "@liveblocks/node";
 import { UserAccessInfo } from "@/types/user-access";
 import { clerkClient, User } from "@clerk/nextjs/server";
@@ -74,7 +74,7 @@ export default async function Page({
 
     return (
       <Providers id={id}>
-        <Editor title={title} userAccessInfo={userAccessInfo} />
+        <CollaborativeEditor title={title} userAccessInfo={userAccessInfo} />
       </Providers>
     );
   } catch {

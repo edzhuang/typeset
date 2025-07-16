@@ -26,8 +26,9 @@ import { Alert, AlertTitle } from "@/components/ui/alert";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
+  "Improve formatting",
+  "Inspect for errors",
   "How do I write an integral?",
-  "Check for spelling errors",
 ];
 
 export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
