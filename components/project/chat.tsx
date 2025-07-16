@@ -288,7 +288,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
       {/* Input */}
       <form
-        className="mx-2 mb-2 overflow-hidden cursor-text border-input focus-within:border-ring focus-within:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none focus-within:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        className="mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus]:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
         onSubmit={onSubmit}
         onClick={() => {
           textareaRef.current?.focus();
@@ -301,7 +301,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
-                      resize-none min-h-9 max-h-42 border-none focus-visible:ring-0 dark:bg-transparent"
+                      resize-none min-h-9 max-h-42 border-none"
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
