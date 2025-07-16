@@ -58,6 +58,7 @@ export default function CollaborativeEditor({
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [titleInput, setTitleInput] = useState(projectTitle);
   const [compileError, setCompileError] = useState<string | null>(null);
+  const [newFile, setNewFile] = useState<string | null>(null);
 
   /**
    * Compiles the current LaTeX content to PDF and updates the PDF viewer
@@ -194,7 +195,12 @@ export default function CollaborativeEditor({
       >
         <ResizablePanel defaultSize={20}>
           <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
-            <Chat yProvider={yProvider} />
+            <Chat
+              yProvider={yProvider}
+              newFile={newFile}
+              setNewFile={setNewFile}
+              compileAction={action}
+            />
           </div>
         </ResizablePanel>
 

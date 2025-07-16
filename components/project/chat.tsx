@@ -17,12 +17,20 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MemoizedMarkdown } from "@/components/project/memoized-markdown";
-import { useState, useRef, useEffect, useCallback } from "react";
+import {
+  useState,
+  useRef,
+  useEffect,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+} from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
 import { CircleCheck } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
+import { startTransition } from "react";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
@@ -31,7 +39,17 @@ const promptSuggestions = [
   "How do I write an integral?",
 ];
 
-export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
+export function Chat({
+  yProvider,
+  newFile,
+  setNewFile,
+  compileAction,
+}: {
+  yProvider: LiveblocksYjsProvider;
+  newFile: string | null;
+  setNewFile: Dispatch<SetStateAction<string | null>>;
+  compileAction: () => void;
+}) {
   const {
     messages,
     status,
@@ -44,6 +62,8 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     maxSteps: 5,
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "editFile") {
+        const args = toolCall.args as { newFile: string };
+        setNewFile(args.newFile);
         return "File edited";
       }
     },
@@ -159,6 +179,23 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
         </div>
       </div>
     );
+  };
+
+  const acceptEdit = () => {
+    if (newFile === null) {
+      return;
+    }
+
+    const yText = yProvider.getYDoc().getText("codemirror");
+    yText.delete(0, yText.length);
+    yText.insert(0, newFile);
+
+    setNewFile(null);
+    startTransition(compileAction);
+  };
+
+  const rejectEdit = () => {
+    setNewFile(null);
   };
 
   const renderAssistantMessage = (message: UIMessage) => {
@@ -286,6 +323,21 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           </Button>
         </div>
       </div>
+
+      {/* Accept and reject buttons */}
+      {newFile !== null && (
+        <div className="border-x border-t rounded-t-md mx-4 p-2 flex justify-between overflow-hidden">
+          <div className="flex items-center text-muted-foreground">
+            File edited
+          </div>
+          <div className="flex gap-2">
+            <Button variant="ghost" onClick={rejectEdit}>
+              Reject
+            </Button>
+            <Button onClick={acceptEdit}>Accept</Button>
+          </div>
+        </div>
+      )}
 
       {/* Input */}
       <form
