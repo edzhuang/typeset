@@ -288,7 +288,8 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
       {/* Input */}
       <form
-        className="mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none has-[textarea:focus]:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+        className="mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 has-[textarea:focus]:ring-[3px]
+                   dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none"
         onSubmit={onSubmit}
         onClick={() => {
           textareaRef.current?.focus();
@@ -315,7 +316,12 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
             </SelectContent>
           </Select>
           {status == "ready" ? (
-            <Button type="submit" size="icon" className="pointer-events-auto">
+            <Button
+              type="submit"
+              size="icon"
+              className="pointer-events-auto disabled:pointer-events-auto disabled:hover:bg-primary"
+              disabled={!input}
+            >
               <SendHorizontal />
             </Button>
           ) : (
