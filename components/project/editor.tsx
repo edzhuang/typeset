@@ -12,7 +12,14 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Play, House, UserPlus, Loader2Icon, FileText } from "lucide-react";
+import {
+  Play,
+  House,
+  UserPlus,
+  Loader2Icon,
+  FileText,
+  AlertCircle,
+} from "lucide-react";
 import { yCollab } from "y-codemirror.next";
 import { basicSetup } from "codemirror";
 import { EditorState } from "@codemirror/state";
@@ -73,6 +80,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   email: z.string().email(),
@@ -93,6 +101,7 @@ export default function Editor({
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
   const [titleInput, setTitleInput] = useState(projectTitle);
+  const [compileError, setCompileError] = useState<string | null>(null);
 
   const inviteForm = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -230,7 +239,12 @@ export default function Editor({
     });
 
     if (!res.ok) {
-      console.error("Failed to compile:", res.statusText);
+      try {
+        const errorData = await res.json();
+        setCompileError(errorData.message || "Unknown error");
+      } catch {
+        setCompileError("Unknown error");
+      }
       return;
     }
 
@@ -239,6 +253,7 @@ export default function Editor({
       URL.revokeObjectURL(pdfUrl);
     }
     const newPdfUrl = URL.createObjectURL(pdfBlob);
+    setCompileError(null);
     setPdfUrl(newPdfUrl);
   };
   const [, action, pending] = useActionState(compile, undefined);
@@ -399,7 +414,17 @@ export default function Editor({
 
         <ResizablePanel defaultSize={40}>
           <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
-            {pdfUrl ? (
+            {compileError ? (
+              <div className="flex flex-col p-4">
+                <Alert variant="destructive">
+                  <AlertCircle />
+                  <AlertTitle>Compilation failed</AlertTitle>
+                  <AlertDescription className="whitespace-pre-wrap">
+                    {compileError}
+                  </AlertDescription>
+                </Alert>
+              </div>
+            ) : pdfUrl ? (
               <PdfViewer file={pdfUrl} />
             ) : (
               <div className="flex flex-col grow justify-center items-center">

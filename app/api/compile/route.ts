@@ -6,44 +6,73 @@ import { join } from "path";
 export async function POST(request: NextRequest) {
   const baseDir = "/tmp";
 
-  const body = await request.json();
-  const content = Buffer.from(body.content);
-  const srcPath = join(baseDir, "input.tex");
-  await fs.writeFile(srcPath, content);
+  try {
+    const body = await request.json();
+    const content = Buffer.from(body.content);
+    const srcPath = join(baseDir, "input.tex");
+    await fs.writeFile(srcPath, content);
 
-  const outDir = join(baseDir, "out");
-  await fs.mkdir(outDir, { recursive: true });
+    const outDir = join(baseDir, "out");
+    await fs.mkdir(outDir, { recursive: true });
 
-  const cacheDir = join(baseDir, "cache");
-  await fs.mkdir(cacheDir, { recursive: true });
+    const cacheDir = join(baseDir, "cache");
+    await fs.mkdir(cacheDir, { recursive: true });
 
-  const tectonicPath = join(process.cwd(), "bin", "tectonic");
-  const proc = spawn(
-    tectonicPath,
-    ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
-    {
-      env: {
-        ...process.env,
-        HOME: baseDir,
-        XDG_CACHE_HOME: cacheDir,
-        TECTONIC_CACHE_DIR: cacheDir,
-        TEXMFVAR: cacheDir,
-      },
+    const tectonicPath = join(process.cwd(), "bin", "tectonic");
+    const proc = spawn(
+      tectonicPath,
+      ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
+      {
+        env: {
+          ...process.env,
+          HOME: baseDir,
+          XDG_CACHE_HOME: cacheDir,
+          TECTONIC_CACHE_DIR: cacheDir,
+          TEXMFVAR: cacheDir,
+        },
+      }
+    );
+
+    let stderr = "";
+    proc.stderr.on("data", (d) => (stderr += d));
+    const exitCode: number = await new Promise((res) => proc.on("close", res));
+
+    if (exitCode !== 0) {
+      // Return structured error response
+      return new Response(
+        JSON.stringify({
+          error: true,
+          message: stderr || "Unknown compilation error",
+        }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
     }
-  );
 
-  let stderr = "";
-  proc.stderr.on("data", (d) => (stderr += d));
-  const exitCode: number = await new Promise((res) => proc.on("close", res));
-  if (exitCode !== 0) {
-    return new Response(stderr || "Compilation failed.", { status: 500 });
+    const pdf = await fs.readFile(join(outDir, "input.pdf"));
+    return new Response(pdf, {
+      headers: {
+        "Content-Type": "application/pdf",
+        "Content-Disposition": 'inline; filename="output.pdf"',
+      },
+    });
+  } catch (error) {
+    // Handle unexpected errors
+    return new Response(
+      JSON.stringify({
+        error: true,
+        message: error instanceof Error ? error.message : "Unknown error",
+      }),
+      {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
   }
-
-  const pdf = await fs.readFile(join(outDir, "input.pdf"));
-  return new Response(pdf, {
-    headers: {
-      "Content-Type": "application/pdf",
-      "Content-Disposition": 'inline; filename="output.pdf"',
-    },
-  });
 }
