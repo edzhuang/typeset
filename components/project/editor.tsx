@@ -92,7 +92,6 @@ export default function Editor({
   const yProvider = getYjsProviderForRoom(room);
   const [editor, setEditor] = useState<HTMLElement>();
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
-  const [, setOldFile] = useState<string | null>(null);
   const [titleInput, setTitleInput] = useState(projectTitle);
 
   const inviteForm = useForm<z.infer<typeof formSchema>>({
@@ -214,18 +213,6 @@ export default function Editor({
       view?.destroy();
     };
   }, [editor, room, yProvider, resolvedTheme, userInfo]);
-
-  // Handle changes to the old file
-  useEffect(() => {
-    const yMap = yProvider.getYDoc().getMap("files");
-    const handleChange = () => {
-      const file = yMap.get("oldFile");
-      setOldFile(typeof file === "string" ? file : null);
-    };
-    yMap.observe(handleChange);
-    handleChange();
-    return () => yMap.unobserve(handleChange);
-  });
 
   /**
    * Compiles the current LaTeX content to PDF and updates the PDF viewer

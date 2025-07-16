@@ -43,17 +43,6 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
     maxSteps: 5,
     async onToolCall({ toolCall }) {
       if (toolCall.toolName === "editFile") {
-        const yDoc = yProvider.getYDoc();
-        const yMap = yDoc.getMap("files");
-        const yText = yDoc.getText("codemirror");
-
-        const oldFile = yText.toString();
-        const { newFile } = toolCall.args as { newFile: string };
-
-        yMap.set("oldFile", oldFile);
-        yText.delete(0, yText.length);
-        yText.insert(0, newFile);
-
         return "File edited";
       }
     },
