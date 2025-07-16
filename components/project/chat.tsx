@@ -211,30 +211,58 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
 
   return (
     <div className="@container flex flex-col h-full min-h-0">
-      {/* Messages */}
-      <div
-        className={clsx(
-          "flex-1 overflow-hidden relative",
-          messages.length === 0 && "hidden"
-        )}
-      >
-        <div ref={scrollareaRef} className="size-full overflow-auto py-2">
-          {messages.map((message) => (
-            <div key={message.id}>
-              {message.role === "user"
-                ? renderUserMessage(message)
-                : renderAssistantMessage(message)}
-            </div>
-          ))}
-
-          {/* Show spinner if waiting for assistant response */}
-          {status !== "ready" &&
-            messages.length > 0 &&
-            messages[messages.length - 1].role === "user" && (
-              <div className="px-4 py-2">
-                <LoaderCircle className="animate-spin" />
+      <div className="flex-1 overflow-hidden relative">
+        <div
+          ref={scrollareaRef}
+          className="flex flex-col size-full overflow-auto py-2"
+        >
+          {messages.length == 0 ? (
+            // Welcome screen
+            <div className="flex flex-col gap-4 grow justify-center">
+              <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
+                <BotMessageSquare className="size-10" />
+                <h1 className="text-lg">Chat</h1>
               </div>
-            )}
+
+              <div
+                className="flex justify-start @sm:justify-center overflow-x-auto"
+                style={{ scrollbarWidth: "none" }}
+              >
+                <div className="flex gap-2 justify-start @sm:justify-center px-4 min-w-md @sm:min-w-0 max-w-md flex-wrap">
+                  {promptSuggestions.map((suggestion) => (
+                    <Button
+                      key={suggestion}
+                      size="sm"
+                      variant="secondary"
+                      onClick={() => setInput(suggestion)}
+                    >
+                      {suggestion}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          ) : (
+            // Messages
+            <>
+              {messages.map((message) => (
+                <div key={message.id}>
+                  {message.role === "user"
+                    ? renderUserMessage(message)
+                    : renderAssistantMessage(message)}
+                </div>
+              ))}
+
+              {/* Show spinner if waiting for assistant response */}
+              {status !== "ready" &&
+                messages.length > 0 &&
+                messages[messages.length - 1].role === "user" && (
+                  <div className="px-4 py-2">
+                    <LoaderCircle className="animate-spin" />
+                  </div>
+                )}
+            </>
+          )}
         </div>
 
         <div
@@ -257,34 +285,6 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           </Button>
         </div>
       </div>
-
-      {/* Welcome screen */}
-      {messages.length == 0 && (
-        <div className="flex flex-col gap-4 grow justify-center">
-          <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
-            <BotMessageSquare className="size-10" />
-            <h1 className="text-lg">Chat</h1>
-          </div>
-
-          <div className="flex @xs:justify-center relative">
-            <div
-              className="flex flex-wrap gap-2 justify-start @xs:justify-center px-4 max-w-md
-                absolute left-0 w-screen @xs:static"
-            >
-              {promptSuggestions.map((suggestion) => (
-                <Button
-                  key={suggestion}
-                  size="sm"
-                  variant="secondary"
-                  onClick={() => setInput(suggestion)}
-                >
-                  {suggestion}
-                </Button>
-              ))}
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Input */}
       <form
