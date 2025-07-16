@@ -303,7 +303,7 @@ export function Chat({ yProvider }: { yProvider: LiveblocksYjsProvider }) {
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
-                      resize-none min-h-9 max-h-42 border-none"
+                      resize-none max-h-42 border-none"
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
