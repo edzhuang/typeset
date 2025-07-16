@@ -11,10 +11,6 @@ export const customTheme = EditorView.theme({
     backgroundColor: "transparent",
     height: "100%",
   },
-  ".cm-mergeView": {
-    height: "100%",
-    overflow: "auto",
-  },
   ".cm-scroller": {
     overflow: "auto",
   },

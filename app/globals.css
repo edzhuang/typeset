@@ -146,3 +146,9 @@ code span {
     color: var(--shiki-dark);
   }
 }
+
+/* Merge view styling */
+.cm-mergeView {
+  height: 100%;
+  overflow: auto;
+}
