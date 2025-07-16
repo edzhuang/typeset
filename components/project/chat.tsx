@@ -17,14 +17,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MemoizedMarkdown } from "@/components/project/memoized-markdown";
-import {
-  useState,
-  useRef,
-  useEffect,
-  useCallback,
-  Dispatch,
-  SetStateAction,
-} from "react";
+import { useState, useRef, useCallback, Dispatch, SetStateAction } from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
@@ -73,48 +66,11 @@ export function Chat({
   const [autoScroll, setAutoScroll] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  // Helper: scroll to bottom
   const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
     const scrollarea = scrollareaRef.current;
     if (!scrollarea) return;
 
     scrollarea.scrollTo({ top: scrollarea.scrollHeight, behavior: behavior });
-  }, []);
-
-  // On new messages, scroll if autoScroll is enabled
-  useEffect(() => {
-    if (autoScroll) {
-      scrollToBottom();
-    }
-  }, [messages, autoScroll, scrollToBottom]);
-
-  // Track scroll position to toggle autoScroll and button
-  useEffect(() => {
-    const scrollarea = scrollareaRef.current;
-    if (!scrollarea) return;
-
-    const handleScroll = () => {
-      const atBottom =
-        Math.abs(
-          scrollarea.scrollHeight -
-            scrollarea.scrollTop -
-            scrollarea.clientHeight
-        ) < 8;
-      setAutoScroll(atBottom);
-    };
-
-    scrollarea.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-
-    const resizeObserver = new ResizeObserver(() => {
-      handleScroll();
-    });
-    resizeObserver.observe(scrollarea);
-
-    return () => {
-      scrollarea.removeEventListener("scroll", handleScroll);
-      resizeObserver.disconnect();
-    };
   }, []);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
@@ -309,7 +265,7 @@ export function Chat({
             variant="outline"
             className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
             onClick={() => {
-              scrollToBottom();
+              scrollToBottom("smooth");
             }}
           >
             <ArrowDown />
