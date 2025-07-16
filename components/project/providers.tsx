@@ -27,7 +27,7 @@ export function Providers({
 
   if (error) {
     return (
-      <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+      <div className="h-dvh flex flex-col justify-center items-center text-center">
         <div className="flex flex-col gap-4 p-6">
           <h1 className="text-3xl font-semibold mb-2">
             You don&apos;t have access to this project
@@ -47,7 +47,7 @@ export function Providers({
       <RoomProvider id={id}>
         <ClientSideSuspense
           fallback={
-            <div className="absolute inset-0 flex flex-col justify-center items-center">
+            <div className="h-dvh flex flex-col justify-center items-center">
               <LoaderCircle className="size-24 animate-spin" />
             </div>
           }

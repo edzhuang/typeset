@@ -95,7 +95,7 @@ export default function CollaborativeEditor({
   const [, action, pending] = useActionState(compile, undefined);
 
   return (
-    <div className="flex flex-col absolute inset-0 bg-editor text-sm">
+    <div className="flex flex-col h-dvh bg-editor text-sm">
       <NavigationMenu className="max-w-none p-2">
         <div className="grid grid-cols-[1fr_auto_1fr] w-full">
           <div className="flex">
