@@ -17,13 +17,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { MemoizedMarkdown } from "@/components/project/memoized-markdown";
-import { useState, useRef, useCallback, Dispatch, SetStateAction } from "react";
+import {
+  useState,
+  useRef,
+  useCallback,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+} from "react";
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
 import { CircleCheck } from "lucide-react";
 import { Alert, AlertTitle } from "@/components/ui/alert";
-import { startTransition } from "react";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
@@ -34,14 +40,10 @@ const promptSuggestions = [
 
 export function Chat({
   yProvider,
-  newFile,
   setNewFile,
-  compileAction,
 }: {
   yProvider: LiveblocksYjsProvider;
-  newFile: string | null;
   setNewFile: Dispatch<SetStateAction<string | null>>;
-  compileAction: () => void;
 }) {
   const {
     messages,
@@ -63,15 +65,62 @@ export function Chat({
   });
   const [model, setModel] = useState("gemini-2.5-flash");
   const scrollareaRef = useRef<HTMLDivElement | null>(null);
-  const [autoScroll, setAutoScroll] = useState(true);
+  const [atBottom, setAtBottom] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 
-  const scrollToBottom = useCallback((behavior?: ScrollBehavior) => {
-    const scrollarea = scrollareaRef.current;
-    if (!scrollarea) return;
-
-    scrollarea.scrollTo({ top: scrollarea.scrollHeight, behavior: behavior });
+  const scrollToBottom = useCallback(() => {
+    const scrollArea = scrollareaRef.current;
+    if (scrollArea) {
+      scrollArea.scrollTo({
+        top: scrollArea.scrollHeight - scrollArea.clientHeight,
+        behavior: "smooth",
+      });
+    }
   }, []);
+
+  const checkAtBottom = useCallback(() => {
+    const scrollArea = scrollareaRef.current;
+    if (!scrollArea) return;
+    const { scrollTop, scrollHeight, clientHeight } = scrollArea;
+    setAtBottom(scrollHeight - scrollTop - clientHeight < 5);
+  }, []);
+
+  useEffect(() => {
+    if (status === "submitted") {
+      scrollToBottom();
+    }
+  }, [status, scrollToBottom]);
+
+  useEffect(() => {
+    const scrollArea = scrollareaRef.current;
+    if (!scrollArea) return;
+
+    scrollArea.addEventListener("scroll", checkAtBottom);
+    checkAtBottom();
+
+    return () => {
+      scrollArea.removeEventListener("scroll", checkAtBottom);
+    };
+  }, [checkAtBottom]);
+
+  useEffect(() => {
+    const scrollArea = scrollareaRef.current;
+    if (!scrollArea) return;
+
+    const resizeObserver = new ResizeObserver(() => {
+      checkAtBottom();
+    });
+
+    resizeObserver.observe(scrollArea);
+
+    return () => {
+      resizeObserver.disconnect();
+    };
+  }, [checkAtBottom]);
+
+  useEffect(() => {
+    checkAtBottom();
+  }, [messages, checkAtBottom]);
 
   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
@@ -112,7 +161,6 @@ export function Chat({
         },
       ],
     });
-    setAutoScroll(true);
   };
 
   const renderUserMessage = (message: UIMessage) => {
@@ -128,23 +176,6 @@ export function Chat({
         </div>
       </div>
     );
-  };
-
-  const acceptEdit = () => {
-    if (newFile === null) {
-      return;
-    }
-
-    const yText = yProvider.getYDoc().getText("codemirror");
-    yText.delete(0, yText.length);
-    yText.insert(0, newFile);
-
-    setNewFile(null);
-    startTransition(compileAction);
-  };
-
-  const rejectEdit = () => {
-    setNewFile(null);
   };
 
   const renderAssistantMessage = (message: UIMessage) => {
@@ -232,19 +263,29 @@ export function Chat({
           ) : (
             // Messages
             <>
-              {messages.map((message) => (
-                <div key={message.id}>
-                  {message.role === "user"
+              {messages.map((message, index) => {
+                const extend =
+                  index === messages.length - 1 && message.role === "assistant";
+                const messageElement =
+                  message.role === "user"
                     ? renderUserMessage(message)
-                    : renderAssistantMessage(message)}
-                </div>
-              ))}
+                    : renderAssistantMessage(message);
+
+                return (
+                  <div
+                    key={message.id}
+                    className={clsx(extend && "min-h-[calc(-500px+100dvh)]")}
+                  >
+                    {messageElement}
+                  </div>
+                );
+              })}
 
               {/* Show spinner if waiting for assistant response */}
               {status !== "ready" &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === "user" && (
-                  <div className="p-4">
+                  <div className="p-4 min-h-[calc(-500px+100dvh)]">
                     <LoaderCircle className="animate-spin" />
                   </div>
                 )}
@@ -255,7 +296,7 @@ export function Chat({
         <div
           className={clsx(
             "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
-            autoScroll
+            atBottom
               ? "opacity-0 pointer-events-none"
               : "opacity-100 pointer-events-auto"
           )}
@@ -265,28 +306,13 @@ export function Chat({
             variant="outline"
             className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
             onClick={() => {
-              scrollToBottom("smooth");
+              scrollToBottom();
             }}
           >
             <ArrowDown />
           </Button>
         </div>
       </div>
-
-      {/* Accept and reject buttons */}
-      {newFile !== null && (
-        <div className="border-x border-t rounded-t-md mx-4 flex justify-between overflow-hidden">
-          <div className="flex items-center text-muted-foreground px-3 py-2">
-            File edited
-          </div>
-          <div className="flex gap-2 p-2">
-            <Button variant="ghost" onClick={rejectEdit}>
-              Reject
-            </Button>
-            <Button onClick={acceptEdit}>Accept</Button>
-          </div>
-        </div>
-      )}
 
       {/* Input */}
       <form

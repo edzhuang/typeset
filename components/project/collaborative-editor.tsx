@@ -95,6 +95,23 @@ export default function CollaborativeEditor({
   };
   const [, action, pending] = useActionState(compile, undefined);
 
+  const acceptEdit = () => {
+    if (newFile === null) {
+      return;
+    }
+
+    const yText = yProvider.getYDoc().getText("codemirror");
+    yText.delete(0, yText.length);
+    yText.insert(0, newFile);
+
+    setNewFile(null);
+    startTransition(action);
+  };
+
+  const rejectEdit = () => {
+    setNewFile(null);
+  };
+
   return (
     <div className="flex flex-col h-dvh bg-editor text-sm">
       <NavigationMenu className="max-w-none p-2">
@@ -195,20 +212,25 @@ export default function CollaborativeEditor({
       >
         <ResizablePanel defaultSize={20}>
           <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
-            <Chat
-              yProvider={yProvider}
-              newFile={newFile}
-              setNewFile={setNewFile}
-              compileAction={action}
-            />
+            <Chat yProvider={yProvider} setNewFile={setNewFile} />
           </div>
         </ResizablePanel>
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
         <ResizablePanel defaultSize={40}>
-          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border">
+          <div className="flex flex-col h-full rounded-md overflow-hidden bg-editor-panel border relative">
             <Editor room={room} yProvider={yProvider} newFile={newFile} />
+
+            {/* Accept and reject buttons */}
+            {newFile !== null && (
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-editor border rounded-md p-2 flex gap-2">
+                <Button variant="ghost" onClick={rejectEdit}>
+                  Reject
+                </Button>
+                <Button onClick={acceptEdit}>Accept</Button>
+              </div>
+            )}
           </div>
         </ResizablePanel>
 

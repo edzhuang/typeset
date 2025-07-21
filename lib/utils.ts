@@ -16,7 +16,7 @@ export const customTheme = EditorView.theme({
   },
   ".cm-content": {
     paddingTop: "1rem",
-    paddingBottom: "1rem",
+    paddingBottom: "6rem",
     fontSize: "13px",
     fontFamily: "var(--font-mono)",
   },
