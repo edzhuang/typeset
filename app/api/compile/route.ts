@@ -2,9 +2,10 @@ import { NextRequest } from "next/server";
 import { spawn } from "node:child_process";
 import { promises as fs } from "fs";
 import { join } from "path";
+import os from "os";
 
 export async function POST(request: NextRequest) {
-  const baseDir = "/tmp";
+  const baseDir = os.tmpdir();
 
   try {
     const body = await request.json();
@@ -18,7 +19,10 @@ export async function POST(request: NextRequest) {
     const cacheDir = join(baseDir, "cache");
     await fs.mkdir(cacheDir, { recursive: true });
 
-    const tectonicPath = join(process.cwd(), "bin", "tectonic");
+    const linuxTectonicPath = join(process.cwd(), "bin", "tectonic");
+    const windowsTectonicPath = join(process.cwd(), "bin", "tectonic.exe");
+    const tectonicPath =
+      process.platform === "win32" ? windowsTectonicPath : linuxTectonicPath;
     const proc = spawn(
       tectonicPath,
       ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
