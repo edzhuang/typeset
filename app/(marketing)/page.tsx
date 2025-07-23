@@ -4,9 +4,18 @@ import { SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
 
 export default function Page() {
+  const [mounted, setMounted] = useState(false);
   const { resolvedTheme } = useTheme();
+
+  // Ensure component is mounted before accessing theme
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Use a fallback during SSR or before mounting
   const previewSrc =
     resolvedTheme === "dark" ? "/preview-dark.png" : "/preview-light.png";
 
@@ -29,14 +38,16 @@ export default function Page() {
       </div>
 
       <div className="flex flex-col items-start sm:items-center px-5 md:px-10 pb-14 md:pb-24 overflow-hidden">
-        <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border">
-          <Image
-            src={previewSrc}
-            width={2880}
-            height={1880}
-            alt="Preview of the app"
-          />
-        </div>
+        {mounted && (
+          <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border">
+            <Image
+              src={previewSrc}
+              width={2880}
+              height={1800}
+              alt="Preview of the app"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
