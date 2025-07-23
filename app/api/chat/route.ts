@@ -8,8 +8,25 @@ import { z } from "zod";
 // Allow streaming responses up to 30 seconds
 export const maxDuration = 30;
 
+export function errorHandler(error: unknown) {
+  if (error == null) {
+    return "unknown error";
+  }
+
+  if (typeof error === "string") {
+    return error;
+  }
+
+  if (error instanceof Error) {
+    return error.message;
+  }
+
+  return JSON.stringify(error);
+}
+
 export async function POST(req: Request) {
   const { messages, model } = await req.json();
+  console.log(process.env.OPENAI_API_KEY);
 
   let selectedModel;
   switch (model) {
@@ -45,5 +62,5 @@ export async function POST(req: Request) {
     },
   });
 
-  return result.toDataStreamResponse();
+  return result.toDataStreamResponse({ getErrorMessage: errorHandler });
 }
