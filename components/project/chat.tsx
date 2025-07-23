@@ -28,8 +28,8 @@ import {
 import clsx from "clsx";
 import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
-import { CircleCheck } from "lucide-react";
-import { Alert, AlertTitle } from "@/components/ui/alert";
+import { CircleCheck, AlertCircleIcon } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
@@ -49,7 +49,9 @@ export function Chat({
     messages,
     status,
     input,
+    error,
     stop,
+    reload,
     setInput,
     handleInputChange,
     handleSubmit,
@@ -61,6 +63,9 @@ export function Chat({
         setNewFile(args.newFile);
         return "File edited";
       }
+    },
+    onError: (error) => {
+      console.error(error);
     },
   });
   const [model, setModel] = useState("gemini-2.5-flash");
@@ -281,14 +286,31 @@ export function Chat({
                 );
               })}
 
-              {/* Show spinner if waiting for assistant response */}
-              {status !== "ready" &&
+              {status === "submitted" &&
                 messages.length > 0 &&
                 messages[messages.length - 1].role === "user" && (
                   <div className="p-4 min-h-[calc(-500px+100dvh)]">
                     <LoaderCircle className="animate-spin" />
                   </div>
                 )}
+
+              {error && (
+                <div className="p-4 min-h-[calc(-500px+100dvh)]">
+                  <Alert variant="destructive">
+                    <AlertCircleIcon />
+                    <AlertTitle>An error occurred.</AlertTitle>
+                    <AlertDescription>
+                      <Button
+                        variant="destructive"
+                        onClick={() => reload()}
+                        className="mt-2"
+                      >
+                        Retry
+                      </Button>
+                    </AlertDescription>
+                  </Alert>
+                </div>
+              )}
             </>
           )}
         </div>
@@ -331,6 +353,7 @@ export function Chat({
           onKeyDown={handleKeyDown}
           className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
                       resize-none max-h-42 border-none"
+          disabled={error != null}
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
