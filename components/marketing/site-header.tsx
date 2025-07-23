@@ -26,7 +26,7 @@ export function SiteHeader() {
           <NavigationMenuList className="gap-2">
             <NavigationMenuItem className="hidden lg:block">
               <SignInButton>
-                <Button variant="outline" size="sm">
+                <Button variant="ghost" size="sm">
                   Log In
                 </Button>
               </SignInButton>
