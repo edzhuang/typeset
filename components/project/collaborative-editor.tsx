@@ -23,12 +23,10 @@ import {
 import { use, useState, useActionState, startTransition } from "react";
 import { getYjsProviderForRoom } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
-import { useTheme } from "next-themes";
 import { PdfViewer } from "@/components/project/pdf-viewer";
 import { Chat } from "@/components/project/chat";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
-import { dark } from "@clerk/themes";
 import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
 import { UserButtonSkeleton } from "@/components/project/skeletons";
@@ -51,7 +49,6 @@ export default function CollaborativeEditor({
 }) {
   const room = useRoom();
   const router = useRouter();
-  const { resolvedTheme } = useTheme();
   const projectTitle = use(title);
   const yProvider = getYjsProviderForRoom(room);
 
@@ -192,7 +189,6 @@ export default function CollaborativeEditor({
               <NavigationMenuItem className="flex flex-1 item-center">
                 <UserButton
                   appearance={{
-                    baseTheme: resolvedTheme === "dark" ? dark : undefined,
                     elements: {
                       avatarBox: "size-8!",
                     },

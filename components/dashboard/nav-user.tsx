@@ -19,8 +19,6 @@ import {
 } from "@/components/ui/sidebar";
 import { SignOutButton } from "@clerk/nextjs";
 import { useClerk } from "@clerk/nextjs";
-import { useTheme } from "next-themes";
-import { dark } from "@clerk/themes";
 
 export function NavUser({
   user,
@@ -32,7 +30,6 @@ export function NavUser({
   };
 }) {
   const { isMobile } = useSidebar();
-  const { resolvedTheme } = useTheme();
   const { openUserProfile } = useClerk();
 
   return (
@@ -79,15 +76,7 @@ export function NavUser({
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem
-                onSelect={() =>
-                  openUserProfile({
-                    appearance: {
-                      baseTheme: resolvedTheme === "dark" ? dark : undefined,
-                    },
-                  })
-                }
-              >
+              <DropdownMenuItem onSelect={() => openUserProfile()}>
                 <User />
                 Account
               </DropdownMenuItem>
