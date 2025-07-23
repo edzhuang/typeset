@@ -54,9 +54,6 @@ export const columns: ColumnDef<Project>[] = [
   },
   {
     id: "actions",
-    meta: {
-      headerClassName: "w-12",
-    },
     cell: ({ row }) => {
       const project = row.original;
 
