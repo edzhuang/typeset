@@ -1,7 +1,15 @@
+"use client";
+
 import { SignUpButton } from "@clerk/nextjs";
 import { Button } from "@/components/ui/button";
+import Image from "next/image";
+import { useTheme } from "next-themes";
 
 export default function Page() {
+  const { resolvedTheme } = useTheme();
+  const previewSrc =
+    resolvedTheme === "dark" ? "/preview-dark.png" : "/preview-light.png";
+
   return (
     <div className="grow flex flex-col">
       <div className="flex justify-center">
@@ -17,6 +25,17 @@ export default function Page() {
               <Button>Get Started</Button>
             </SignUpButton>
           </div>
+        </div>
+      </div>
+
+      <div className="flex flex-col items-start sm:items-center px-5 md:px-10 pb-14 md:pb-24 overflow-hidden">
+        <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border">
+          <Image
+            src={previewSrc}
+            width={2880}
+            height={1880}
+            alt="Preview of the app"
+          />
         </div>
       </div>
     </div>
