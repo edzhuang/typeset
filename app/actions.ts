@@ -1,15 +1,11 @@
 "use server";
 
-import { Liveblocks } from "@liveblocks/node";
+import { liveblocks } from "@/lib/liveblocks";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
 import { revalidatePath } from "next/cache";
 import * as Y from "yjs";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
-});
 
 function generateLatexTemplate(author: string): string {
   return [

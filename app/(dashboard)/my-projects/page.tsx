@@ -1,12 +1,8 @@
 import { columns, Project } from "@/components/dashboard/my-projects/columns";
 import { SiteHeader } from "@/components/dashboard/site-header";
 import { DataTable } from "@/components/dashboard/data-table";
-import { Liveblocks } from "@liveblocks/node";
+import { liveblocks } from "@/lib/liveblocks";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
-});
 
 async function getData(): Promise<Project[]> {
   const user = await currentUser();

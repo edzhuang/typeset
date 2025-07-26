@@ -1,13 +1,10 @@
 import { Providers } from "@/components/project/providers";
 import { CollaborativeEditor } from "@/components/project/collaborative-editor";
-import { Liveblocks, RoomData } from "@liveblocks/node";
+import { liveblocks } from "@/lib/liveblocks";
+import { RoomData } from "@liveblocks/node";
 import { UserAccessInfo } from "@/types/user-access";
 import { clerkClient, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
-});
 
 const getTitle = async (room: RoomData) => {
   return room.metadata.title as string;

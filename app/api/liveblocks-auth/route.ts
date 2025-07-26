@@ -1,9 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { Liveblocks } from "@liveblocks/node";
-
-const liveblocks = new Liveblocks({
-  secret: process.env.LIVEBLOCKS_SECRET_KEY!,
-});
+import { liveblocks } from "@/lib/liveblocks";
 
 // Function to generate a random color
 function generateRandomColor(): string {
