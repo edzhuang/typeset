@@ -1,5 +1,5 @@
 import { Providers } from "@/components/project/providers";
-import CollaborativeEditor from "@/components/project/collaborative-editor";
+import { CollaborativeEditor } from "@/components/project/collaborative-editor";
 import { Liveblocks, RoomData } from "@liveblocks/node";
 import { UserAccessInfo } from "@/types/user-access";
 import { clerkClient, User } from "@clerk/nextjs/server";

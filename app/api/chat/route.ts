@@ -13,14 +13,14 @@ export async function POST(req: Request) {
 
   let selectedModel;
   switch (model) {
-    case "gemini-2.5-flash":
-      selectedModel = google("gemini-2.5-flash");
-      break;
     case "gpt-4.1-mini":
       selectedModel = openai("gpt-4.1-mini");
       break;
-    default:
+    case "gemini-2.5-flash":
       selectedModel = google("gemini-2.5-flash");
+      break;
+    default:
+      selectedModel = openai("gpt-4.1-mini");
   }
 
   const systemPromptPath = path.join(process.cwd(), "docs", "system-prompt.md");

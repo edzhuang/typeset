@@ -68,7 +68,7 @@ export function Chat({
       console.error(error);
     },
   });
-  const [model, setModel] = useState("gemini-2.5-flash");
+  const [model, setModel] = useState("gpt-4.1-mini");
   const scrollareaRef = useRef<HTMLDivElement | null>(null);
   const [atBottom, setAtBottom] = useState(true);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
@@ -209,6 +209,12 @@ export function Chat({
                 case "editFile": {
                   switch (part.toolInvocation.state) {
                     case "partial-call":
+                      return (
+                        <Alert key={callId}>
+                          <LoaderCircle className="animate-spin" />
+                          <AlertTitle>Editing file...</AlertTitle>
+                        </Alert>
+                      );
                     case "call":
                       return (
                         <Alert key={callId}>
@@ -362,8 +368,8 @@ export function Chat({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
               <SelectItem value="gpt-4.1-mini">GPT-4.1 mini</SelectItem>
+              <SelectItem value="gemini-2.5-flash">Gemini 2.5 Flash</SelectItem>
             </SelectContent>
           </Select>
           {(status === "ready" || status === "error") && (
