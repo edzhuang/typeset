@@ -30,6 +30,7 @@ import { LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { UIMessage } from "ai";
 import { CircleCheck, AlertCircleIcon } from "lucide-react";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
+import { AutoSizeTextarea } from "@/components/project/auto-size-textarea";
 
 const promptSuggestions = [
   "Add Transformer attention formula",
@@ -348,22 +349,22 @@ export function Chat({
 
       {/* Input */}
       <form
-        className="mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 has-[textarea:focus]:ring-[3px]
+        className="flex flex-col gap-0 mx-2 mb-2 overflow-hidden cursor-text border-input has-[textarea:focus]:border-ring has-[textarea:focus]:ring-ring/50 has-[textarea:focus]:ring-[3px]
                    dark:bg-input/30 rounded-md border bg-transparent shadow-xs transition-[color,box-shadow] outline-none z-10"
         onSubmit={onSubmit}
         onClick={() => {
           textareaRef.current?.focus();
         }}
       >
-        <textarea
+        <AutoSizeTextarea
           ref={textareaRef}
           value={input}
           placeholder="Say something..."
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
-          className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
-                      resize-none min-h-[40px] max-h-42 border-none"
           disabled={error != null}
+          maxRows={10}
+          className="placeholder:text-muted-foreground w-full bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-auto max-h-40"
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
