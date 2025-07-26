@@ -358,7 +358,7 @@ export function Chat({
           onChange={handleInputChange}
           onKeyDown={handleKeyDown}
           className="placeholder:text-muted-foreground flex field-sizing-content w-full rounded-md border bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm
-                      resize-none max-h-42 border-none"
+                      resize-none min-h-[40px] max-h-42 border-none"
           disabled={error != null}
         />
 
