@@ -170,15 +170,13 @@ export function Chat({
 
   const renderUserMessage = (message: UIMessage) => {
     return (
-      <div className="flex justify-end p-4">
-        <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
-          {message.parts.map((part, i) => {
-            switch (part.type) {
-              case "text":
-                return <div key={`${message.id}-${i}`}>{part.text}</div>;
-            }
-          })}
-        </div>
+      <div className="whitespace-pre-wrap flex rounded-lg px-3 py-2 bg-muted">
+        {message.parts.map((part, i) => {
+          switch (part.type) {
+            case "text":
+              return <div key={`${message.id}-${i}`}>{part.text}</div>;
+          }
+        })}
       </div>
     );
   };
@@ -186,7 +184,7 @@ export function Chat({
   const renderAssistantMessage = (message: UIMessage) => {
     return (
       <div
-        className="prose prose-sm dark:prose-invert p-4 space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent
+        className="prose prose-sm dark:prose-invert space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent
                       prose-pre:p-4 prose-pre:overflow-x-auto prose-code:text-[13px] prose-code:p-0"
       >
         {message.parts.map((part, i) => {
@@ -240,105 +238,111 @@ export function Chat({
 
   return (
     <div className="@container flex flex-col h-full">
-      <div className="flex-1 overflow-hidden relative">
+      <div className="flex flex-col flex-1 overflow-hidden relative">
         <div
-          ref={scrollareaRef}
-          className="flex flex-col size-full overflow-auto"
-        >
-          {messages.length == 0 ? (
-            // Welcome screen
-            <div className="flex flex-col gap-4 grow justify-center py-4">
-              <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
-                <BotMessageSquare className="size-10" />
-                <h1 className="text-lg">Chat</h1>
-              </div>
-
-              <div
-                className="flex justify-start @sm:justify-center overflow-x-auto"
-                style={{ scrollbarWidth: "none" }}
-              >
-                <div className="flex gap-2 justify-start @sm:justify-center px-4 min-w-md @sm:min-w-0 max-w-md flex-wrap">
-                  {promptSuggestions.map((suggestion) => (
-                    <Button
-                      key={suggestion}
-                      size="sm"
-                      variant="secondary"
-                      onClick={() => setInput(suggestion)}
-                    >
-                      {suggestion}
-                    </Button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          ) : (
-            // Messages
-            <>
-              {messages.map((message, index) => {
-                const extend =
-                  index === messages.length - 1 && message.role === "assistant";
-                const messageElement =
-                  message.role === "user"
-                    ? renderUserMessage(message)
-                    : renderAssistantMessage(message);
-
-                return (
-                  <div
-                    key={message.id}
-                    className={clsx(extend && "min-h-[calc(-500px+100dvh)]")}
-                  >
-                    {messageElement}
-                  </div>
-                );
-              })}
-
-              {status === "submitted" &&
-                messages.length > 0 &&
-                messages[messages.length - 1].role === "user" && (
-                  <div className="p-4 min-h-[calc(-500px+100dvh)]">
-                    <LoaderCircle className="animate-spin" />
-                  </div>
-                )}
-
-              {error && (
-                <div className="p-4 min-h-[calc(-500px+100dvh)]">
-                  <Alert variant="destructive">
-                    <AlertCircleIcon />
-                    <AlertTitle>An error occurred.</AlertTitle>
-                    <AlertDescription>
-                      <Button
-                        variant="destructive"
-                        onClick={() => reload()}
-                        className="mt-2"
-                      >
-                        Retry
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                </div>
-              )}
-            </>
+          className={clsx(
+            "flex flex-col flex-1 gap-4 grow justify-center py-4",
+            messages.length > 0 && "hidden"
           )}
+        >
+          <div className="flex flex-col justify-center items-center text-center px-4 gap-4">
+            <BotMessageSquare className="size-10" />
+            <h1 className="text-lg">Chat</h1>
+          </div>
+
+          <div
+            className="flex justify-start @sm:justify-center overflow-x-auto"
+            style={{ scrollbarWidth: "none" }}
+          >
+            <div className="flex gap-2 justify-start @sm:justify-center px-4 min-w-md @sm:min-w-0 max-w-md flex-wrap">
+              {promptSuggestions.map((suggestion) => (
+                <Button
+                  key={suggestion}
+                  size="sm"
+                  variant="secondary"
+                  onClick={() => setInput(suggestion)}
+                >
+                  {suggestion}
+                </Button>
+              ))}
+            </div>
+          </div>
         </div>
 
         <div
+          ref={scrollareaRef}
           className={clsx(
-            "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
-            atBottom
-              ? "opacity-0 pointer-events-none"
-              : "opacity-100 pointer-events-auto"
+            "size-full overflow-auto",
+            messages.length === 0 && "hidden"
           )}
         >
-          <Button
-            size="icon"
-            variant="outline"
-            className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
-            onClick={() => {
-              scrollToBottom();
-            }}
+          {messages.map((message, index) => {
+            return (
+              <div
+                key={message.id}
+                className={clsx(
+                  "p-4",
+                  index === messages.length - 1 &&
+                    message.role === "assistant" &&
+                    "min-h-[calc(-500px+100dvh)]"
+                )}
+              >
+                {message.role === "user" ? (
+                  <div className="flex justify-end">
+                    {renderUserMessage(message)}
+                  </div>
+                ) : (
+                  renderAssistantMessage(message)
+                )}
+              </div>
+            );
+          })}
+
+          {messages.length > 0 &&
+            messages[messages.length - 1].role === "user" &&
+            (status === "submitted" || status === "streaming") && (
+              <div className="p-4 min-h-[calc(-500px+100dvh)]">
+                <LoaderCircle className="animate-spin" />
+              </div>
+            )}
+
+          {error && (
+            <div className="p-4 min-h-[calc(-500px+100dvh)]">
+              <Alert variant="destructive">
+                <AlertCircleIcon />
+                <AlertTitle>An error occurred.</AlertTitle>
+                <AlertDescription>
+                  <Button
+                    variant="destructive"
+                    onClick={() => reload()}
+                    className="mt-2"
+                  >
+                    Retry
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            </div>
+          )}
+
+          <div
+            className={clsx(
+              "absolute flex justify-center inset-x-0 bottom-2 z-10 transition-opacity duration-200",
+              atBottom
+                ? "opacity-0 pointer-events-none"
+                : "opacity-100 pointer-events-auto"
+            )}
           >
-            <ArrowDown />
-          </Button>
+            <Button
+              size="icon"
+              variant="outline"
+              className="rounded-full bg-editor-panel dark:bg-editor-panel hover:bg-editor-panel dark:hover:bg-editor-panel"
+              onClick={() => {
+                scrollToBottom();
+              }}
+            >
+              <ArrowDown />
+            </Button>
+          </div>
         </div>
       </div>
 
