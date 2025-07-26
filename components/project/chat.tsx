@@ -364,7 +364,7 @@ export function Chat({
           onKeyDown={handleKeyDown}
           disabled={error != null}
           maxRows={10}
-          className="placeholder:text-muted-foreground w-full bg-transparent px-3 py-2 text-base outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-auto max-h-40"
+          className="placeholder:text-muted-foreground w-full bg-transparent px-3 py-2 text-sm outline-none disabled:cursor-not-allowed disabled:opacity-50 md:text-sm resize-none overflow-auto max-h-40"
         />
 
         <div className="flex justify-between p-2 pointer-events-none gap-2">
