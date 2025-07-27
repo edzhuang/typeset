@@ -1,5 +1,3 @@
-import { auth } from "@clerk/nextjs/server";
-import { redirect } from "next/navigation";
 import { SiteHeader } from "@/components/marketing/site-header";
 
 export default async function Layout({
@@ -7,9 +5,6 @@ export default async function Layout({
 }: {
   children: React.ReactNode;
 }) {
-  const { userId } = await auth();
-  if (userId) redirect("/my-projects");
-
   return (
     <div className="bg-background relative flex min-h-svh flex-col">
       <SiteHeader />
