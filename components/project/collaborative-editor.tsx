@@ -105,7 +105,7 @@ export function CollaborativeEditor({
 
   if (isMobile) {
     return (
-      <div className="flex flex-col h-dvh bg-editor text-sm">
+      <div className="flex flex-col h-dvh bg-editor text-sm scrollbar-custom">
         <NavigationMenu className="flex-0 max-w-none p-2">
           <div className="grid grid-cols-[1fr_auto_1fr] w-full">
             <div className="flex">
@@ -178,7 +178,7 @@ export function CollaborativeEditor({
   }
 
   return (
-    <div className="flex flex-col h-dvh bg-editor text-sm">
+    <div className="flex flex-col h-dvh bg-editor text-sm scrollbar-custom">
       <NavigationMenu className="max-w-none p-2">
         <div className="grid grid-cols-[1fr_auto_1fr] w-full">
           <div className="flex">

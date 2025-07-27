@@ -129,7 +129,8 @@
 }
 
 /* Scrollbar styling */
-* {
+.scrollbar-custom,
+.scrollbar-custom * {
   scrollbar-width: thin;
   scrollbar-color: var(--border) transparent;
 }

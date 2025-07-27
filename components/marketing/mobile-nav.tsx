@@ -56,10 +56,10 @@ export function MobileNav({ className }: { className?: string }) {
             </div>
             <div className="flex flex-col gap-3">
               <SignInButton>
-                <span className="text-2xl font-medium">Log In</span>
+                <span className="text-2xl font-medium">Log in</span>
               </SignInButton>
               <SignUpButton>
-                <span className="text-2xl font-medium">Sign Up</span>
+                <span className="text-2xl font-medium">Sign up</span>
               </SignUpButton>
             </div>
           </div>

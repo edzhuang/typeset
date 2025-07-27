@@ -8,6 +8,7 @@ export default async function Layout({
 }) {
   return (
     <SidebarProvider
+      className="scrollbar-custom"
       style={
         {
           "--sidebar-width": "calc(var(--spacing) * 72)",
