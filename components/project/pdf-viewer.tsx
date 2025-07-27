@@ -108,13 +108,13 @@ export function PdfViewer({ file }: { file: string | File }) {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="@container flex flex-col h-full">
       {/* Top toolbar */}
-      <div className="flex justify-between p-2 border-b gap-2">
+      <div className="flex-0 grid grid-cols-[1fr_auto_1fr] p-2 border-b gap-2">
         {/* Page selector */}
         <div className="flex items-center gap-2">
           <Input
-            className="w-9 p-0 text-center [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+            className="w-9 p-0 text-center text-sm [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             type="number"
             value={pageInput}
             onChange={(e) => setPageInput(e.target.value)}
@@ -136,26 +136,32 @@ export function PdfViewer({ file }: { file: string | File }) {
           <Button variant="ghost" size="icon" onClick={zoomOut}>
             <ZoomOut />
           </Button>
-          <div className="w-10 text-center">{Math.round(zoom * 100)}%</div>
+          <div className="w-10 text-center hidden @sm:block">
+            {Math.round(zoom * 100)}%
+          </div>
           <Button variant="ghost" size="icon" onClick={zoomIn}>
             <ZoomIn />
           </Button>
         </div>
 
         {/* Download button */}
-        <div>
-          <Button variant="ghost" size="icon" asChild>
-            <Link
-              href={typeof file === "string" ? file : URL.createObjectURL(file)}
-              download={typeof file === "string" ? "output" : file.name}
-            >
-              <Download />
-            </Link>
-          </Button>
+        <div className="flex justify-end">
+          <div>
+            <Button variant="ghost" size="icon" asChild>
+              <Link
+                href={
+                  typeof file === "string" ? file : URL.createObjectURL(file)
+                }
+                download={typeof file === "string" ? "output" : file.name}
+              >
+                <Download />
+              </Link>
+            </Button>
+          </div>
         </div>
       </div>
       {/* Scrollable PDF content */}
-      <div ref={scrollareaRef} className="size-full overflow-auto">
+      <div ref={scrollareaRef} className="flex-1 overflow-auto">
         <Document
           className="flex flex-col w-min mx-auto"
           file={file}
