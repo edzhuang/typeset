@@ -8,16 +8,12 @@ export function SiteFooter() {
           <div className="text-muted-foreground w-full px-1 text-center text-xs leading-loose sm:text-sm space-x-2">
             <Link
               href="/terms"
-              target="_blank"
-              rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
               Terms of service
             </Link>
             <Link
               href="/privacy"
-              target="_blank"
-              rel="noreferrer"
               className="font-medium underline underline-offset-4"
             >
               Privacy policy
