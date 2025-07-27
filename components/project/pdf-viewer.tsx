@@ -161,9 +161,9 @@ export function PdfViewer({ file }: { file: string | File }) {
         </div>
       </div>
       {/* Scrollable PDF content */}
-      <div ref={scrollareaRef} className="flex-1 overflow-auto">
+      <div ref={scrollareaRef} className="flex-1 overflow-auto z-10">
         <Document
-          className="flex flex-col w-min mx-auto"
+          className="flex flex-col w-min mx-auto z-0"
           file={file}
           onLoadSuccess={onDocumentLoadSuccess}
         >
@@ -181,7 +181,7 @@ export function PdfViewer({ file }: { file: string | File }) {
                   width={816}
                   scale={zoom}
                   onRenderSuccess={onPageRenderSuccess}
-                  className="z-0 border"
+                  className="border"
                 />
               </div>
             ))}
