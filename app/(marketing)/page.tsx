@@ -26,7 +26,7 @@ export default async function Page() {
         </div>
       </div>
 
-      <div className="flex flex-col items-start sm:items-center px-5 md:px-10 pb-14 md:pb-24 overflow-hidden">
+      <div className="flex flex-col items-start sm:items-center px-6 md:px-10 pb-6 overflow-hidden">
         <PreviewImage />
       </div>
     </div>
