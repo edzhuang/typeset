@@ -186,7 +186,7 @@ export function Chat({
     return (
       <div
         className="prose prose-sm dark:prose-invert space-y-2 max-w-none prose-figure:rounded-md prose-figure:border prose-pre:bg-transparent
-                      prose-pre:p-4 prose-pre:overflow-x-auto prose-code:text-[13px] prose-code:p-0"
+                      prose-pre:p-0 prose-code:text-[13px] prose-code:p-4 prose-code:overflow-x-auto"
       >
         {message.parts.map((part, i) => {
           const partId = `${message.id}-${i}`;

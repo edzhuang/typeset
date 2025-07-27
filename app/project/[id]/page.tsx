@@ -2,7 +2,7 @@ import { Providers } from "@/components/project/providers";
 import { CollaborativeEditor } from "@/components/project/collaborative-editor";
 import { liveblocks } from "@/lib/liveblocks";
 import { RoomData } from "@liveblocks/node";
-import { UserAccessInfo } from "@/types/user-access";
+import { UserAccessInfo } from "@/components/project/user-access-row";
 import { clerkClient, User } from "@clerk/nextjs/server";
 import { notFound } from "next/navigation";
 

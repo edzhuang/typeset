@@ -38,7 +38,7 @@ import { Avatars } from "@/components/project/avatars";
 import { renameProject } from "@/app/actions";
 import { UserButtonSkeleton } from "@/components/project/skeletons";
 import { InviteDialog } from "@/components/project/invite-dialog";
-import { UserAccessInfo } from "@/types/user-access";
+import { UserAccessInfo } from "@/components/project/user-access-row";
 import {
   Popover,
   PopoverContent,

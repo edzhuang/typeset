@@ -10,7 +10,13 @@ import {
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 import { useState } from "react";
 import { removeFromProject } from "@/app/actions";
-import { UserAccessInfo } from "@/types/user-access";
+
+export interface UserAccessInfo {
+  imageUrl: string | null;
+  name: string | null;
+  email: string;
+  access: "owner" | "can edit" | "can view";
+}
 
 export function UserAccessRow({
   projectId,

@@ -1,5 +1,5 @@
 import React, { use } from "react";
-import { UserAccessInfo } from "@/types/user-access";
+import { UserAccessInfo } from "@/components/project/user-access-row";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
