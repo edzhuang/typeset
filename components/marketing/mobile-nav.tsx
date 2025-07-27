@@ -8,7 +8,8 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import Link from "next/link";
 
 export function MobileNav({ className }: { className?: string }) {
   const [open, setOpen] = React.useState(false);
@@ -55,12 +56,20 @@ export function MobileNav({ className }: { className?: string }) {
               Menu
             </div>
             <div className="flex flex-col gap-3">
-              <SignInButton>
-                <span className="text-2xl font-medium">Log in</span>
-              </SignInButton>
-              <SignUpButton>
-                <span className="text-2xl font-medium">Sign up</span>
-              </SignUpButton>
+              <SignedOut>
+                <SignInButton>
+                  <span className="text-2xl font-medium">Log In</span>
+                </SignInButton>
+                <SignUpButton>
+                  <span className="text-2xl font-medium">Sign Up</span>
+                </SignUpButton>
+              </SignedOut>
+
+              <SignedIn>
+                <Link className="text-2xl font-medium" href="/my-projects">
+                  Open App
+                </Link>
+              </SignedIn>
             </div>
           </div>
         </div>
