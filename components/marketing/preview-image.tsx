@@ -20,8 +20,8 @@ export function PreviewImage() {
     <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border">
       <Image
         src={`/preview-${resolvedTheme}.png`}
-        width={2880}
-        height={1800}
+        width={2940}
+        height={1840}
         alt="Preview of the app"
       />
     </div>
