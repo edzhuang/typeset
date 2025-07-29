@@ -19,10 +19,11 @@ export async function POST(request: NextRequest) {
     const cacheDir = join(baseDir, "cache");
     await fs.mkdir(cacheDir, { recursive: true });
 
-    const linuxTectonicPath = join(process.cwd(), "bin", "tectonic");
-    const windowsTectonicPath = join(process.cwd(), "bin", "tectonic.exe");
-    const tectonicPath =
-      process.platform === "win32" ? windowsTectonicPath : linuxTectonicPath;
+    let tectonicPath = join(process.cwd(), "bin", "tectonic");
+    if (process.platform === "darwin") {
+      tectonicPath = "/usr/local/bin/tectonic";
+    }
+
     const proc = spawn(
       tectonicPath,
       ["-X", "compile", srcPath, "--outdir", outDir, "--synctex=false"],
