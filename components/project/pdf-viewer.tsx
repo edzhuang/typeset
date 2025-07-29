@@ -100,11 +100,11 @@ export function PdfViewer({ file }: { file: string | File }) {
   };
 
   const zoomIn = () => {
-    setZoom((prevZoom) => Math.min(prevZoom + 0.25, 5));
+    setZoom((prevZoom) => Math.min(prevZoom + 0.2, 5));
   };
 
   const zoomOut = () => {
-    setZoom((prevZoom) => Math.max(prevZoom - 0.25, 0.25));
+    setZoom((prevZoom) => Math.max(prevZoom - 0.2, 0.2));
   };
 
   return (
