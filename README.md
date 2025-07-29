@@ -15,6 +15,7 @@ https://github.com/user-attachments/assets/1b8a7d30-34a3-4ba2-8b7d-9e181cbf4983
 - Next.js
 - Vercel
 - TypeScript
+- AI SDK
 - shadcn/ui
 - Clerk
 - Liveblocks
