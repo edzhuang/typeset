@@ -22,6 +22,7 @@ export function PreviewImage() {
         src={`/preview-${resolvedTheme}.png`}
         width={2940}
         height={1840}
+        quality={100}
         alt="Preview of the app"
       />
     </div>
