@@ -30,7 +30,7 @@ export function DemoVideo() {
           <iframe
             key={open ? "open" : "closed"}
             className="max-w-[1280px] max-h-[720px] w-full h-auto md:size-full aspect-video z-10"
-            src="https://www.youtube.com/embed/thOFQq8fat0?si=Pjlc5qGxUSgl7vs2&autoplay=1"
+            src="https://www.youtube.com/embed/__-EeI9c2NI?si=Kb1eUHGTcb1nAA8C&autoplay=1"
             allowFullScreen
             allow="autoplay"
           />
