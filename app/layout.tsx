@@ -27,12 +27,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable}`}
-    >
-      <body className={`bg-background text-foreground font-sans antialiased`}>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`bg-background text-foreground font-sans antialiased ${geistSans.variable} ${geistMono.variable}`}
+      >
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
