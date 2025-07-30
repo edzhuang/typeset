@@ -16,7 +16,7 @@ export function DemoVideo() {
       {open && (
         <div
           onClick={() => setOpen(false)}
-          className="fixed bg-black inset-0 flex flex-col justify-center items-center md:p-5"
+          className="fixed dark text-foreground bg-background inset-0 flex flex-col justify-center items-center md:p-5"
         >
           <Button
             className="absolute right-5 top-5"
