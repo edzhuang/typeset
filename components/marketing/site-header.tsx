@@ -20,7 +20,7 @@ export function SiteHeader() {
       <div className="flex h-14 items-center justify-between gap-2 w-full box-content max-w-[1248px] px-6">
         <NavigationMenuList>
           <NavigationMenuItem>
-            <Link href="/" className="flex flex-row gap-2 items-center">
+            <Link href="/home" className="flex flex-row gap-2 items-center">
               <Image src="/typeset.svg" width={24} height={24} alt="Logo" />
               <span className="text-base font-semibold">Typeset</span>
             </Link>
