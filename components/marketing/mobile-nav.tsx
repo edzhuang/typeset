@@ -9,9 +9,10 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
-import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export function MobileNav({ className }: { className?: string }) {
+  const router = useRouter();
   const [open, setOpen] = React.useState(false);
 
   return (
@@ -50,25 +51,22 @@ export function MobileNav({ className }: { className?: string }) {
         alignOffset={-16}
         sideOffset={12}
       >
-        <div className="flex flex-col gap-12 overflow-auto px-6 py-6">
-          <div className="flex flex-col gap-4">
-            <div className="text-muted-foreground text-sm font-medium">
-              Menu
-            </div>
+        <div className="flex h-full flex-col gap-12 overflow-auto px-6 py-6">
+          <div className="flex flex-1 flex-col">
             <div className="flex flex-col gap-3">
               <SignedOut>
                 <SignInButton>
-                  <span className="text-2xl font-medium">Log In</span>
+                  <Button variant="outline">Log In</Button>
                 </SignInButton>
                 <SignUpButton>
-                  <span className="text-2xl font-medium">Sign Up</span>
+                  <Button>Sign Up</Button>
                 </SignUpButton>
               </SignedOut>
 
               <SignedIn>
-                <Link className="text-2xl font-medium" href="/my-projects">
+                <Button onClick={() => router.push("/my-projects")}>
                   Open App
-                </Link>
+                </Button>
               </SignedIn>
             </div>
           </div>
