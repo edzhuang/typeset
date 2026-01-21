@@ -4,6 +4,16 @@ import remarkGfm from "remark-gfm";
 
 const nextConfig: NextConfig = {
   pageExtensions: ["js", "jsx", "md", "mdx", "ts", "tsx"],
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Suppress webpack cache serialization warnings for large strings (e.g., from shiki themes)
+      config.infrastructureLogging = {
+        ...config.infrastructureLogging,
+        level: "error",
+      };
+    }
+    return config;
+  },
 };
 
 const withMDX = createMDX({

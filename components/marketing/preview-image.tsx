@@ -1,29 +1,25 @@
-"use client";
-
 import Image from "next/image";
-import { useTheme } from "next-themes";
-import { useState, useEffect } from "react";
 
 export function PreviewImage() {
-  const [mounted, setMounted] = useState(false);
-  const { resolvedTheme } = useTheme();
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
-
-  if (!mounted) {
-    return null;
-  }
-
   return (
-    <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border">
+    <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border bg-muted">
+      {/* Light theme image - hidden in dark mode via CSS */}
       <Image
-        src={`/preview-${resolvedTheme}.png`}
+        src="/preview-light.png"
         width={2940}
         height={1840}
-        quality={100}
+        priority
         alt="Preview of the app"
+        className="dark:hidden"
+      />
+      {/* Dark theme image - hidden in light mode via CSS */}
+      <Image
+        src="/preview-dark.png"
+        width={2940}
+        height={1840}
+        priority
+        alt="Preview of the app"
+        className="hidden dark:block"
       />
     </div>
   );
