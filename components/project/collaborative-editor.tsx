@@ -30,8 +30,7 @@ import {
 } from "react";
 import { getYjsProviderForRoom, LiveblocksYjsProvider } from "@liveblocks/yjs";
 import { useRoom } from "@liveblocks/react/suspense";
-import { PdfViewer } from "@/components/project/pdf-viewer";
-import { Chat } from "@/components/project/chat";
+import dynamic from "next/dynamic";
 import { UserButton } from "@clerk/nextjs";
 import { useRouter } from "next/navigation";
 import { Avatars } from "@/components/project/avatars";
@@ -45,9 +44,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover";
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
-import { Editor } from "@/components/project/editor";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Skeleton } from "@/components/ui/skeleton";
+
+// Dynamic imports for heavy components to improve initial load time
+const PdfViewer = dynamic(
+  () => import("@/components/project/pdf-viewer").then((mod) => mod.PdfViewer),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        <Loader2Icon className="animate-spin size-6" />
+      </div>
+    ),
+  }
+);
+
+const Editor = dynamic(
+  () => import("@/components/project/editor").then((mod) => mod.Editor),
+  {
+    ssr: false,
+    loading: () => <Skeleton className="h-full w-full" />,
+  }
+);
+
+const Chat = dynamic(
+  () => import("@/components/project/chat").then((mod) => mod.Chat),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex items-center justify-center h-full">
+        <Loader2Icon className="animate-spin size-6" />
+      </div>
+    ),
+  }
+);
 import { Room } from "@liveblocks/client";
 
 export function CollaborativeEditor({
