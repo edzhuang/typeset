@@ -3,6 +3,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { useTheme } from "next-themes";
+import { useMemo } from "react";
 
 export function ThemedClerkProvider({
   children,
@@ -11,14 +12,15 @@ export function ThemedClerkProvider({
 }) {
   const { resolvedTheme } = useTheme();
 
-  return (
-    <ClerkProvider
-      appearance={{
-        baseTheme: resolvedTheme === "dark" ? dark : undefined,
-        cssLayerName: "clerk",
-      }}
-    >
-      {children}
-    </ClerkProvider>
+  // Memoize the appearance object to prevent unnecessary re-renders
+  // ClerkProvider handles appearance updates without remounting
+  const appearance = useMemo(
+    () => ({
+      baseTheme: resolvedTheme === "dark" ? dark : undefined,
+      cssLayerName: "clerk" as const,
+    }),
+    [resolvedTheme]
   );
+
+  return <ClerkProvider appearance={appearance}>{children}</ClerkProvider>;
 }
