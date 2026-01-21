@@ -5,12 +5,20 @@ import {
   NavigationMenuItem,
   NavigationMenuList,
 } from "@/components/ui/navigation-menu";
-import { SignedIn, SignedOut, SignInButton, SignUpButton } from "@clerk/nextjs";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  SignUpButton,
+  ClerkLoading,
+  ClerkLoaded,
+} from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { MobileNav } from "@/components/marketing/mobile-nav";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export function SiteHeader() {
   const router = useRouter();
@@ -28,28 +36,38 @@ export function SiteHeader() {
         </NavigationMenuList>
 
         <NavigationMenuList className="gap-2">
-          <SignedOut>
-            <NavigationMenuItem className="hidden lg:block">
-              <SignInButton>
-                <Button variant="ghost" size="sm">
-                  Log In
-                </Button>
-              </SignInButton>
+          {/* Show skeleton while Clerk is loading */}
+          <ClerkLoading>
+            <NavigationMenuItem className="hidden lg:flex gap-2">
+              <Skeleton className="h-8 w-16" />
+              <Skeleton className="h-8 w-20" />
             </NavigationMenuItem>
-            <NavigationMenuItem className="hidden lg:block">
-              <SignUpButton>
-                <Button size="sm">Sign Up</Button>
-              </SignUpButton>
-            </NavigationMenuItem>
-          </SignedOut>
+          </ClerkLoading>
 
-          <SignedIn>
-            <NavigationMenuItem className="hidden lg:block">
-              <Button onClick={() => router.push("/my-projects")}>
-                Open App
-              </Button>
-            </NavigationMenuItem>
-          </SignedIn>
+          <ClerkLoaded>
+            <SignedOut>
+              <NavigationMenuItem className="hidden lg:block">
+                <SignInButton>
+                  <Button variant="ghost" size="sm">
+                    Log In
+                  </Button>
+                </SignInButton>
+              </NavigationMenuItem>
+              <NavigationMenuItem className="hidden lg:block">
+                <SignUpButton>
+                  <Button size="sm">Sign Up</Button>
+                </SignUpButton>
+              </NavigationMenuItem>
+            </SignedOut>
+
+            <SignedIn>
+              <NavigationMenuItem className="hidden lg:block">
+                <Button onClick={() => router.push("/my-projects")}>
+                  Open App
+                </Button>
+              </NavigationMenuItem>
+            </SignedIn>
+          </ClerkLoaded>
 
           <NavigationMenuItem className="lg:hidden">
             <MobileNav />
