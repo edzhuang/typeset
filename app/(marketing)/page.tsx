@@ -1,8 +1,13 @@
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 import Page from "@/app/(marketing)/home/page";
 
-// Allow static generation, auth check happens at runtime via middleware
-export const dynamic = "force-static";
-
 export default async function RootPage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/my-projects");
+  }
+
   return <Page />;
 }
