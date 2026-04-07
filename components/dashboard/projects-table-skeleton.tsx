@@ -1,4 +1,5 @@
 import { Skeleton } from "@/components/ui/skeleton";
+import { Input } from "@/components/ui/input";
 import {
   Table,
   TableBody,
@@ -12,7 +13,12 @@ export function ProjectsTableSkeleton() {
   return (
     <div>
       <div className="flex items-center py-4">
-        <Skeleton className="h-9 w-full max-w-sm" />
+        <Input
+          placeholder="Search projects..."
+          className="max-w-sm"
+          disabled
+          aria-label="Search projects"
+        />
       </div>
 
       <div className="rounded-md border">
