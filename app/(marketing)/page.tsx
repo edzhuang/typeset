@@ -1,11 +1,13 @@
 import Page from "@/app/(marketing)/home/page";
-import { AuthRedirect } from "@/components/marketing/auth-redirect";
+import { auth } from "@clerk/nextjs/server";
+import { redirect } from "next/navigation";
 
-export default function RootPage() {
-  return (
-    <>
-      <AuthRedirect />
-      <Page />
-    </>
-  );
+export default async function RootPage() {
+  const { userId } = await auth();
+
+  if (userId) {
+    redirect("/my-projects");
+  }
+
+  return <Page />;
 }
