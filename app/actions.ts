@@ -1,6 +1,6 @@
 "use server";
 
-import { liveblocks } from "@/lib/liveblocks";
+import { getLiveblocks } from "@/lib/liveblocks";
 import { currentUser } from "@clerk/nextjs/server";
 import { redirect } from "next/navigation";
 import { nanoid } from "nanoid";
@@ -41,7 +41,7 @@ export async function createProject() {
   yText.insert(0, template);
   const yUpdate = Y.encodeStateAsUpdate(yDoc);
 
-  await liveblocks.createRoom(projectId, {
+  await getLiveblocks().createRoom(projectId, {
     defaultAccesses: [],
     usersAccesses: {
       [email]: ["room:write"],
@@ -53,14 +53,14 @@ export async function createProject() {
   });
 
   // Initialize the Yjs document with the update
-  await liveblocks.sendYjsBinaryUpdate(projectId, yUpdate);
+  await getLiveblocks().sendYjsBinaryUpdate(projectId, yUpdate);
 
   revalidatePath("/my-projects");
   redirect(`/project/${projectId}`);
 }
 
 export async function deleteProject(projectId: string) {
-  await liveblocks.deleteRoom(projectId);
+  await getLiveblocks().deleteRoom(projectId);
   revalidatePath("/my-projects");
 }
 
@@ -69,7 +69,7 @@ export async function leaveProject(projectId: string) {
   if (!user || !user.primaryEmailAddress) return;
   const email = user.primaryEmailAddress.emailAddress;
 
-  await liveblocks.updateRoom(projectId, {
+  await getLiveblocks().updateRoom(projectId, {
     usersAccesses: {
       [email]: null,
     },
@@ -83,7 +83,7 @@ export async function renameProject(projectId: string, newTitle: string) {
     return;
   }
 
-  await liveblocks.updateRoom(projectId, {
+  await getLiveblocks().updateRoom(projectId, {
     metadata: {
       title: newTitle,
     },
@@ -95,7 +95,7 @@ export async function renameProject(projectId: string, newTitle: string) {
 }
 
 export async function inviteToProject(projectId: string, email: string) {
-  await liveblocks.updateRoom(projectId, {
+  await getLiveblocks().updateRoom(projectId, {
     usersAccesses: {
       [email]: ["room:write"],
     },
@@ -105,7 +105,7 @@ export async function inviteToProject(projectId: string, email: string) {
 }
 
 export async function removeFromProject(projectId: string, email: string) {
-  await liveblocks.updateRoom(projectId, {
+  await getLiveblocks().updateRoom(projectId, {
     usersAccesses: {
       [email]: null,
     },

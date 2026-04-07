@@ -1,7 +1,7 @@
 import { columns, Project } from "@/components/dashboard/my-projects/columns";
 import { SiteHeader } from "@/components/dashboard/site-header";
 import { DataTable } from "@/components/dashboard/data-table";
-import { liveblocks } from "@/lib/liveblocks";
+import { getLiveblocks } from "@/lib/liveblocks";
 import { currentUser, clerkClient } from "@clerk/nextjs/server";
 
 async function getData(): Promise<Project[]> {
@@ -9,7 +9,7 @@ async function getData(): Promise<Project[]> {
   if (!user || !user.primaryEmailAddress) return [];
   const email = user.primaryEmailAddress.emailAddress;
 
-  const { data: rooms } = await liveblocks.getRooms({
+  const { data: rooms } = await getLiveblocks().getRooms({
     userId: email,
     query: {
       metadata: {

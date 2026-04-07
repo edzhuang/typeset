@@ -1,6 +1,6 @@
 import { Providers } from "@/components/project/providers";
 import { CollaborativeEditor } from "@/components/project/collaborative-editor";
-import { liveblocks } from "@/lib/liveblocks";
+import { getLiveblocks } from "@/lib/liveblocks";
 import { RoomData } from "@liveblocks/node";
 import { UserAccessInfo } from "@/components/project/user-access-row";
 import { clerkClient, User } from "@clerk/nextjs/server";
@@ -65,7 +65,7 @@ export default async function Page({
   const { id } = await params;
 
   try {
-    const room = await liveblocks.getRoom(id);
+    const room = await getLiveblocks().getRoom(id);
     const title = getTitle(room);
     const userAccessInfo = getUserAccessInfo(room);
 
