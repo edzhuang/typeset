@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export function PreviewImage() {
   return (
-    <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border bg-muted">
+    <div className="w-[160vw] sm:w-full sm:max-w-[1248px] overflow-hidden rounded-md border bg-background">
       {/* Light theme image - hidden in dark mode via CSS */}
       <Image
         src="/preview-light.png"
