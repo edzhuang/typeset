@@ -21,6 +21,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Typeset",
   description: "Cursor for LaTeX",
+  twitter: {
+    card: "summary_large_image",
+  },
 };
 
 export default function RootLayout({
