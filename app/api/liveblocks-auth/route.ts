@@ -1,5 +1,5 @@
 import { currentUser } from "@clerk/nextjs/server";
-import { liveblocks } from "@/lib/liveblocks";
+import { getLiveblocks } from "@/lib/liveblocks";
 
 // Function to generate a random color
 function generateRandomColor(): string {
@@ -38,7 +38,7 @@ export async function POST() {
   const email = user.primaryEmailAddress.emailAddress;
 
   // Identify the user and return the result
-  const { status, body } = await liveblocks.identifyUser(email, {
+  const { status, body } = await getLiveblocks().identifyUser(email, {
     userInfo: {
       name: user.fullName || "Unnamed User",
       imageUrl: user.imageUrl,

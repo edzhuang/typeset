@@ -23,12 +23,12 @@ export default async function Image() {
           alignItems: "center",
           justifyContent: "center",
           backgroundColor: "#0a0a0a",
-          gap: "24px",
+          gap: "32px",
         }}
       >
         <svg
-          width="80"
-          height="80"
+          width="120"
+          height="120"
           viewBox="0 0 512 512"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
@@ -41,7 +41,7 @@ export default async function Image() {
         </svg>
         <span
           style={{
-            fontSize: 48,
+            fontSize: 72,
             fontFamily: "Geist Sans",
             fontWeight: 600,
             color: "white",
