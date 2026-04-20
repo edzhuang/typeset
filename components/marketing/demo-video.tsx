@@ -19,7 +19,7 @@ export function DemoVideo() {
           className="fixed dark text-foreground bg-background inset-0 flex flex-col justify-center items-center md:p-5"
         >
           <Button
-            className="absolute right-5 top-5"
+            className="absolute right-5 top-5 z-20"
             variant="ghost"
             size="icon"
             onClick={() => setOpen(false)}
