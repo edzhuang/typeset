@@ -315,7 +315,7 @@ export function Chat({
                 <AlertDescription>
                   <Button
                     variant="destructive"
-                    onClick={() => reload()}
+                    onClick={() => reload({ body: { model } })}
                     className="mt-2"
                   >
                     Retry

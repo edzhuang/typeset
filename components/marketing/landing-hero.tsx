@@ -1,0 +1,70 @@
+"use client";
+
+import { SignUpButton } from "@clerk/nextjs";
+import { Button } from "@/components/ui/button";
+import { PreviewImage } from "@/components/marketing/preview-image";
+import { DemoVideo } from "@/components/marketing/demo-video";
+import { CSSProperties, useEffect, useState } from "react";
+
+const tierStyle = (
+  loaded: boolean,
+  done: boolean,
+  delayMs: number
+): CSSProperties => {
+  if (done) return {};
+  return {
+    opacity: loaded ? 1 : 0,
+    filter: loaded ? "blur(0)" : "blur(6px)",
+    transition: "opacity 700ms ease-out, filter 700ms ease-out",
+    transitionDelay: `${delayMs}ms`,
+  };
+};
+
+export function LandingHero() {
+  const [loaded, setLoaded] = useState(false);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    if (!loaded) return;
+    const t = setTimeout(() => setDone(true), 1200);
+    return () => clearTimeout(t);
+  }, [loaded]);
+
+  return (
+    <>
+      <div className="flex justify-center">
+        <div className="container flex flex-col items-center gap-2 py-8 text-center md:py-16 lg:py-20 xl:gap-4 px-4 md:px-8 lg:px-16">
+          <h1
+            style={tierStyle(loaded, done,0)}
+            className="text-foreground leading-tighter max-w-2xl text-4xl font-semibold tracking-tight text-balance lg:leading-[1.1] lg:font-semibold xl:text-5xl xl:tracking-tighter"
+          >
+            Cursor for LaTeX
+          </h1>
+          <p
+            style={tierStyle(loaded, done,150)}
+            className="text-foreground max-w-3xl text-base text-balance sm:text-lg"
+          >
+            The first AI-powered, collaborative, online LaTeX editor
+          </p>
+          <div
+            style={tierStyle(loaded, done,300)}
+            className="flex w-full items-center justify-center gap-2 pt-2 **:data-[slot=button]:shadow-none"
+          >
+            <SignUpButton>
+              <Button>Get Started</Button>
+            </SignUpButton>
+
+            <DemoVideo />
+          </div>
+        </div>
+      </div>
+
+      <div
+        style={tierStyle(loaded, done,450)}
+        className="flex flex-col items-start sm:items-center px-6 md:px-10 pb-6 overflow-hidden"
+      >
+        <PreviewImage onLoad={() => setLoaded(true)} />
+      </div>
+    </>
+  );
+}
