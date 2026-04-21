@@ -148,12 +148,10 @@ export function Chat({
     }
 
     const fileContent = yProvider.getYDoc().getText("codemirror").toString();
-    const base64Content = btoa(
-      new TextEncoder()
-        .encode(fileContent)
-        .reduce((data, byte) => data + String.fromCharCode(byte), "")
-    );
-    const dataUrl = `data:text/plain;charset=utf-8;base64,${base64Content}`;
+    const attachmentBlob = new Blob([fileContent], {
+      type: "text/plain;charset=utf-8",
+    });
+    const attachmentUrl = URL.createObjectURL(attachmentBlob);
 
     handleSubmit(event, {
       body: {
@@ -163,10 +161,14 @@ export function Chat({
         {
           name: "main.tex",
           contentType: "text/plain;charset=utf-8",
-          url: dataUrl,
+          url: attachmentUrl,
         },
       ],
     });
+
+    window.setTimeout(() => {
+      URL.revokeObjectURL(attachmentUrl);
+    }, 60_000);
   };
 
   const renderUserMessage = (message: UIMessage) => {

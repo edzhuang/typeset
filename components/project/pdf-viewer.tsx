@@ -2,7 +2,7 @@ import { Document, Page } from "react-pdf";
 import { Button } from "@/components/ui/button";
 import { ZoomIn, ZoomOut, Download } from "lucide-react";
 import { Input } from "@/components/ui/input";
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import Link from "next/link";
 import { pdfjs } from "react-pdf";
 import "react-pdf/dist/Page/AnnotationLayer.css";
@@ -20,6 +20,13 @@ export function PdfViewer({ file }: { file: string | File }) {
   const [pagesRendered, setPagesRendered] = useState<number>(0);
   const pagesRef = useRef<(HTMLDivElement | null)[]>([]);
   const scrollareaRef = useRef<HTMLDivElement | null>(null);
+  const downloadUrl = useMemo(() => {
+    if (typeof file === "string") {
+      return file;
+    }
+
+    return URL.createObjectURL(file);
+  }, [file]);
 
   const navigateToPage = (page: number) => {
     if (isNaN(page) || page < 1 || page > numPages) {
@@ -39,6 +46,16 @@ export function PdfViewer({ file }: { file: string | File }) {
     setPagesRendered(0);
   }, [file]);
 
+  useEffect(() => {
+    if (typeof file === "string") {
+      return;
+    }
+
+    return () => {
+      URL.revokeObjectURL(downloadUrl);
+    };
+  }, [file, downloadUrl]);
+
   /**
    * Automatically update `currentPage` while scrolling so that it always reflects
    * the page that is most prominently visible in the viewport.
@@ -53,7 +70,10 @@ export function PdfViewer({ file }: { file: string | File }) {
     observer = new window.IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          const idx = pagesRef.current.findIndex((el) => el === entry.target);
+          const pageIndex = Number(
+            (entry.target as HTMLElement).dataset.pageIndex ?? "-1"
+          );
+          const idx = Number.isFinite(pageIndex) ? pageIndex : -1;
           if (idx !== -1) {
             visibleMap.set(idx, entry.intersectionRatio);
           }
@@ -149,9 +169,7 @@ export function PdfViewer({ file }: { file: string | File }) {
           <div>
             <Button variant="ghost" size="icon" asChild>
               <Link
-                href={
-                  typeof file === "string" ? file : URL.createObjectURL(file)
-                }
+                href={downloadUrl}
                 download={typeof file === "string" ? "output" : file.name}
               >
                 <Download />
@@ -174,6 +192,7 @@ export function PdfViewer({ file }: { file: string | File }) {
                 ref={(el) => {
                   pagesRef.current[index] = el;
                 }}
+                data-page-index={index}
                 className="p-2"
               >
                 <Page
