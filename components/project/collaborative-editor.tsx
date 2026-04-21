@@ -281,13 +281,13 @@ export function CollaborativeEditor({
         direction="horizontal"
         autoSaveId="editor"
       >
-        <ResizablePanel defaultSize={20}>
+        <ResizablePanel defaultSize={20} minSize={15}>
           <ChatPanel yProvider={yProvider} setNewFile={setNewFile} />
         </ResizablePanel>
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-        <ResizablePanel defaultSize={40}>
+        <ResizablePanel defaultSize={40} minSize={25}>
           <EditorPanel
             room={room}
             yProvider={yProvider}
@@ -299,7 +299,7 @@ export function CollaborativeEditor({
 
         <ResizableHandle className="mx-1 opacity-0 data-[resize-handle-state=drag]:opacity-100 transition-opacity duration-200" />
 
-        <ResizablePanel defaultSize={40}>
+        <ResizablePanel defaultSize={40} minSize={25}>
           <PreviewPanel compileError={compileError} pdfUrl={pdfUrl} />
         </ResizablePanel>
       </ResizablePanelGroup>
