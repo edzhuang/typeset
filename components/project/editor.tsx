@@ -49,9 +49,9 @@ export function Editor({
 
     // Attach user info to Yjs
     yProvider.awareness.setLocalStateField("user", {
-      name: userInfo.name,
-      color: userInfo.color,
-      colorLight: userInfo.color + "80", // 6-digit hex code at 50% opacity
+      name: userInfo?.name ?? "Anonymous",
+      color: userInfo?.color ?? "#6b7280",
+      colorLight: `${userInfo?.color ?? "#6b7280"}80`, // 6-digit hex code at 50% opacity
     });
 
     const stateConfig = {
